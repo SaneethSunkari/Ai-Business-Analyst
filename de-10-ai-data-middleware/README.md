@@ -11,6 +11,20 @@
 
 ---
 
+## Demo
+
+🎥 Watch the system in action (2 min):  
+👉 https://youtu.be/hMyuesQavrM
+
+This demo shows:
+- connecting to a live database
+- asking natural language questions
+- SQL generation and execution
+- real results returned from the database
+
+---
+
+
 ## What it does
 
 Most AI projects fail because they can't reliably access enterprise data. This middleware solves that:
