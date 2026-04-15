@@ -1,0 +1,20 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: ai_middleware_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: demo_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./demo_db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./demo_db/csv:/docker-entrypoint-initdb.d/csv:ro
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
