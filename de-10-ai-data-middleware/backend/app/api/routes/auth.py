@@ -1,20 +1,30 @@
 from fastapi import APIRouter, Header, Request, Response
+import logging
 
 from app.schemas.auth import LoginRequest, RefreshSessionRequest, SignUpRequest
 from app.schemas.responses import AuthMeResponse, AuthSessionInfo, AuthSessionResponse, AuthUserInfo
 from app.services import auth_service
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 ACCESS_COOKIE = "adm_access_token"
 REFRESH_COOKIE = "adm_refresh_token"
 REFRESH_COOKIE_MAX_AGE = 60 * 60 * 24 * 30
 
 
-def _set_session_cookies(response: Response, session: dict) -> None:
+def _cookie_secure(request: Request) -> bool:
+    forwarded_proto = request.headers.get("x-forwarded-proto", "").strip().lower()
+    if forwarded_proto:
+        return forwarded_proto == "https"
+    return request.url.scheme == "https"
+
+
+def _set_session_cookies(request: Request, response: Response, session: dict) -> None:
     access_token = session.get("access_token")
     refresh_token = session.get("refresh_token")
     expires_in = session.get("expires_in") or 3600
+    secure = _cookie_secure(request)
 
     if access_token:
         response.set_cookie(
@@ -23,7 +33,7 @@ def _set_session_cookies(response: Response, session: dict) -> None:
             max_age=expires_in,
             httponly=True,
             samesite="lax",
-            secure=False,
+            secure=secure,
             path="/",
         )
 
@@ -34,7 +44,7 @@ def _set_session_cookies(response: Response, session: dict) -> None:
             max_age=REFRESH_COOKIE_MAX_AGE,
             httponly=True,
             samesite="lax",
-            secure=False,
+            secure=secure,
             path="/",
         )
 
@@ -42,6 +52,22 @@ def _set_session_cookies(response: Response, session: dict) -> None:
 def _clear_session_cookies(response: Response) -> None:
     response.delete_cookie(ACCESS_COOKIE, path="/")
     response.delete_cookie(REFRESH_COOKIE, path="/")
+
+
+def _public_auth_error(exc: ValueError) -> str:
+    message = str(exc)
+    if any(
+        token in message
+        for token in (
+            "SUPABASE_URL",
+            "SUPABASE_SERVICE_ROLE_KEY",
+            "SUPABASE_ANON_KEY",
+            "CONTROL_PLANE_ENCRYPTION_KEY",
+        )
+    ):
+        logger.warning("Auth configuration error: %s", message)
+        return "Authentication is not configured for this environment. Contact your administrator."
+    return message
 
 
 def _read_access_token(authorization: str | None, request: Request) -> str | None:
@@ -59,7 +85,7 @@ def _read_access_token(authorization: str | None, request: Request) -> str | Non
     summary="Create Account",
     description="Create a new Supabase-authenticated user and return a signed-in session.",
 )
-def sign_up(payload: SignUpRequest, response: Response) -> AuthSessionResponse:
+def sign_up(payload: SignUpRequest, request: Request, response: Response) -> AuthSessionResponse:
     try:
         session = auth_service.sign_up_user(
             email=payload.email,
@@ -67,9 +93,9 @@ def sign_up(payload: SignUpRequest, response: Response) -> AuthSessionResponse:
             full_name=payload.full_name,
         )
     except ValueError as exc:
-        return AuthSessionResponse(success=False, error=str(exc))
+        return AuthSessionResponse(success=False, error=_public_auth_error(exc))
 
-    _set_session_cookies(response, session)
+    _set_session_cookies(request, response, session)
     return AuthSessionResponse(success=True, session=AuthSessionInfo(**session))
 
 
@@ -80,13 +106,13 @@ def sign_up(payload: SignUpRequest, response: Response) -> AuthSessionResponse:
     summary="Sign In",
     description="Authenticate an existing user with email and password.",
 )
-def log_in(payload: LoginRequest, response: Response) -> AuthSessionResponse:
+def log_in(payload: LoginRequest, request: Request, response: Response) -> AuthSessionResponse:
     try:
         session = auth_service.log_in_user(email=payload.email, password=payload.password)
     except ValueError as exc:
-        return AuthSessionResponse(success=False, error=str(exc))
+        return AuthSessionResponse(success=False, error=_public_auth_error(exc))
 
-    _set_session_cookies(response, session)
+    _set_session_cookies(request, response, session)
     return AuthSessionResponse(success=True, session=AuthSessionInfo(**session))
 
 
@@ -97,13 +123,13 @@ def log_in(payload: LoginRequest, response: Response) -> AuthSessionResponse:
     summary="Refresh Session",
     description="Exchange a refresh token for a fresh access token.",
 )
-def refresh_session(payload: RefreshSessionRequest, response: Response) -> AuthSessionResponse:
+def refresh_session(payload: RefreshSessionRequest, request: Request, response: Response) -> AuthSessionResponse:
     try:
         session = auth_service.refresh_user_session(payload.refresh_token)
     except ValueError as exc:
-        return AuthSessionResponse(success=False, error=str(exc))
+        return AuthSessionResponse(success=False, error=_public_auth_error(exc))
 
-    _set_session_cookies(response, session)
+    _set_session_cookies(request, response, session)
     return AuthSessionResponse(success=True, session=AuthSessionInfo(**session))
 
 
