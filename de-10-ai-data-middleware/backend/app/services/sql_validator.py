@@ -21,7 +21,7 @@ def validate_read_only_sql(sql: str) -> tuple[bool, str]:
     if not cleaned_sql:
         return False, "SQL query cannot be empty"
 
-    if not cleaned_sql.startswith("select"):
+    if not (cleaned_sql.startswith("select") or cleaned_sql.startswith("with")):
         return False, "Only SELECT queries are allowed"
 
     if ";" in cleaned_sql[:-1]:

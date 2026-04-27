@@ -1,8 +1,11 @@
 from fastapi import FastAPI
+from fastapi import Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, RedirectResponse
 import os
+from app.api.routes.auth import router as auth_router
+from app.services import auth_service
 from app.api.routes.health import router as health_router
 from app.api.routes.connections import router as connections_router
 from app.api.routes.query import router as query_router
@@ -11,41 +14,54 @@ from app.api.routes.tools import router as tools_router
 from app.schemas.responses import RootResponse
 
 API_DESCRIPTION = """
-AI Data Middleware is a small backend that connects to the demo PostgreSQL database,
-inspects the imported 12 CSV tables, and turns simple English questions into safe
-read-only SQL.
+AI Data Middleware connects to multiple data source engines, inspects schema metadata,
+and turns plain-English questions into safe read-only SQL.
 
-**Recommended local flow**
-1. Use `POST /connections/test` to verify the demo database connection.
-2. Use `POST /schema/scan` to inspect tables and inferred relationships.
-3. Use `POST /query/ask` for natural-language questions.
-4. Use `POST /query/run` when you want to send SQL manually.
+**Supported SQL and warehouse engines**
+- PostgreSQL
+- MySQL
+- SQL Server
+- SQLite
+- Oracle
+- Snowflake
+- BigQuery
+- Redshift
+
+**Supported object storage engines**
+- Amazon S3
+- Azure Blob
+
+**Recommended flow**
+1. Use `GET /connections/types` to discover the fields required for each source engine.
+2. Use `POST /connections/test` to verify credentials.
+3. Use `POST /schema/scan` to inspect tables and relationships.
+4. Use `POST /query/ask` for natural-language questions.
+5. Use `POST /query/run` when you want to send SQL manually.
 
 **Important local note**
-- On this machine, the Docker PostgreSQL database is on `localhost:5433`.
-
-**Good starter questions**
-- `Show the first 5 patients`
-- `Show provider names and organization names`
-- `List all medications and their total cost`
+- On this machine, the demo Docker PostgreSQL database is on `localhost:5433`.
 """
 
 TAGS_METADATA = [
+    {
+        "name": "auth",
+        "description": "Supabase-backed signup, login, and session validation.",
+    },
     {
         "name": "health",
         "description": "Basic service health checks.",
     },
     {
         "name": "connections",
-        "description": "Verify PostgreSQL credentials before running schema scans or queries.",
+        "description": "Verify credentials, list supported source engines, and manage saved sources across databases, warehouses, and object stores.",
     },
     {
         "name": "schema",
-        "description": "Inspect the real 12 CSV-backed tables and inferred relationships.",
+        "description": "Inspect tables, columns, and inferred relationships for the connected source.",
     },
     {
         "name": "query",
-        "description": "Run read-only SQL directly or ask questions in plain English.",
+        "description": "Run read-only SQL directly or ask questions in plain English across supported data sources.",
     },
     {
         "name": "tools",
@@ -76,6 +92,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(auth_router, prefix="/auth", tags=["auth"])
 app.include_router(health_router, prefix="/health", tags=["health"])
 app.include_router(connections_router, prefix="/connections", tags=["connections"])
 app.include_router(query_router, prefix="/query", tags=["query"])
@@ -87,15 +104,35 @@ app.mount("/static", StaticFiles(directory=_static_dir), name="static")
 
 
 @app.get("/ui", include_in_schema=False)
-def serve_ui():
+def serve_ui(request: Request):
+    access_token = request.cookies.get("adm_access_token")
+    if not access_token:
+        return RedirectResponse(url="/", status_code=303)
+
+    try:
+        context = auth_service.get_auth_context_from_token(access_token)
+    except ValueError:
+        return RedirectResponse(url="/", status_code=303)
+
+    if not context:
+        return RedirectResponse(url="/", status_code=303)
+
     return FileResponse(os.path.join(_static_dir, "index.html"))
 
 
 @app.get(
     "/",
+    include_in_schema=False,
+)
+def serve_home():
+    return FileResponse(os.path.join(_static_dir, "home.html"))
+
+
+@app.get(
+    "/api/status",
     response_model=RootResponse,
     summary="API Status",
     description="Quick status check for the middleware API.",
 )
-def root() -> RootResponse:
+def api_status() -> RootResponse:
     return RootResponse(message="AI Data Middleware is running")

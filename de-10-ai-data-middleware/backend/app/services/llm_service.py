@@ -1,10 +1,13 @@
 import os
 import re
+from pathlib import Path
 
 from openai import OpenAI
+from dotenv import load_dotenv
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 UNANSWERABLE_SQL = "SELECT 'UNANSWERABLE' AS error;"
+_client: OpenAI | None = None
 QUESTION_STOPWORDS = {
     "a",
     "all",
@@ -31,6 +34,16 @@ QUESTION_STOPWORDS = {
     "what",
     "with",
 }
+
+
+def get_openai_client() -> OpenAI:
+    global _client
+    if _client is None:
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            raise ValueError("OPENAI_API_KEY is not configured for AI queries.")
+        _client = OpenAI(api_key=api_key)
+    return _client
 
 
 def normalize_term(term: str) -> str:
@@ -66,6 +79,10 @@ def build_schema_table_terms(schema_metadata: dict) -> set[str]:
 
 
 def question_targets_known_table(question: str, schema_metadata: dict) -> bool:
+    tables = schema_metadata.get("tables", {})
+    if len(tables) == 1 and question.strip():
+        return True
+
     question_terms = {
         normalize_term(term)
         for term in re.findall(r"[a-zA-Z_]+", question.lower())
@@ -94,8 +111,8 @@ def clean_sql_output(raw_text: str) -> str:
     text = re.sub(r"^```\s*", "", text)
     text = re.sub(r"\s*```$", "", text)
 
-    # Keep only from first SELECT onward
-    match = re.search(r"\bselect\b.*", text, flags=re.IGNORECASE | re.DOTALL)
+    # Keep only from first WITH/SELECT onward
+    match = re.search(r"\b(?:with|select)\b.*", text, flags=re.IGNORECASE | re.DOTALL)
     if match:
         text = match.group(0).strip()
 
@@ -109,18 +126,32 @@ _DIALECT_LABELS = {
     "mysql": "MySQL",
     "sqlite": "SQLite",
     "postgresql": "PostgreSQL",
+    "sqlserver": "Microsoft SQL Server",
+    "oracle": "Oracle SQL",
+    "snowflake": "Snowflake SQL",
+    "bigquery": "GoogleSQL for BigQuery",
+    "redshift": "Amazon Redshift SQL",
+    "databricks_sql": "Databricks SQL",
+    "athena": "Amazon Athena SQL",
+    "synapse": "Azure Synapse SQL",
+    "fabric": "Microsoft Fabric Warehouse SQL",
+    "trino": "Trino SQL",
+    "dremio": "Dremio SQL",
+    "salesforce": "Salesforce SOQL",
+    "mongodb": "DuckDB SQL over sampled MongoDB documents",
+    "kafka": "DuckDB SQL over sampled Kafka messages",
 }
 
 
 def generate_sql_from_question(
     question: str,
     schema_metadata: dict,
-    db_type: str = "postgresql",
+    engine_key: str = "postgresql",
 ) -> str:
     if not question_targets_known_table(question, schema_metadata):
         return UNANSWERABLE_SQL
 
-    dialect = _DIALECT_LABELS.get(db_type, "PostgreSQL")
+    dialect = _DIALECT_LABELS.get(engine_key, "PostgreSQL")
 
     table_text_parts = []
     for table_name, columns in schema_metadata["tables"].items():
@@ -167,7 +198,7 @@ User question:
 {question}
 """
 
-    response = client.chat.completions.create(
+    response = get_openai_client().chat.completions.create(
         model="gpt-4.1-mini",
         messages=[
             {
@@ -182,7 +213,9 @@ User question:
     raw_output = response.choices[0].message.content or ""
     cleaned_sql = clean_sql_output(raw_output)
 
-    if not cleaned_sql.lower().startswith("select"):
+    lowered_sql = cleaned_sql.lower()
+
+    if not (lowered_sql.startswith("select") or lowered_sql.startswith("with")):
         return UNANSWERABLE_SQL
 
     referenced_tables = extract_referenced_tables(cleaned_sql)

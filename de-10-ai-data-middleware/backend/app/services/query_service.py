@@ -1,56 +1,73 @@
-import re
 from sqlalchemy import create_engine, text
 from sqlalchemy.exc import SQLAlchemyError
+from time import perf_counter
 from app.services.db_url import build_db_url
+from app.services.error_service import clean_db_error_message
+from app.services.extended_source_service import execute_special_query, handles_special_engine
 from app.services.llm_service import UNANSWERABLE_SQL, generate_sql_from_question
 from app.services.log_service import build_query_log, write_query_log
+from app.services.object_store_service import execute_object_store_sql
 from app.services.schema_service import get_schema_metadata
 from app.services.sql_validator import validate_read_only_sql
 
 
 def clean_error_message(error: str) -> str:
-    cleaned_error = error.strip()
-    cleaned_error = re.sub(r"\n+\(Background on this error at:.*$", "", cleaned_error, flags=re.DOTALL)
-    cleaned_error = re.sub(r"^\([^)]+\)\s*", "", cleaned_error)
-    cleaned_error = cleaned_error.strip()
-    normalized_error = cleaned_error.lower()
-
-    if "only select queries are allowed" in normalized_error:
-        return "Only SELECT queries are allowed"
-    if "multiple sql statements are not allowed" in normalized_error:
-        return "Multiple SQL statements are not allowed"
-    if "password authentication failed" in normalized_error:
-        return "Unable to connect to the database with the provided credentials"
-    if "role \"" in normalized_error and "does not exist" in normalized_error:
-        return "Unable to connect to the database with the provided credentials"
-    if "connection refused" in normalized_error or "could not connect to server" in normalized_error:
-        return "Unable to connect to the database server"
-    if "relation \"" in normalized_error and "does not exist" in normalized_error:
-        return "Generated SQL referenced a table that does not exist"
-    if "column \"" in normalized_error and "does not exist" in normalized_error:
-        return "Generated SQL referenced a column that does not exist"
-    if "syntax error at or near" in normalized_error:
-        return "Generated SQL was invalid"
-    if not cleaned_error:
-        return "Query failed"
-    first_line = cleaned_error.splitlines()[0].strip()
-    return first_line or "Query failed"
+    return clean_db_error_message(error)
 
 
 def execute_sql_query(
     sql: str,
-    db_type: str = "postgresql",
+    source_kind: str = "database",
+    engine_key: str = "postgresql",
     host: str = "localhost",
     port: int = 5432,
     database: str = "",
     username: str = "",
     password: str = "",
+    options: dict[str, str] | None = None,
 ):
     is_valid, message = validate_read_only_sql(sql)
     if not is_valid:
         return {"success": False, "error": message}
 
-    db_url = build_db_url(db_type, host, port, database, username, password)
+    if source_kind == "object_store":
+        try:
+            return execute_object_store_sql(
+                engine_key=engine_key,
+                host=host,
+                database=database,
+                username=username,
+                password=password,
+                options=options,
+                sql=sql,
+            )
+        except Exception as e:
+            return {"success": False, "error": str(e)}
+
+    if handles_special_engine(engine_key):
+        try:
+            return execute_special_query(
+                engine_key=engine_key,
+                sql=sql,
+                host=host,
+                port=port,
+                database=database,
+                username=username,
+                password=password,
+                options=options,
+            )
+        except Exception as e:
+            return {"success": False, "error": str(e)}
+
+    db_url = build_db_url(
+        engine_key,
+        host,
+        port,
+        database,
+        username,
+        password,
+        options=options,
+    )
     engine = create_engine(db_url)
     try:
         with engine.connect() as connection:
@@ -66,61 +83,126 @@ def execute_sql_query(
 
 def execute_nl_query(
     question: str,
-    db_type: str = "postgresql",
+    connection_id: str | None = None,
+    organization_id: str | None = None,
+    user_id: str | None = None,
+    source_kind: str = "database",
+    engine_key: str = "postgresql",
     host: str = "localhost",
     port: int = 5432,
     database: str = "",
     username: str = "",
     password: str = "",
+    options: dict[str, str] | None = None,
 ):
+    started_at = perf_counter()
     try:
         schema_metadata = get_schema_metadata(
-            db_type=db_type,
+            source_kind=source_kind,
+            engine_key=engine_key,
             host=host,
             port=port,
             database=database,
             username=username,
             password=password,
+            options=options,
         )
     except Exception as e:
         error_msg = clean_error_message(str(e))
-        write_query_log(build_query_log(question=question, generated_sql="", success=False, error=error_msg))
+        write_query_log(
+            build_query_log(
+                question=question,
+                generated_sql="",
+                success=False,
+                error=error_msg,
+                connection_id=connection_id,
+                latency_ms=int((perf_counter() - started_at) * 1000),
+            ),
+            organization_id=organization_id,
+            user_id=user_id,
+        )
         return {"success": False, "question": question, "sql": "", "error": error_msg}
 
     if not schema_metadata or not schema_metadata.get("tables"):
         error_msg = "No schema metadata found"
-        write_query_log(build_query_log(question=question, generated_sql="", success=False, error=error_msg))
+        write_query_log(
+            build_query_log(
+                question=question,
+                generated_sql="",
+                success=False,
+                error=error_msg,
+                connection_id=connection_id,
+                latency_ms=int((perf_counter() - started_at) * 1000),
+            ),
+            organization_id=organization_id,
+            user_id=user_id,
+        )
         return {"success": False, "question": question, "sql": "", "error": error_msg}
 
     generated_sql = generate_sql_from_question(
         question=question,
         schema_metadata=schema_metadata,
-        db_type=db_type,
+        engine_key=engine_key,
     )
 
     if generated_sql == UNANSWERABLE_SQL:
         error_msg = "Question cannot be answered from the available schema"
-        write_query_log(build_query_log(question=question, generated_sql=generated_sql, success=False, error=error_msg))
+        write_query_log(
+            build_query_log(
+                question=question,
+                generated_sql=generated_sql,
+                success=False,
+                error=error_msg,
+                connection_id=connection_id,
+                latency_ms=int((perf_counter() - started_at) * 1000),
+            ),
+            organization_id=organization_id,
+            user_id=user_id,
+        )
         return {"success": False, "question": question, "sql": generated_sql, "error": error_msg}
 
     query_result = execute_sql_query(
         sql=generated_sql,
-        db_type=db_type,
+        source_kind=source_kind,
+        engine_key=engine_key,
         host=host,
         port=port,
         database=database,
         username=username,
         password=password,
+        options=options,
     )
 
     if not query_result.get("success"):
         error_msg = clean_error_message(query_result.get("error", "Query execution failed"))
-        write_query_log(build_query_log(question=question, generated_sql=generated_sql, success=False, error=error_msg))
+        write_query_log(
+            build_query_log(
+                question=question,
+                generated_sql=generated_sql,
+                success=False,
+                error=error_msg,
+                connection_id=connection_id,
+                latency_ms=int((perf_counter() - started_at) * 1000),
+            ),
+            organization_id=organization_id,
+            user_id=user_id,
+        )
         return {"success": False, "question": question, "sql": generated_sql, "error": error_msg}
 
     columns = query_result.get("columns", [])
     rows = query_result.get("rows", [])
-    write_query_log(build_query_log(question=question, generated_sql=generated_sql, success=True, row_count=len(rows)))
+    write_query_log(
+        build_query_log(
+            question=question,
+            generated_sql=generated_sql,
+            success=True,
+            row_count=len(rows),
+            connection_id=connection_id,
+            latency_ms=int((perf_counter() - started_at) * 1000),
+        ),
+        organization_id=organization_id,
+        user_id=user_id,
+    )
 
     return {
         "success": True,

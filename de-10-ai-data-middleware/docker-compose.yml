@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   postgres:
     image: postgres:16
@@ -13,7 +11,7 @@ services:
       - "5433:5432"
     volumes:
       - ./demo_db/init.sql:/docker-entrypoint-initdb.d/init.sql
-      - ./demo_db/csv:/docker-entrypoint-initdb.d/csv:ro
+      - /Users/saneethsunkari/Desktop/PRACTICE/csv:/docker-entrypoint-initdb.d/csv:ro
       - postgres_data:/var/lib/postgresql/data
 
 volumes:

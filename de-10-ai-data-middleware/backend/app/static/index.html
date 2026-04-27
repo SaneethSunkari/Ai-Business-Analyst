@@ -23,8 +23,11 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: var(--bg);
+      font-family: "Avenir Next", "Segoe UI", "Helvetica Neue", sans-serif;
+      background:
+        radial-gradient(circle at 12% 0%, rgba(88,166,255,0.18), transparent 26%),
+        radial-gradient(circle at 88% 8%, rgba(63,185,80,0.10), transparent 18%),
+        linear-gradient(180deg, #08111c 0%, #0d1117 38%, #10161f 100%);
       color: var(--text);
       min-height: 100vh;
       display: flex;
@@ -38,7 +41,8 @@
       gap: 10px;
       padding: 0 20px;
       height: 54px;
-      background: var(--surface);
+      background: rgba(12, 18, 27, 0.88);
+      backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--border);
       position: sticky;
       top: 0;
@@ -68,9 +72,12 @@
       background: none;
     }
     .nav-tab:hover { background: var(--surface2); color: var(--text); }
-    .nav-tab.active { background: var(--surface2); color: var(--accent); }
+    .nav-tab.active {
+      background: linear-gradient(135deg, rgba(88,166,255,0.18), rgba(88,166,255,0.08));
+      color: var(--accent);
+      box-shadow: inset 0 0 0 1px rgba(88,166,255,0.14);
+    }
     .status-pill {
-      margin-left: auto;
       display: flex;
       align-items: center;
       gap: 6px;
@@ -90,6 +97,151 @@
     }
     .status-dot.connected { background: var(--accent2); box-shadow: 0 0 6px var(--accent2); }
     .status-dot.error { background: var(--danger); }
+    .header-actions {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .account-pill {
+      position: relative;
+    }
+    .header-link {
+      padding: 7px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      transition: border-color var(--tr), color var(--tr);
+    }
+    .header-link:hover { border-color: var(--accent); color: var(--accent); }
+    .profile-trigger {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      padding: 6px 10px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+      color: var(--text);
+      cursor: pointer;
+      transition: border-color var(--tr), background var(--tr);
+    }
+    .profile-trigger:hover,
+    .profile-trigger.open {
+      border-color: var(--accent);
+      background: rgba(88,166,255,0.06);
+    }
+    .account-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: #08111c;
+      background: linear-gradient(135deg, #9fd1ff, #7ddfc0);
+      flex-shrink: 0;
+    }
+    .account-copy {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .account-name {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 180px;
+      text-align: left;
+    }
+    .account-meta {
+      font-size: 0.68rem;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 180px;
+      text-align: left;
+    }
+    .profile-caret {
+      color: var(--muted);
+      flex-shrink: 0;
+      transition: transform var(--tr);
+    }
+    .profile-trigger.open .profile-caret {
+      transform: rotate(180deg);
+    }
+    .profile-menu {
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      width: 290px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: rgba(10, 16, 24, 0.98);
+      box-shadow: 0 18px 40px rgba(0,0,0,0.35);
+      padding: 12px;
+      display: none;
+      z-index: 300;
+    }
+    .profile-menu.open { display: block; }
+    .profile-menu-head {
+      padding: 8px 8px 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      margin-bottom: 10px;
+    }
+    .profile-menu-head strong {
+      display: block;
+      font-size: 0.9rem;
+      margin-bottom: 4px;
+    }
+    .profile-menu-head span {
+      display: block;
+      font-size: 0.75rem;
+      color: var(--muted);
+      line-height: 1.5;
+      word-break: break-word;
+    }
+    .profile-menu-actions {
+      display: grid;
+      gap: 8px;
+    }
+    .profile-action {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.03);
+      color: var(--text);
+      text-decoration: none;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: border-color var(--tr), background var(--tr);
+    }
+    .profile-action:hover {
+      border-color: var(--accent);
+      background: rgba(88,166,255,0.06);
+    }
+    .profile-action.danger:hover {
+      border-color: var(--danger);
+      color: var(--danger);
+      background: rgba(248,81,73,0.08);
+    }
 
     /* ── LAYOUT ── */
     main { flex: 1; display: flex; overflow: hidden; min-height: 0; }
@@ -169,6 +321,16 @@
       background: rgba(248,81,73,0.08); color: var(--danger);
       border: 1px solid rgba(248,81,73,0.25); display: block;
     }
+    .db-help {
+      margin-top: 8px;
+      font-size: 0.74rem;
+      line-height: 1.5;
+      color: var(--muted);
+      background: rgba(88,166,255,0.06);
+      border: 1px solid rgba(88,166,255,0.14);
+      border-radius: 6px;
+      padding: 8px 10px;
+    }
 
     /* db type badges */
     .db-badge {
@@ -183,6 +345,13 @@
     .db-badge.postgresql { background: rgba(88,166,255,0.12); color: var(--accent); }
     .db-badge.mysql { background: rgba(240,136,62,0.12); color: var(--warn); }
     .db-badge.sqlite { background: rgba(188,140,255,0.12); color: var(--purple); }
+    .db-badge.sqlserver { background: rgba(79,140,255,0.14); color: #7db7ff; }
+    .db-badge.oracle { background: rgba(248,81,73,0.12); color: #ff938f; }
+    .db-badge.snowflake { background: rgba(69,196,255,0.12); color: #76dfff; }
+    .db-badge.bigquery { background: rgba(63,185,80,0.12); color: #6fdd8e; }
+    .db-badge.redshift { background: rgba(255,176,64,0.14); color: #ffc978; }
+    .db-badge.s3 { background: rgba(255,153,0,0.14); color: #ffbe62; }
+    .db-badge.azure_blob { background: rgba(63,149,255,0.14); color: #98c9ff; }
 
     /* saved connections */
     .saved-conn-item {
@@ -232,6 +401,168 @@
     }
     .tab-panel { display: none; flex-direction: column; gap: 16px; }
     .tab-panel.active { display: flex; }
+
+    /* launchpad */
+    .hero-panel {
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at top right, rgba(88,166,255,0.18), transparent 28%),
+        linear-gradient(135deg, rgba(22,27,34,0.98), rgba(13,17,23,0.96));
+      border: 1px solid rgba(88,166,255,0.14);
+      border-radius: 16px;
+      padding: 22px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.55fr) minmax(280px, 0.95fr);
+      gap: 18px;
+    }
+    .hero-panel::after {
+      content: "";
+      position: absolute;
+      inset: auto -40px -60px auto;
+      width: 220px;
+      height: 220px;
+      background: radial-gradient(circle, rgba(63,185,80,0.16), transparent 64%);
+      pointer-events: none;
+    }
+    .hero-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 12px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #b7dcff;
+      background: rgba(88,166,255,0.09);
+      border: 1px solid rgba(88,166,255,0.16);
+    }
+    .hero-title {
+      font-size: 1.8rem;
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+      margin-bottom: 10px;
+      max-width: 640px;
+    }
+    .hero-subtitle {
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 0.93rem;
+      max-width: 660px;
+    }
+    .hero-stats {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .hero-stat {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 12px;
+      padding: 12px 14px;
+    }
+    .hero-stat-value {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .hero-stat-label {
+      font-size: 0.76rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .hero-side {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .hero-side-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #8ec5ff;
+    }
+    .journey-card {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 10px;
+      align-items: start;
+      padding: 10px 0;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .journey-card:first-of-type { border-top: none; padding-top: 0; }
+    .journey-index {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(88,166,255,0.12);
+      border: 1px solid rgba(88,166,255,0.2);
+      color: #b7dcff;
+      font-size: 0.76rem;
+      font-weight: 700;
+    }
+    .journey-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .journey-text {
+      font-size: 0.76rem;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+    .support-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .support-chip {
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.74rem;
+      font-weight: 600;
+      color: var(--text);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .insight-bar {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .insight-card {
+      background: rgba(22,27,34,0.92);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 12px;
+      padding: 13px 14px;
+    }
+    .insight-card strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.84rem;
+      color: #d6e8ff;
+    }
+    .insight-card span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.77rem;
+      line-height: 1.55;
+    }
 
     /* card */
     .card {
@@ -393,6 +724,20 @@
       transition: opacity 0.18s, transform 0.18s; z-index: 9999;
     }
     #toast.show { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 1120px) {
+      .hero-panel {
+        grid-template-columns: 1fr;
+      }
+      .hero-stats,
+      .insight-bar {
+        grid-template-columns: 1fr;
+      }
+      .header-actions {
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+    }
   </style>
 </head>
 <body>
@@ -418,9 +763,41 @@
     <button class="nav-tab"        id="ntab-history"onclick="switchTab('history')">History</button>
   </nav>
 
-  <div class="status-pill" id="statusPill" title="Click to test connection">
-    <div class="status-dot" id="statusDot"></div>
-    <span id="statusLabel">Not connected</span>
+  <div class="header-actions">
+    <div class="status-pill" id="statusPill" title="Click to test connection">
+      <div class="status-dot" id="statusDot"></div>
+      <span id="statusLabel">Not connected</span>
+    </div>
+    <div class="account-pill">
+      <button class="profile-trigger" id="profileTrigger" type="button" onclick="toggleProfileMenu()">
+        <span class="account-avatar" id="accountAvatar">AI</span>
+        <span class="account-copy">
+          <span class="account-name" id="accountName">Loading workspace…</span>
+          <span class="account-meta" id="accountMeta">Checking session</span>
+        </span>
+        <svg class="profile-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </button>
+      <div class="profile-menu" id="profileMenu">
+        <div class="profile-menu-head">
+          <strong id="profileMenuName">Loading…</strong>
+          <span id="profileMenuEmail">Checking account</span>
+          <span id="profileMenuWorkspace">Workspace</span>
+        </div>
+        <div class="profile-menu-actions">
+          <a class="profile-action" href="/" onclick="closeProfileMenu()">
+            <span>Go to home</span>
+            <span>↗</span>
+          </a>
+          <button class="profile-action danger" type="button" onclick="logoutWorkspace()">
+            <span>Log out</span>
+            <span>⎋</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <a class="header-link" href="/">Home</a>
   </div>
 </header>
 
@@ -432,42 +809,40 @@
 
     <!-- DB TYPE + CREDENTIALS -->
     <div class="sidebar-section">
-      <div class="sidebar-title">Database Connection</div>
+      <div class="sidebar-title">Data Source Connection</div>
 
       <div class="form-row">
-        <label>Database Type</label>
-        <select id="dbType" onchange="onDbTypeChange()">
-          <option value="postgresql">PostgreSQL</option>
-          <option value="mysql">MySQL</option>
-          <option value="sqlite">SQLite</option>
-        </select>
+        <label>Data Source Type</label>
+        <select id="dbType" onchange="onDbTypeChange()"></select>
       </div>
 
       <div id="hostPortFields">
         <div class="form-row-2">
-          <div class="form-row">
-            <label>Host</label>
+          <div class="form-row" id="hostField">
+            <label id="hostLabel">Host</label>
             <input id="host" value="localhost" placeholder="localhost" />
           </div>
-          <div class="form-row">
-            <label>Port</label>
+          <div class="form-row" id="portField">
+            <label id="portLabel">Port</label>
             <input id="port" type="number" value="5433" placeholder="5433" />
           </div>
         </div>
-        <div class="form-row">
-          <label>Username</label>
+        <div class="form-row" id="usernameRow">
+          <label id="usernameLabel">Username</label>
           <input id="username" value="postgres" placeholder="postgres" />
         </div>
-        <div class="form-row">
-          <label>Password</label>
+        <div class="form-row" id="passwordRow">
+          <label id="passwordLabel">Password</label>
           <input id="password" type="password" value="postgres" placeholder="••••••••" />
         </div>
       </div>
 
-      <div class="form-row">
+      <div class="form-row" id="databaseRow">
         <label id="dbLabel">Database</label>
         <input id="database" value="demo_db" placeholder="demo_db" />
       </div>
+      <div id="extraOptionFields"></div>
+      <div id="dbHelp" class="db-help" style="display:none"></div>
 
       <div class="btn-row">
         <button class="btn btn-primary" style="flex:1" id="testConnBtn" onclick="testConnection()">Test Connection</button>
@@ -489,11 +864,11 @@
     <!-- SAVED CONNECTIONS -->
     <div class="sidebar-section" id="savedSection">
       <div class="sidebar-title">
-        <span>Saved Connections</span>
+        <span>Saved Sources</span>
         <span id="savedCount" style="color:var(--muted);font-size:0.68rem;font-weight:400"></span>
       </div>
       <div id="savedList">
-        <div style="font-size:0.76rem;color:var(--muted);padding:4px 0">No saved connections yet.</div>
+        <div style="font-size:0.76rem;color:var(--muted);padding:4px 0">No saved sources yet.</div>
       </div>
     </div>
 
@@ -515,19 +890,22 @@
     <div class="tab-panel active" id="tab-ask">
       <div class="card">
         <div class="card-header">
-          <span>Ask a question in plain English</span>
-          <span style="font-size:0.7rem;color:var(--muted);font-weight:400">GPT-4.1-mini · dialect-aware</span>
+          <span>Ask AI</span>
+          <span style="font-size:0.7rem;color:var(--muted);font-weight:400">Natural language to safe SQL</span>
         </div>
         <div class="card-body">
-          <div class="ai-input-wrap">
-            <textarea id="aiQuestion" placeholder="e.g. Show the first 5 patients, List all medications and their total cost…" rows="3"></textarea>
+          <div class="form-row">
+            <textarea id="aiQuestion" class="sql-editor" placeholder="Show the first 5 patients" rows="6"></textarea>
+          </div>
+          <div class="suggestions" id="suggestions">
+            <span style="font-size:0.7rem;color:var(--muted);align-self:center">Try:</span>
+          </div>
+          <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
+            <button class="btn btn-ghost btn-sm" type="button" onclick="clearAI()">Clear</button>
             <button class="btn btn-primary" id="askBtn" onclick="askQuery()">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
               Ask
             </button>
-          </div>
-          <div class="suggestions" id="suggestions">
-            <span style="font-size:0.7rem;color:var(--muted);align-self:center">Try:</span>
           </div>
         </div>
       </div>
@@ -588,7 +966,7 @@
     <div class="tab-panel" id="tab-schema">
       <div class="card">
         <div class="card-header">
-          <span>Database Schema</span>
+          <span>Source Schema</span>
           <button class="btn btn-ghost btn-sm" onclick="loadSchema()">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
             Scan
@@ -622,7 +1000,7 @@
 
           <div class="tool-card">
             <div class="tool-name">test_connection</div>
-            <div class="tool-desc">Verify a database connection. Use inline credentials or a saved <code>connection_id</code>.</div>
+            <div class="tool-desc">Verify a data source connection. Use inline credentials or a saved <code>connection_id</code>.</div>
             <div class="code-block">GET  /tools/manifest        → full OpenAI tools array
 POST /tools/invoke          → execute any tool by name</div>
           </div>
@@ -652,12 +1030,12 @@ POST /tools/invoke          → execute any tool by name</div>
 
           <div class="tool-card">
             <div class="tool-name">inspect_schema</div>
-            <div class="tool-desc">Return all tables, columns, and relationships so the agent understands the data model.</div>
+            <div class="tool-desc">Return all tables, columns, and relationships so the agent understands the active source model.</div>
           </div>
 
           <div style="margin-top:16px">
             <div style="font-size:0.76rem;color:var(--muted);margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em">Fetch manifest with curl</div>
-            <div class="code-block">curl http://localhost:8000/tools/manifest</div>
+            <div class="code-block" id="manifestCurlBlock">curl http://localhost:8000/tools/manifest</div>
           </div>
 
           <div style="margin-top:12px">
@@ -694,6 +1072,7 @@ POST /tools/invoke          → execute any tool by name</div>
 
 <div id="toast"></div>
 
+<script src="/static/auth.js"></script>
 <script>
 // ── STATE ──
 const API = '';
@@ -702,6 +1081,8 @@ let schemaData = null;
 let aiLastResult = null;
 let sqlLastResult = null;
 let activeConnId = null;  // currently selected saved connection
+let databaseCatalog = {};
+let savedConnectionsById = {};
 const queryHistory = [];
 
 const SUGGESTIONS = [
@@ -714,11 +1095,60 @@ const SUGGESTIONS = [
 ];
 
 // ── INIT ──
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  const user = await window.middlewareAuth.requireAuth('/');
+  if (!user) return;
+  renderWorkspaceIdentity(user);
   renderSuggestions();
   setupHotkeys();
+  setupConnectionFieldWatchers();
   renderHistory();
+  document.getElementById('manifestCurlBlock').textContent = `curl ${window.location.origin}/tools/manifest`;
+  await loadDatabaseTypes();
   loadSavedConnections();
+});
+
+function renderWorkspaceIdentity(user) {
+  document.getElementById('accountName').textContent = user.full_name || user.email || 'Workspace user';
+  document.getElementById('accountMeta').textContent = user.organization_name || user.email || 'Signed in';
+  document.getElementById('accountAvatar').textContent = (user.full_name || user.email || 'AI').trim().slice(0, 2).toUpperCase();
+  document.getElementById('profileMenuName').textContent = user.full_name || 'Workspace user';
+  document.getElementById('profileMenuEmail').textContent = user.email || 'No email available';
+  document.getElementById('profileMenuWorkspace').textContent = user.organization_name || 'Personal workspace';
+}
+
+async function logoutWorkspace() {
+  closeProfileMenu();
+  await window.middlewareAuth.signOut();
+  window.location.replace('/');
+}
+
+function toggleProfileMenu() {
+  const trigger = document.getElementById('profileTrigger');
+  const menu = document.getElementById('profileMenu');
+  const open = menu.classList.toggle('open');
+  trigger.classList.toggle('open', open);
+}
+
+function closeProfileMenu() {
+  document.getElementById('profileMenu').classList.remove('open');
+  document.getElementById('profileTrigger').classList.remove('open');
+}
+
+window.addEventListener('middleware-auth-changed', (event) => {
+  if (!event.detail) {
+    window.location.replace('/');
+    return;
+  }
+  if (event.detail.user) {
+    renderWorkspaceIdentity(event.detail.user);
+  }
+});
+
+document.addEventListener('click', (event) => {
+  const pill = document.querySelector('.account-pill');
+  if (!pill || pill.contains(event.target)) return;
+  closeProfileMenu();
 });
 
 function setupHotkeys() {
@@ -740,36 +1170,137 @@ function switchTab(id) {
 }
 
 // ── DB TYPE ──
-function onDbTypeChange() {
+async function loadDatabaseTypes() {
+  const res = await window.middlewareAuth.request(`${API}/connections/types`);
+  const data = await res.json();
+  const databases = data.databases || [];
+  databaseCatalog = Object.fromEntries(databases.map(db => [db.engine_key || db.key, db]));
+
+  const select = document.getElementById('dbType');
+  select.innerHTML = databases.map(db => `<option value="${db.engine_key || db.key}">${db.label}</option>`).join('');
+
+  if (databaseCatalog.postgresql) {
+    select.value = 'postgresql';
+  }
+
+  onDbTypeChange();
+}
+
+function getCurrentDbMeta() {
   const type = document.getElementById('dbType').value;
-  const hostPort = document.getElementById('hostPortFields');
+  return databaseCatalog[type] || null;
+}
+
+function getOptionValues() {
+  const values = {};
+  document.querySelectorAll('[data-opt-key]').forEach(el => {
+    const key = el.dataset.optKey;
+    const value = el.value.trim();
+    if (value) values[key] = value;
+  });
+  return values;
+}
+
+function renderOptionFields(meta, values = {}) {
+  const wrap = document.getElementById('extraOptionFields');
+  const fields = meta?.options || [];
+
+  if (!fields.length) {
+    wrap.innerHTML = '';
+    return;
+  }
+
+  wrap.innerHTML = fields.map(field => `
+    <div class="form-row">
+      <label>${field.label}${field.required ? ' *' : ''}</label>
+      <input
+        id="opt-${field.key}"
+        data-opt-key="${field.key}"
+        type="${field.secret ? 'password' : 'text'}"
+        placeholder="${field.placeholder || ''}"
+        value="${escapeHtml(values[field.key] || '')}"
+      />
+    </div>
+  `).join('');
+}
+
+function renderDbHelp(meta) {
+  const help = document.getElementById('dbHelp');
+  if (!meta?.help_text) {
+    help.style.display = 'none';
+    help.textContent = '';
+    return;
+  }
+  help.textContent = meta.help_text;
+  help.style.display = 'block';
+}
+
+function onDbTypeChange(prefill = null) {
+  const meta = getCurrentDbMeta();
+  if (!meta) return;
+
+  const hostField = document.getElementById('hostField');
+  const portField = document.getElementById('portField');
+  const usernameRow = document.getElementById('usernameRow');
+  const passwordRow = document.getElementById('passwordRow');
   const dbLabel = document.getElementById('dbLabel');
   const dbInput = document.getElementById('database');
+  const hostInput = document.getElementById('host');
   const portInput = document.getElementById('port');
+  const usernameInput = document.getElementById('username');
+  const passwordInput = document.getElementById('password');
 
-  if (type === 'sqlite') {
-    hostPort.style.display = 'none';
-    dbLabel.textContent = 'File Path';
-    dbInput.placeholder = '/path/to/file.db';
-    dbInput.value = '';
-  } else {
-    hostPort.style.display = 'block';
-    dbLabel.textContent = 'Database';
-    dbInput.placeholder = type === 'mysql' ? 'mydb' : 'demo_db';
-    portInput.value = type === 'mysql' ? '3306' : '5433';
-    if (!dbInput.value) dbInput.value = type === 'mysql' ? '' : 'demo_db';
-  }
+  document.getElementById('hostLabel').textContent = meta.host_label || 'Host';
+  document.getElementById('portLabel').textContent = meta.port_label || 'Port';
+  document.getElementById('usernameLabel').textContent = meta.username_label || 'Username';
+  document.getElementById('passwordLabel').textContent = meta.password_label || 'Password';
+  dbLabel.textContent = meta.database_label || 'Database';
+
+  hostField.style.display = meta.show_host ? '' : 'none';
+  portField.style.display = meta.show_port ? '' : 'none';
+  usernameRow.style.display = meta.show_username ? '' : 'none';
+  passwordRow.style.display = meta.show_password ? '' : 'none';
+
+  hostInput.placeholder = meta.host_placeholder || '';
+  dbInput.placeholder = meta.database_placeholder || '';
+  usernameInput.placeholder = meta.username_placeholder || '';
+
+  hostInput.value = meta.show_host ? (prefill?.host ?? meta.host_placeholder ?? '') : '';
+  portInput.value = meta.show_port ? (prefill?.port ?? meta.default_port ?? '') : '';
+  dbInput.value = prefill?.database ?? meta.database_placeholder ?? '';
+  usernameInput.value = meta.show_username ? (prefill?.username ?? meta.username_placeholder ?? '') : '';
+  passwordInput.value = meta.show_password ? (prefill?.password ?? '') : '';
+
+  renderOptionFields(meta, prefill?.options || {});
+  renderDbHelp(meta);
+}
+
+function setConnectionFormValues(conn) {
+  const dbType = document.getElementById('dbType');
+  dbType.value = conn.engine_key || conn.db_type;
+  onDbTypeChange({
+    host: conn.host,
+    port: conn.port,
+    database: conn.database,
+    username: conn.username,
+    password: '',
+    options: conn.options || {},
+  });
 }
 
 // ── GET CONN PARAMS ──
 function getConnParams() {
+  const meta = getCurrentDbMeta();
+  const engineKey = document.getElementById('dbType').value;
   return {
-    db_type: document.getElementById('dbType').value,
-    host: document.getElementById('host').value.trim() || 'localhost',
-    port: parseInt(document.getElementById('port').value) || 5433,
+    source_kind: meta?.source_kind || 'database',
+    engine_key: engineKey,
+    host: meta?.show_host ? document.getElementById('host').value.trim() : null,
+    port: meta?.show_port ? (parseInt(document.getElementById('port').value) || meta?.default_port || null) : null,
     database: document.getElementById('database').value.trim(),
-    username: document.getElementById('username').value.trim(),
-    password: document.getElementById('password').value,
+    username: meta?.show_username ? document.getElementById('username').value.trim() : null,
+    password: meta?.show_password ? document.getElementById('password').value : null,
+    options: getOptionValues(),
   };
 }
 
@@ -789,7 +1320,7 @@ async function testConnection() {
   msg.className = 'conn-msg'; msg.style.display = 'none';
 
   try {
-    const res = await fetch(`${API}/connections/test`, {
+    const res = await window.middlewareAuth.request(`${API}/connections/test`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(getPayload()),
@@ -827,23 +1358,24 @@ async function saveConnection() {
   if (!name) { toast('Enter a name for this connection'); return; }
 
   try {
-    const res = await fetch(`${API}/connections/register`, {
+    const res = await window.middlewareAuth.request(`${API}/connections/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, ...getConnParams() }),
     });
     const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || data.message || 'Failed to save connection');
     document.getElementById('connName').value = '';
     toast(`Saved as "${data.name}" (ID: ${data.connection_id.slice(0, 8)}…)`);
     loadSavedConnections();
   } catch (e) {
-    toast('Failed to save connection');
+    toast(e.message || 'Failed to save connection');
   }
 }
 
 async function loadSavedConnections() {
   try {
-    const res = await fetch(`${API}/connections/`);
+    const res = await window.middlewareAuth.request(`${API}/connections/`);
     const data = await res.json();
     renderSavedConnections(data.connections || []);
   } catch {
@@ -852,12 +1384,13 @@ async function loadSavedConnections() {
 }
 
 function renderSavedConnections(conns) {
+  savedConnectionsById = Object.fromEntries(conns.map(c => [c.id, c]));
   const list = document.getElementById('savedList');
   const count = document.getElementById('savedCount');
   count.textContent = conns.length ? `${conns.length}` : '';
 
   if (!conns.length) {
-    list.innerHTML = '<div style="font-size:0.76rem;color:var(--muted);padding:4px 0">No saved connections yet.</div>';
+    list.innerHTML = '<div style="font-size:0.76rem;color:var(--muted);padding:4px 0">No saved sources yet.</div>';
     return;
   }
 
@@ -866,29 +1399,68 @@ function renderSavedConnections(conns) {
       <div style="flex:1;min-width:0">
         <div class="saved-conn-name">${c.name}</div>
         <div class="saved-conn-meta">
-          <span class="db-badge ${c.db_type}">${c.db_type}</span>
+          <span class="db-badge ${c.engine_key || c.db_type}">${databaseCatalog[c.engine_key || c.db_type]?.label || c.engine_key || c.db_type}</span>
+          ${c.source_kind ? ` <span style="color:var(--muted)">· ${c.source_kind}</span>` : ''}
           ${c.host ? ` ${c.host}:${c.port}` : ''}
           ${c.database ? ` / ${c.database}` : ''}
+          ${formatConnectionOptions(c.options)}
         </div>
       </div>
       <button class="saved-conn-del" onclick="deleteConn(event,'${c.id}')">✕</button>
     </div>`).join('');
 }
 
+function formatConnectionOptions(options = {}) {
+  const parts = [];
+  if (options.schema) parts.push(`schema=${options.schema}`);
+  if (options.warehouse) parts.push(`warehouse=${options.warehouse}`);
+  if (options.role) parts.push(`role=${options.role}`);
+  if (options.project) parts.push(`project=${options.project}`);
+  if (options.location) parts.push(`location=${options.location}`);
+  return parts.length ? ` / ${parts.join(' · ')}` : '';
+}
+
 function selectSavedConn(id) {
   activeConnId = activeConnId === id ? null : id;
+  if (activeConnId) {
+    const conn = savedConnectionsById[activeConnId];
+    if (conn) setConnectionFormValues(conn);
+  }
   loadSavedConnections();
-  const label = activeConnId ? `Using saved connection` : 'Not connected';
+  const label = activeConnId ? `Using saved source` : 'Not connected';
   updateStatusPill(activeConnId != null, label);
   if (activeConnId) {
-    toast('Connection selected — click Test to verify');
+    toast('Source selected — click Test to verify');
   }
+}
+
+function setupConnectionFieldWatchers() {
+  const ids = ['dbType', 'host', 'port', 'username', 'password', 'database'];
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    const eventName = id === 'dbType' ? 'change' : 'input';
+    el.addEventListener(eventName, () => {
+      if (!activeConnId) return;
+      activeConnId = null;
+      connected = false;
+      updateStatusPill(false, 'Not connected');
+      loadSavedConnections();
+    });
+  });
+
+  document.getElementById('extraOptionFields').addEventListener('input', () => {
+    if (!activeConnId) return;
+    activeConnId = null;
+    connected = false;
+    updateStatusPill(false, 'Not connected');
+    loadSavedConnections();
+  });
 }
 
 async function deleteConn(e, id) {
   e.stopPropagation();
   try {
-    await fetch(`${API}/connections/${id}`, { method: 'DELETE' });
+    await window.middlewareAuth.request(`${API}/connections/${id}`, { method: 'DELETE' });
     if (activeConnId === id) activeConnId = null;
     loadSavedConnections();
     toast('Connection deleted');
@@ -905,7 +1477,7 @@ async function loadSchema() {
   body.innerHTML = '<div class="empty-state"><span class="spinner"></span><p>Scanning schema…</p></div>';
 
   try {
-    const res = await fetch(`${API}/schema/scan`, {
+    const res = await window.middlewareAuth.request(`${API}/schema/scan`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(getPayload()),
@@ -1006,7 +1578,7 @@ async function askQuery() {
 
   const start = Date.now();
   try {
-    const res = await fetch(`${API}/query/ask`, {
+    const res = await window.middlewareAuth.request(`${API}/query/ask`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(getPayload({ question: q })),
@@ -1055,7 +1627,7 @@ async function runSQL() {
 
   const start = Date.now();
   try {
-    const res = await fetch(`${API}/query/run`, {
+    const res = await window.middlewareAuth.request(`${API}/query/run`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(getPayload({ sql })),
@@ -1079,6 +1651,15 @@ async function runSQL() {
     btn.disabled = false;
     btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg> Run Query';
   }
+}
+
+function clearAI() {
+  document.getElementById('aiQuestion').value = '';
+  document.getElementById('aiResultCard').style.display = 'none';
+  document.getElementById('aiResultMeta').style.display = 'none';
+  document.getElementById('aiTableWrap').innerHTML = '';
+  document.getElementById('aiSQLText').textContent = '';
+  document.getElementById('aiSQLBadge').style.display = 'none';
 }
 
 function clearSQL() { document.getElementById('sqlInput').value = ''; }
@@ -1110,7 +1691,7 @@ async function fetchManifest() {
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner"></span>';
   try {
-    const res = await fetch(`${API}/tools/manifest`);
+    const res = await window.middlewareAuth.request(`${API}/tools/manifest`);
     const data = await res.json();
     document.getElementById('manifestJson').textContent = JSON.stringify(data, null, 2);
     wrap.style.display = 'block';
@@ -1185,6 +1766,14 @@ function copySQL() {
   const sql = document.getElementById('aiSQLText').textContent;
   if (!sql) { toast('No SQL to copy'); return; }
   navigator.clipboard.writeText(sql).then(() => toast('SQL copied'));
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 // ── TOAST ──

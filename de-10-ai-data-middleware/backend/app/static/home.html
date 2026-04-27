@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Data Middleware</title>
+  <style>
+    :root {
+      --bg: #071019;
+      --bg2: #0d1722;
+      --panel: rgba(13, 22, 34, 0.9);
+      --panel-strong: rgba(10, 17, 26, 0.96);
+      --line: rgba(154, 188, 225, 0.14);
+      --line-strong: rgba(154, 188, 225, 0.22);
+      --text: #eef5ff;
+      --muted: #96a6ba;
+      --accent: #5aa2ff;
+      --accent-2: #74d6c6;
+      --warm: #f6bd60;
+      --danger: #ff857d;
+      --radius: 22px;
+      --shadow: 0 30px 90px rgba(0, 0, 0, 0.38);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Avenir Next", "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 16% 18%, rgba(90, 162, 255, 0.28), transparent 28%),
+        radial-gradient(circle at 84% 14%, rgba(116, 214, 198, 0.16), transparent 24%),
+        radial-gradient(circle at 50% 84%, rgba(246, 189, 96, 0.1), transparent 20%),
+        linear-gradient(180deg, #071019 0%, #09121d 42%, #0b131c 100%);
+    }
+
+    .shell {
+      width: min(1180px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 28px 0 36px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      letter-spacing: -0.03em;
+    }
+
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, rgba(90, 162, 255, 0.2), rgba(116, 214, 198, 0.18));
+      border: 1px solid rgba(90, 162, 255, 0.18);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .account-badge {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+      min-width: 0;
+    }
+
+    .account-badge.show {
+      display: inline-flex;
+    }
+
+    .account-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: #071019;
+      background: linear-gradient(135deg, #9fd0ff, #74d6c6);
+      flex-shrink: 0;
+    }
+
+    .account-copy {
+      min-width: 0;
+    }
+
+    .account-copy strong,
+    .account-copy span {
+      display: block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 180px;
+    }
+
+    .account-copy strong {
+      font-size: 0.82rem;
+      margin-bottom: 2px;
+    }
+
+    .account-copy span {
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+
+    .top-link,
+    .top-button {
+      border-radius: 999px;
+      padding: 10px 16px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      border: 1px solid var(--line);
+      color: var(--text);
+      background: rgba(255,255,255,0.02);
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease;
+    }
+
+    button.top-link,
+    button.top-button {
+      font-family: inherit;
+    }
+
+    .top-link:hover,
+    .top-button:hover {
+      transform: translateY(-1px);
+      border-color: rgba(90, 162, 255, 0.4);
+      background: rgba(255,255,255,0.04);
+    }
+
+    .top-button.primary {
+      background: linear-gradient(135deg, var(--accent), #76b3ff);
+      color: #04101a;
+      border-color: transparent;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.24fr) minmax(360px, 0.76fr);
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    .hero-copy,
+    .hero-auth {
+      position: relative;
+      overflow: hidden;
+      border-radius: 28px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(10, 17, 26, 0.94), rgba(12, 20, 31, 0.96));
+      box-shadow: var(--shadow);
+    }
+
+    .hero-copy {
+      padding: 30px;
+    }
+
+    .hero-copy::before,
+    .hero-auth::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(135deg, rgba(255,255,255,0.06), transparent 32%, transparent 68%, rgba(90,162,255,0.06));
+    }
+
+    .hero-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #b7dcff;
+      border: 1px solid rgba(90, 162, 255, 0.18);
+      background: rgba(90, 162, 255, 0.09);
+    }
+
+    h1 {
+      margin: 0 0 14px;
+      max-width: 640px;
+      font-size: clamp(2.2rem, 5vw, 4.25rem);
+      line-height: 0.96;
+      letter-spacing: -0.06em;
+    }
+
+    .hero-subtitle {
+      max-width: 640px;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 1rem;
+      margin-bottom: 24px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .metric {
+      border-radius: 18px;
+      padding: 16px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .metric strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 1.15rem;
+      letter-spacing: -0.04em;
+    }
+
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.82rem;
+      line-height: 1.55;
+    }
+
+    .supported {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.03);
+      color: var(--text);
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+
+    .chip.alt {
+      color: #ccefe7;
+      border-color: rgba(116, 214, 198, 0.12);
+      background: rgba(116, 214, 198, 0.07);
+    }
+
+    .journey {
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .journey-card {
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .journey-card .step {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      margin-bottom: 10px;
+      border-radius: 50%;
+      background: rgba(90, 162, 255, 0.14);
+      color: #d2e8ff;
+      font-size: 0.76rem;
+      font-weight: 700;
+    }
+
+    .journey-card strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.92rem;
+    }
+
+    .journey-card span {
+      color: var(--muted);
+      font-size: 0.8rem;
+      line-height: 1.55;
+    }
+
+    .hero-auth {
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      justify-content: flex-start;
+      min-height: 720px;
+    }
+
+    .auth-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .auth-header h2 {
+      margin: 0;
+      font-size: 1.05rem;
+      letter-spacing: -0.03em;
+    }
+
+    .auth-switcher {
+      display: inline-flex;
+      gap: 6px;
+      padding: 5px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .auth-tab {
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-weight: 700;
+      padding: 9px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: background 0.16s ease, color 0.16s ease;
+    }
+
+    .auth-tab.active {
+      color: #08111a;
+      background: linear-gradient(135deg, #cfe5ff, #9bd0ff);
+    }
+
+    .auth-state {
+      display: none;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .auth-state.active {
+      display: flex;
+    }
+
+    .auth-state-signed {
+      margin-top: auto;
+    }
+
+    .auth-card {
+      border-radius: 20px;
+      padding: 18px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .auth-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 0.84rem;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(3, 8, 14, 0.68);
+      color: var(--text);
+      font-size: 0.94rem;
+      outline: none;
+      transition: border-color 0.16s ease, transform 0.16s ease;
+    }
+
+    input:focus {
+      border-color: rgba(90, 162, 255, 0.48);
+      transform: translateY(-1px);
+    }
+
+    .auth-submit,
+    .workspace-link {
+      width: 100%;
+      border: none;
+      border-radius: 16px;
+      padding: 14px 18px;
+      font-size: 0.96rem;
+      font-weight: 800;
+      cursor: pointer;
+      color: #071019;
+      background: linear-gradient(135deg, var(--accent), #8bc3ff);
+      transition: transform 0.16s ease, opacity 0.16s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .auth-submit:hover,
+    .workspace-link:hover {
+      transform: translateY(-1px);
+      opacity: 0.92;
+    }
+
+    .ghost-link {
+      width: 100%;
+      border-radius: 16px;
+      padding: 12px 18px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+      color: var(--text);
+      font-weight: 700;
+      cursor: pointer;
+      transition: border-color 0.16s ease, transform 0.16s ease;
+    }
+
+    .ghost-link:hover {
+      transform: translateY(-1px);
+      border-color: rgba(90, 162, 255, 0.36);
+    }
+
+    .auth-message {
+      display: none;
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-size: 0.84rem;
+      line-height: 1.5;
+    }
+
+    .auth-message.show {
+      display: block;
+    }
+
+    .auth-message.error {
+      color: var(--danger);
+      border: 1px solid rgba(255, 133, 125, 0.22);
+      background: rgba(255, 133, 125, 0.08);
+    }
+
+    .auth-message.success {
+      color: #bff4df;
+      border: 1px solid rgba(116, 214, 198, 0.22);
+      background: rgba(116, 214, 198, 0.08);
+    }
+
+    .signed-in {
+      display: grid;
+      gap: 12px;
+    }
+
+    .signed-in-card {
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(90, 162, 255, 0.08);
+      border: 1px solid rgba(90, 162, 255, 0.16);
+    }
+
+    .signed-in-card strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 1rem;
+    }
+
+    .signed-in-card span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.82rem;
+      line-height: 1.55;
+    }
+
+    .signed-in-actions {
+      display: grid;
+      gap: 10px;
+    }
+
+    .footer-notes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 28px;
+    }
+
+    .footer-note {
+      flex: 1 1 240px;
+      padding: 16px 18px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .footer-note strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.9rem;
+    }
+
+    .footer-note span {
+      color: var(--muted);
+      font-size: 0.8rem;
+      line-height: 1.55;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.2);
+      border-top-color: currentColor;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 980px) {
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-grid,
+      .journey {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .top-actions {
+        width: 100%;
+        flex-wrap: wrap;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="topbar">
+      <div class="brand">
+        <div class="brand-mark">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <ellipse cx="12" cy="5" rx="8" ry="3"></ellipse>
+            <path d="M20 12c0 1.7-3.6 3-8 3s-8-1.3-8-3"></path>
+            <path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"></path>
+          </svg>
+        </div>
+        <div>AI Data Middleware</div>
+      </div>
+
+      <div class="top-actions">
+        <div class="account-badge" id="topAccountBadge">
+          <div class="account-avatar" id="topAccountAvatar">AI</div>
+          <div class="account-copy">
+            <strong id="topAccountName">Guest</strong>
+            <span id="topAccountMeta">Sign in to save data sources</span>
+          </div>
+        </div>
+        <a class="top-link" href="/docs">API Docs</a>
+        <button class="top-link" id="topWorkspaceBtn" type="button">Workspace</button>
+        <button class="top-button primary" id="topLaunchBtn" type="button">Launch Workspace</button>
+        <button class="top-link" id="topLogoutBtn" type="button" style="display:none">Logout</button>
+      </div>
+    </div>
+
+    <section class="hero">
+      <div class="hero-copy">
+        <div class="hero-kicker">Universal data access layer</div>
+        <h1>Sign in once, then explore databases, warehouses, and storage with one guided workflow.</h1>
+        <div class="hero-subtitle">
+          Connect PostgreSQL, Snowflake, BigQuery, Redshift, S3, Azure Blob, and the rest of your source catalog from one interface. Inspect schema, generate safe SQL from plain English, and keep the execution path visible end to end.
+        </div>
+
+        <div class="hero-grid">
+          <div class="metric">
+            <strong>Multi-source</strong>
+            <span>One product surface for SQL engines, warehouses, and object storage.</span>
+          </div>
+          <div class="metric">
+            <strong>Read-only guardrails</strong>
+            <span>Validation blocks destructive SQL before it can execute.</span>
+          </div>
+          <div class="metric">
+            <strong>Workspace-ready</strong>
+            <span>Saved sources and query history are tied to the signed-in user.</span>
+          </div>
+        </div>
+
+        <div class="supported">
+          <span class="chip">PostgreSQL</span>
+          <span class="chip">MySQL</span>
+          <span class="chip">SQL Server</span>
+          <span class="chip">Snowflake</span>
+          <span class="chip">BigQuery</span>
+          <span class="chip">Redshift</span>
+          <span class="chip alt">Amazon S3</span>
+          <span class="chip alt">Azure Blob</span>
+          <span class="chip alt">Databricks SQL</span>
+          <span class="chip alt">Athena</span>
+        </div>
+
+        <div class="journey">
+          <div class="journey-card">
+            <div class="step">1</div>
+            <strong>Create your workspace</strong>
+            <span>Sign up once and the app provisions a personal workspace so connections and query history have a real home.</span>
+          </div>
+          <div class="journey-card">
+            <div class="step">2</div>
+            <strong>Connect a source</strong>
+            <span>Use the workspace to test credentials, save reusable connectors, and scan the schema before asking anything.</span>
+          </div>
+          <div class="journey-card">
+            <div class="step">3</div>
+            <strong>Ask or run SQL</strong>
+            <span>Natural language and manual SQL share the same read-only execution path, so nothing disappears behind the AI.</span>
+          </div>
+          <div class="journey-card">
+            <div class="step">4</div>
+            <strong>Operationalize it</strong>
+            <span>Use the same saved sources with the browser UI, the REST API, and agent tools exposed from the backend.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-auth">
+        <div>
+          <div class="auth-header">
+            <h2>Login / Signup</h2>
+            <div class="auth-switcher">
+              <button class="auth-tab active" data-mode="login" type="button">Login</button>
+              <button class="auth-tab" data-mode="signup" type="button">Signup</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="auth-message" id="authMessage"></div>
+
+        <div class="auth-state active" id="loginState">
+          <div class="auth-card">
+            <p>Use your account to open the workspace, manage saved data sources, and keep query history tied to your user.</p>
+          </div>
+          <form class="form-grid" id="loginForm">
+            <div>
+              <label for="loginEmail">Email</label>
+              <input id="loginEmail" type="email" placeholder="you@company.com" required />
+            </div>
+            <div>
+              <label for="loginPassword">Password</label>
+              <input id="loginPassword" type="password" placeholder="Enter your password" required />
+            </div>
+            <button class="auth-submit" id="loginSubmit" type="submit">Sign In</button>
+          </form>
+        </div>
+
+        <div class="auth-state" id="signupState">
+          <div class="auth-card">
+            <p>Create an account to get your own workspace and start adding data sources without sharing saved credentials.</p>
+          </div>
+          <form class="form-grid" id="signupForm">
+            <div>
+              <label for="signupName">Full Name</label>
+              <input id="signupName" type="text" placeholder="Your name" required />
+            </div>
+            <div>
+              <label for="signupEmail">Work Email</label>
+              <input id="signupEmail" type="email" placeholder="you@company.com" required />
+            </div>
+            <div>
+              <label for="signupPassword">Password</label>
+              <input id="signupPassword" type="password" placeholder="At least 8 characters" required />
+            </div>
+            <button class="auth-submit" id="signupSubmit" type="submit">Create Account</button>
+          </form>
+        </div>
+
+        <div class="auth-state auth-state-signed" id="signedInState">
+          <div class="signed-in">
+            <div class="signed-in-card">
+              <strong id="signedInName">Signed in</strong>
+              <span id="signedInMeta">Your workspace is ready.</span>
+            </div>
+            <div class="signed-in-actions">
+              <a class="workspace-link" href="/ui">Open Workspace</a>
+              <button class="ghost-link" id="logoutBtn" type="button">Log Out</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer-notes">
+      <div class="footer-note">
+        <strong>Why this homepage exists</strong>
+        <span>The middleware now feels like a product entry point, not just a raw development screen. New users can land here, create an account, and move straight into the workspace.</span>
+      </div>
+      <div class="footer-note">
+        <strong>What happens after login</strong>
+        <span>The workspace keeps using the same AI, schema, and query pipeline, but saved sources and query history can now be scoped to the signed-in user.</span>
+      </div>
+      <div class="footer-note">
+        <strong>Still useful for power users</strong>
+        <span>You can jump into the API docs or workspace directly, but the login flow now gives the app a much clearer first-run experience.</span>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/auth.js"></script>
+  <script>
+    const modeButtons = document.querySelectorAll(".auth-tab");
+    const loginState = document.getElementById("loginState");
+    const signupState = document.getElementById("signupState");
+    const signedInState = document.getElementById("signedInState");
+    const authMessage = document.getElementById("authMessage");
+    const topLaunchBtn = document.getElementById("topLaunchBtn");
+    const topWorkspaceBtn = document.getElementById("topWorkspaceBtn");
+    const topAccountBadge = document.getElementById("topAccountBadge");
+    const topAccountAvatar = document.getElementById("topAccountAvatar");
+    const topAccountName = document.getElementById("topAccountName");
+    const topAccountMeta = document.getElementById("topAccountMeta");
+    const topLogoutBtn = document.getElementById("topLogoutBtn");
+
+    function setMode(mode) {
+      modeButtons.forEach((button) => {
+        button.classList.toggle("active", button.dataset.mode === mode);
+      });
+      loginState.classList.toggle("active", mode === "login");
+      signupState.classList.toggle("active", mode === "signup");
+      signedInState.classList.toggle("active", mode === "signed-in");
+      authMessage.className = "auth-message";
+      authMessage.textContent = "";
+    }
+
+    function setMessage(text, kind = "error") {
+      authMessage.textContent = text;
+      authMessage.className = `auth-message show ${kind}`;
+    }
+
+    function setBusy(button, busy, label) {
+      button.disabled = busy;
+      button.innerHTML = busy ? '<span class="spinner"></span>' : label;
+    }
+
+    function renderSignedIn(user) {
+      if (!user) {
+        topAccountBadge.classList.remove("show");
+        topLogoutBtn.style.display = "none";
+        topLaunchBtn.textContent = "Launch Workspace";
+        topWorkspaceBtn.textContent = "Workspace";
+        setMode("login");
+        return;
+      }
+
+      document.getElementById("signedInName").textContent = user.full_name || user.email || "Signed in";
+      document.getElementById("signedInMeta").textContent =
+        `${user.email || "No email"}${user.organization_name ? " · " + user.organization_name : ""}`;
+      topAccountName.textContent = user.full_name || user.email || "Signed in";
+      topAccountMeta.textContent = user.organization_name || user.email || "Workspace";
+      topAccountAvatar.textContent = (user.full_name || user.email || "AI").trim().slice(0, 2).toUpperCase();
+      topAccountBadge.classList.add("show");
+      topLogoutBtn.style.display = "inline-flex";
+      setMode("signed-in");
+      topLaunchBtn.textContent = "Open Workspace";
+      topWorkspaceBtn.textContent = "Workspace";
+      setMessage("You are signed in. Open the workspace or log out from here.", "success");
+    }
+
+    async function initialize() {
+      const user = await window.middlewareAuth.loadCurrentUser();
+      renderSignedIn(user);
+      topLaunchBtn.textContent = user ? "Open Workspace" : "Launch Workspace";
+    }
+
+    modeButtons.forEach((button) => {
+      button.addEventListener("click", () => setMode(button.dataset.mode));
+    });
+
+    async function openWorkspaceFromHeader() {
+      const user = await window.middlewareAuth.loadCurrentUser();
+      if (user) {
+        window.location.href = "/ui";
+      } else {
+        setMode("login");
+        document.getElementById("loginEmail").focus();
+        setMessage("Sign in first to open the workspace.", "error");
+      }
+    }
+
+    topLaunchBtn.addEventListener("click", openWorkspaceFromHeader);
+    topWorkspaceBtn.addEventListener("click", openWorkspaceFromHeader);
+
+    document.getElementById("loginForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const button = document.getElementById("loginSubmit");
+      setBusy(button, true, "Sign In");
+
+      try {
+        const session = await window.middlewareAuth.signIn({
+          email: document.getElementById("loginEmail").value.trim(),
+          password: document.getElementById("loginPassword").value,
+        });
+        renderSignedIn(session.user);
+        window.location.assign("/ui");
+      } catch (error) {
+        setMessage(error.message || "Login failed.");
+      } finally {
+        setBusy(button, false, "Sign In");
+      }
+    });
+
+    document.getElementById("signupForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const button = document.getElementById("signupSubmit");
+      setBusy(button, true, "Create Account");
+
+      try {
+        const session = await window.middlewareAuth.signUp({
+          full_name: document.getElementById("signupName").value.trim(),
+          email: document.getElementById("signupEmail").value.trim(),
+          password: document.getElementById("signupPassword").value,
+        });
+        renderSignedIn(session.user);
+        window.location.assign("/ui");
+      } catch (error) {
+        setMessage(error.message || "Sign up failed.");
+      } finally {
+        setBusy(button, false, "Create Account");
+      }
+    });
+
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      await window.middlewareAuth.signOut();
+      setMode("login");
+      setMessage("You have been logged out.", "success");
+    });
+
+    topLogoutBtn.addEventListener("click", async () => {
+      await window.middlewareAuth.signOut();
+      setMode("login");
+      setMessage("You have been logged out.", "success");
+    });
+
+    window.addEventListener("middleware-auth-changed", (event) => {
+      renderSignedIn(event.detail?.user || null);
+    });
+
+    initialize();
+  </script>
+</body>
+</html>

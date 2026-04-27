@@ -47,17 +47,41 @@ Your Question (plain English)
 Any AI agent (OpenAI, Claude, LangChain, AutoGen) can plug into this middleware via the **OpenAI function-calling manifest** at `GET /tools/manifest` — no custom integration code needed.
 
 ---
+## 🚀 Demo
+
+🎥 Watch the system in action (2 min):  
+👉 https://youtu.be/hMyuesQavrM
+
+This demo shows:
+- connecting to a live database
+- asking natural language questions
+- SQL generation and execution
+- real results returned from the database
+
+---
 
 ## Features
 
 - **Natural language → SQL** — ask questions in plain English; GPT-4.1-mini generates dialect-aware SQL against your live schema
-- **Multi-database** — PostgreSQL, MySQL, SQLite (one `db_type` field)
+- **19-source connector catalog** — databases, warehouses, object stores, SaaS apps, NoSQL, and stream adapters are exposed from one source model
+- **Real product entry flow** — landing page at `/` with login/signup, protected workspace access, and authenticated profile/logout UX
+- **Supabase-backed control plane** — persistent users, organizations, saved sources, schema snapshots, and query history
 - **Saved connections** — register credentials once, reuse a `connection_id` across all calls
-- **Agent-compatible API** — `GET /tools/manifest` returns 5 tools in OpenAI function-calling format; any LLM agent can invoke them via `POST /tools/invoke`
-- **Read-only enforced** — SQL validator blocks INSERT, UPDATE, DELETE, DROP, and 7 other destructive keywords
+- **Agent-compatible API** — `GET /tools/manifest` returns OpenAI function-calling tools; agents can invoke them through `POST /tools/invoke`
+- **Read-only enforced** — SQL validator blocks destructive SQL and multi-statement execution
 - **Schema introspection** — automatic foreign-key + inferred relationship discovery
-- **Built-in UI** — dark-mode single-page app at `/ui` with Ask AI, SQL Runner, Schema viewer, Agent Tools, and History tabs
-- **Query audit log** — every query appended to `logs/query_logs.jsonl`
+- **File-backed virtual tables** — S3 and Azure Blob files can be scanned and queried through DuckDB-backed temporary views
+- **Built-in UI** — homepage at `/` plus protected workspace at `/ui` with Ask AI, SQL Runner, Schema viewer, Agent Tools, and History tabs
+- **Query audit log** — local JSONL logging plus Supabase query history persistence
+
+---
+
+## Product Blueprint
+
+This repo now contains both the working prototype and the architecture for the production-grade version:
+
+- [End Product Blueprint](docs/END_PRODUCT_BLUEPRINT.md) — multi-user SaaS design, tenant model, security controls, S3/Azure Blob expansion path, deployment shape, and roadmap
+- [Universal Connector Strategy](docs/UNIVERSAL_CONNECTOR_STRATEGY.md) — how this becomes one product surface across databases, warehouse platforms, object stores, SaaS apps, NoSQL, and files
 
 ---
 
@@ -86,6 +110,9 @@ This starts PostgreSQL 16 on port **5433** with 12 pre-loaded healthcare CSV tab
 ### 3 — Install & run the API
 
 ```bash
+python3 -m venv .venv
+source .venv/bin/activate
+
 cd backend
 pip install -r requirements.txt
 
@@ -93,14 +120,16 @@ pip install -r requirements.txt
 env $(cat ../.env | xargs) uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-### 4 — Open the UI
+### 4 — Open the app
 
 ```
-http://localhost:8000/ui
+http://localhost:8000/
 ```
 
 | Also available | URL |
 |---|---|
+| Homepage | `http://localhost:8000/` |
+| Workspace | `http://localhost:8000/ui` |
 | Swagger API docs | `http://localhost:8000/docs` |
 | ReDoc | `http://localhost:8000/redoc` |
 
@@ -135,6 +164,15 @@ The Docker PostgreSQL instance ships with **12 CSV-backed healthcare tables**:
 ---
 
 ## API Reference
+
+### Auth
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/auth/signup` | Create a user account and start a session |
+| `POST` | `/auth/login` | Sign in and set session cookies |
+| `GET` | `/auth/me` | Return the current signed-in user |
+| `POST` | `/auth/logout` | End the current session |
 
 ### Connections
 
@@ -242,17 +280,37 @@ result = requests.post("http://localhost:8000/tools/invoke", json={
 
 ---
 
-## Multi-Database Support
+## Source Support
 
-Pass `db_type` in any request to switch engines:
+Pass `source_kind` and `engine_key` in any request to switch engines:
 
 ```json
-{ "db_type": "postgresql", "host": "...", "port": 5432, ... }
-{ "db_type": "mysql",      "host": "...", "port": 3306, ... }
-{ "db_type": "sqlite",     "database": "/path/to/file.db" }
+{ "source_kind": "database",     "engine_key": "postgresql", "host": "...", "port": 5432, ... }
+{ "source_kind": "database",     "engine_key": "mysql",      "host": "...", "port": 3306, ... }
+{ "source_kind": "database",     "engine_key": "sqlserver",  "host": "...", "port": 1433, ... }
+{ "source_kind": "database",     "engine_key": "sqlite",     "database": "/path/to/file.db" }
+{ "source_kind": "database",     "engine_key": "oracle",     "host": "...", "port": 1521, ... }
+{ "source_kind": "warehouse",    "engine_key": "snowflake",  "host": "myorg-account123", "database": "...", "options": { "warehouse": "COMPUTE_WH" } }
+{ "source_kind": "warehouse",    "engine_key": "bigquery",   "database": "dataset_name", "options": { "project": "my-project" } }
+{ "source_kind": "warehouse",    "engine_key": "redshift",   "host": "...", "port": 5439, ... }
+{ "source_kind": "object_store", "engine_key": "s3",         "host": "my-bucket", "database": "folder/path/", "username": "...", "password": "...", "options": { "region": "us-east-1" } }
+{ "source_kind": "object_store", "engine_key": "azure_blob", "host": "https://myaccount.blob.core.windows.net", "database": "my-container", "options": { "prefix": "folder/path/", "sas_token": "..." } }
 ```
 
-The SQL generator is dialect-aware — it tells the LLM which syntax to use.
+For backwards compatibility, the older `db_type` field still works for SQL engines.
+
+Current connector catalog:
+
+- **Databases** — PostgreSQL, MySQL, SQL Server, SQLite, Oracle
+- **Warehouses** — Snowflake, BigQuery, Redshift, Databricks SQL, Athena, Synapse, Fabric, Trino, Dremio
+- **Object stores** — Amazon S3, Azure Blob
+- **SaaS / NoSQL / streams** — Salesforce, MongoDB, Kafka
+
+Important:
+
+- PostgreSQL is the most complete local demo path in this repo.
+- Warehouses and cloud connectors require real credentials and reachable external accounts.
+- Some non-SQL adapters are preview-style connector paths and should be validated against your target platform before production use.
 
 ---
 
@@ -263,37 +321,54 @@ de-10-ai-data-middleware/
 ├── backend/
 │   ├── app/
 │   │   ├── api/
-│   │   │   ├── router.py
 │   │   │   └── routes/
+│   │   │       ├── auth.py          # signup / login / logout / me
 │   │   │       ├── connections.py   # test / register / list / delete
 │   │   │       ├── health.py
 │   │   │       ├── query.py         # /ask and /run
 │   │   │       ├── schema.py        # /scan
 │   │   │       └── tools.py         # agent manifest + invoke
 │   │   ├── schemas/
+│   │   │   ├── auth.py
 │   │   │   ├── ai_query.py
 │   │   │   ├── connection.py
 │   │   │   ├── query.py
 │   │   │   └── responses.py
 │   │   ├── services/
-│   │   │   ├── connection_registry.py  # in-memory saved connections
+│   │   │   ├── auth_service.py
+│   │   │   ├── connection_registry.py  # Supabase-backed saved sources
 │   │   │   ├── connection_service.py
+│   │   │   ├── control_plane_service.py
+│   │   │   ├── database_catalog.py
 │   │   │   ├── db_url.py               # multi-DB URL builder
+│   │   │   ├── error_service.py
+│   │   │   ├── extended_source_service.py
 │   │   │   ├── llm_service.py          # OpenAI SQL generation
 │   │   │   ├── log_service.py
+│   │   │   ├── object_store_service.py # S3 / Azure Blob virtual-table execution
 │   │   │   ├── query_service.py
 │   │   │   ├── schema_service.py
 │   │   │   └── sql_validator.py
 │   │   ├── static/
-│   │   │   └── index.html              # built-in dark-mode UI
+│   │   │   ├── auth.js
+│   │   │   ├── home.html               # landing page + login/signup
+│   │   │   └── index.html              # protected workspace UI
 │   │   └── main.py
 │   ├── scripts/
+│   │   ├── apply_supabase_schema.py
+│   │   ├── bootstrap_supabase_control_plane.py
 │   │   └── load_csvs.py
 │   └── requirements.txt
 ├── demo_db/
 │   └── init.sql                        # PostgreSQL schema + CSV loader
 ├── logs/
 │   └── query_logs.jsonl                # append-only query audit log
+├── docs/
+│   ├── END_PRODUCT_BLUEPRINT.md
+│   ├── SUPABASE_SETUP.md
+│   └── UNIVERSAL_CONNECTOR_STRATEGY.md
+├── supabase/
+│   └── migrations/                     # control-plane schema SQL
 ├── docker-compose.yml
 ├── .env.example
 └── README.md
@@ -303,8 +378,10 @@ de-10-ai-data-middleware/
 
 ## Security
 
-- **Read-only enforcement** — only `SELECT` queries are allowed; `INSERT`, `UPDATE`, `DELETE`, `DROP`, `ALTER`, `TRUNCATE`, `CREATE`, `GRANT`, `REVOKE`, `COPY` are all blocked by regex
+- **Read-only enforcement** — only read-safe SQL flows are allowed; destructive SQL is blocked before execution
 - **Single-statement only** — multiple statements in one request are rejected
+- **Protected workspace** — unauthenticated `/ui` requests redirect to `/`
+- **Control-plane persistence** — saved source metadata and query history are stored in Supabase, not only in local memory
 - **No credentials in logs** — passwords are never written to `query_logs.jsonl`
 - **CORS** — open by default for local development; restrict `allow_origins` in `main.py` before deploying to production
 
@@ -315,8 +392,16 @@ de-10-ai-data-middleware/
 | Variable | Required | Description |
 |---|---|---|
 | `OPENAI_API_KEY` | Yes | OpenAI API key for SQL generation |
+| `SUPABASE_URL` | For auth/control plane | Supabase project URL |
+| `SUPABASE_ANON_KEY` | For browser auth | Public browser-safe Supabase key |
+| `SUPABASE_SERVICE_ROLE_KEY` | For backend control plane | Server-side Supabase admin key |
+| `CONTROL_PLANE_ENCRYPTION_KEY` | For persistent saved secrets | Encrypts stored source secrets |
+| `CONTROL_PLANE_ORGANIZATION_ID` | Optional runtime default | Default workspace/org to bind saved sources to |
+| `CONTROL_PLANE_ACTOR_USER_ID` | Optional runtime default | Default actor user for backend-side writes |
 
-Copy `.env.example` → `.env` and fill in your key.
+Copy `.env.example` → `.env` and fill in the values you need.
+
+For the full Supabase setup flow, see [docs/SUPABASE_SETUP.md](docs/SUPABASE_SETUP.md).
 
 ---
 
