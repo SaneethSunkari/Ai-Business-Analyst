@@ -143,3 +143,62 @@ class ToolInvokeResponse(BaseModel):
     success: bool
     result: Any | None = None
     error: str | None = None
+
+
+class OpsBudgetStatus(BaseModel):
+    daily_token_budget: int | None = None
+    monthly_token_budget: int | None = None
+    daily_tokens_used: int | None = None
+    monthly_tokens_used: int | None = None
+
+
+class OpsGatewayUsage(BaseModel):
+    total_requests: int = 0
+    cache_hits: int = 0
+    tool_bypasses: int = 0
+    llm_calls: int = 0
+    budget_blocks: int = 0
+    total_estimated_tokens_saved: int = 0
+    total_estimated_cost_saved: float = 0.0
+    top_strategies: list[list[Any]] | None = None
+
+
+class OpsOnboardingItem(BaseModel):
+    key: str
+    label: str
+    done: bool
+    detail: str | None = None
+
+
+class OpsRecentRun(BaseModel):
+    created_at: str | None = None
+    question: str | None = None
+    generated_sql: str | None = None
+    success: bool | None = None
+    row_count: int | None = None
+    error: str | None = None
+    connection_id: str | None = None
+    latency_ms: int | None = None
+
+
+class OpsStatusResponse(BaseModel):
+    success: bool
+    environment: str
+    authenticated: bool
+    auth_configured: bool
+    control_plane_enabled: bool
+    tokenfirewall_enabled: bool
+    tokenfirewall_routed: bool
+    tokenfirewall_healthy: bool | None = None
+    tokenfirewall_base_url: str | None = None
+    openai_model: str
+    saved_source_count: int = 0
+    recent_query_count: int = 0
+    recent_success_count: int = 0
+    recent_failure_count: int = 0
+    avg_latency_ms: int | None = None
+    latest_question: str | None = None
+    budget: OpsBudgetStatus | None = None
+    gateway_usage: OpsGatewayUsage | None = None
+    onboarding: list[OpsOnboardingItem] = Field(default_factory=list)
+    recent_runs: list[OpsRecentRun] = Field(default_factory=list)

@@ -71,8 +71,9 @@ This demo shows:
 - **Read-only enforced** — SQL validator blocks destructive SQL and multi-statement execution
 - **Schema introspection** — automatic foreign-key + inferred relationship discovery
 - **File-backed virtual tables** — S3 and Azure Blob files can be scanned and queried through DuckDB-backed temporary views
-- **Built-in UI** — homepage at `/` plus protected workspace at `/ui` with Ask AI, SQL Runner, Schema viewer, Agent Tools, and History tabs
+- **Built-in UI** — homepage at `/` plus protected workspace at `/ui` with Ask AI, SQL Runner, Schema viewer, Agent Tools, Ops, and History tabs
 - **Query audit log** — local JSONL logging plus Supabase query history persistence
+- **Ops visibility** — `/ops/status` exposes runtime, cost-control, onboarding, and recent activity status for the current workspace
 
 ---
 

@@ -51,6 +51,10 @@ def _gateway_base_url() -> str | None:
     return gateway if gateway.endswith("/v1") else f"{gateway}/v1"
 
 
+def get_gateway_base_url() -> str | None:
+    return _gateway_base_url()
+
+
 def get_openai_client() -> OpenAI:
     global _client, _client_config
     api_key = os.getenv("OPENAI_API_KEY")

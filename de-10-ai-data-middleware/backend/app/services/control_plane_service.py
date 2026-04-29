@@ -399,3 +399,30 @@ def append_query_run(
         "error": error,
     }
     _rest_request("POST", "query_runs", json_body=payload, prefer="return=minimal")
+
+
+def list_recent_query_runs(
+    *,
+    limit: int = 10,
+    organization_id: str | None = None,
+    user_id: str | None = None,
+) -> list[dict[str, Any]]:
+    if not control_plane_enabled():
+        return []
+
+    organization_id, resolved_user_id = get_control_plane_context(organization_id, user_id)
+    params = {
+        "select": "created_at,question,generated_sql,success,row_count,error,connection_id,latency_ms,user_id",
+        "organization_id": f"eq.{quote(organization_id, safe='')}",
+        "order": "created_at.desc",
+        "limit": str(limit),
+    }
+    if user_id or resolved_user_id:
+        params["user_id"] = f"eq.{quote((user_id or resolved_user_id), safe='')}"
+
+    response = _rest_request(
+        "GET",
+        "query_runs",
+        params=params,
+    )
+    return list(response.json())

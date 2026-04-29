@@ -673,6 +673,144 @@
     .ok { color: var(--accent2); }
     .fail { color: var(--danger); }
 
+    /* ops */
+    .ops-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
+    .ops-stat {
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    }
+    .ops-stat-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .ops-stat-value {
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 6px;
+    }
+    .ops-stat-meta {
+      font-size: 0.76rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .ops-badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .ops-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.03);
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--muted);
+    }
+    .ops-badge.ok {
+      color: #a7f3c7;
+      border-color: rgba(63,185,80,0.35);
+      background: rgba(63,185,80,0.10);
+    }
+    .ops-badge.warn {
+      color: #ffd29f;
+      border-color: rgba(240,136,62,0.35);
+      background: rgba(240,136,62,0.10);
+    }
+    .ops-badge.fail {
+      color: #ffb2ac;
+      border-color: rgba(248,81,73,0.35);
+      background: rgba(248,81,73,0.10);
+    }
+    .ops-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .ops-list-item {
+      display: flex;
+      gap: 12px;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.02);
+    }
+    .ops-list-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      font-size: 0.78rem;
+      font-weight: 800;
+      flex-shrink: 0;
+      margin-top: 2px;
+      background: rgba(255,255,255,0.05);
+      color: var(--muted);
+    }
+    .ops-list-item.done .ops-list-icon {
+      background: rgba(63,185,80,0.14);
+      color: #a7f3c7;
+    }
+    .ops-list-copy strong {
+      display: block;
+      font-size: 0.82rem;
+      margin-bottom: 4px;
+    }
+    .ops-list-copy span {
+      display: block;
+      font-size: 0.74rem;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+    .ops-run {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 11px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.025);
+    }
+    .ops-run-copy {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .ops-run-copy strong {
+      font-size: 0.78rem;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .ops-run-copy span {
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+    .ops-inline-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+
     /* relationships */
     .rel-row {
       display: flex; align-items: center; gap: 7px; font-size: 0.78rem;
@@ -760,6 +898,7 @@
     <button class="nav-tab"        id="ntab-sql"    onclick="switchTab('sql')">SQL Runner</button>
     <button class="nav-tab"        id="ntab-schema" onclick="switchTab('schema')">Schema</button>
     <button class="nav-tab"        id="ntab-agent"  onclick="switchTab('agent')">Agent Tools</button>
+    <button class="nav-tab"        id="ntab-ops"    onclick="switchTab('ops')">Ops</button>
     <button class="nav-tab"        id="ntab-history"onclick="switchTab('history')">History</button>
   </nav>
 
@@ -1049,6 +1188,67 @@ POST /tools/invoke          → execute any tool by name</div>
       </div>
     </div>
 
+    <!-- OPS -->
+    <div class="tab-panel" id="tab-ops">
+      <div class="card">
+        <div class="card-header">
+          <span>Workspace Operations</span>
+          <button class="btn btn-ghost btn-sm" onclick="loadOpsStatus()">Refresh</button>
+        </div>
+        <div class="card-body">
+          <div class="ops-grid" id="opsStatsGrid">
+            <div class="ops-stat">
+              <div class="ops-stat-label">Loading</div>
+              <div class="ops-stat-value">…</div>
+              <div class="ops-stat-meta">Checking runtime, query flow, and cost-control status.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span>Cost-Control Path</span>
+        </div>
+        <div class="card-body">
+          <div class="ops-badge-row" id="opsBadgeRow">
+            <span class="ops-badge">Loading cost-control status…</span>
+          </div>
+          <div class="ops-inline-stats" id="opsGatewayStats"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span>Company-Ready Checklist</span>
+        </div>
+        <div class="card-body">
+          <div class="ops-list" id="opsChecklist">
+            <div class="ops-list-item">
+              <div class="ops-list-icon">…</div>
+              <div class="ops-list-copy">
+                <strong>Loading checklist</strong>
+                <span>Validating workspace, saved-source, and cost-control readiness.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span>Recent Workspace Activity</span>
+        </div>
+        <div class="card-body">
+          <div class="ops-list" id="opsRecentRuns">
+            <div class="empty-state">
+              <p>Run a few questions and the latest workspace activity will show up here.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- HISTORY -->
     <div class="tab-panel" id="tab-history">
       <div class="card">
@@ -1083,6 +1283,8 @@ let sqlLastResult = null;
 let activeConnId = null;  // currently selected saved connection
 let databaseCatalog = {};
 let savedConnectionsById = {};
+let currentUser = null;
+let opsData = null;
 const queryHistory = [];
 
 const SUGGESTIONS = [
@@ -1098,6 +1300,7 @@ const SUGGESTIONS = [
 document.addEventListener('DOMContentLoaded', async () => {
   const user = await window.middlewareAuth.requireAuth('/');
   if (!user) return;
+  currentUser = user;
   renderWorkspaceIdentity(user);
   renderSuggestions();
   setupHotkeys();
@@ -1105,7 +1308,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderHistory();
   document.getElementById('manifestCurlBlock').textContent = `curl ${window.location.origin}/tools/manifest`;
   await loadDatabaseTypes();
-  loadSavedConnections();
+  await loadSavedConnections();
+  await loadOpsStatus();
 });
 
 function renderWorkspaceIdentity(user) {
@@ -1135,13 +1339,132 @@ function closeProfileMenu() {
   document.getElementById('profileTrigger').classList.remove('open');
 }
 
+async function loadOpsStatus() {
+  try {
+    const res = await window.middlewareAuth.request(`${API}/ops/status`);
+    const data = await res.json();
+    opsData = data;
+    renderOpsStatus(data);
+  } catch (error) {
+    renderOpsError(error?.message || 'Failed to load workspace operations status.');
+  }
+}
+
+function renderOpsError(message) {
+  document.getElementById('opsStatsGrid').innerHTML = `
+    <div class="ops-stat">
+      <div class="ops-stat-label">Ops status unavailable</div>
+      <div class="ops-stat-value">Error</div>
+      <div class="ops-stat-meta">${escapeHtml(message)}</div>
+    </div>`;
+  document.getElementById('opsBadgeRow').innerHTML = `<span class="ops-badge fail">${escapeHtml(message)}</span>`;
+  document.getElementById('opsGatewayStats').innerHTML = '';
+  document.getElementById('opsChecklist').innerHTML = '';
+  document.getElementById('opsRecentRuns').innerHTML = `<div class="error-box">${escapeHtml(message)}</div>`;
+}
+
+function renderOpsStatus(data) {
+  const stats = [
+    {
+      label: 'Environment',
+      value: data.environment || 'unknown',
+      meta: `${data.authenticated ? 'Signed-in workspace' : 'Anonymous'} · model ${data.openai_model || 'n/a'}`,
+    },
+    {
+      label: 'Saved sources',
+      value: String(data.saved_source_count ?? 0),
+      meta: data.saved_source_count ? 'Reusable connectors are available for this workspace.' : 'Save at least one connector for repeatable team use.',
+    },
+    {
+      label: 'Recent AI queries',
+      value: String(data.recent_query_count ?? 0),
+      meta: data.latest_question ? `Latest: ${data.latest_question}` : 'No recent AI query recorded yet.',
+    },
+    {
+      label: 'Average latency',
+      value: data.avg_latency_ms != null ? `${data.avg_latency_ms}ms` : '—',
+      meta: `${data.recent_success_count ?? 0} successes · ${data.recent_failure_count ?? 0} failures`,
+    },
+  ];
+
+  document.getElementById('opsStatsGrid').innerHTML = stats.map((stat) => `
+    <div class="ops-stat">
+      <div class="ops-stat-label">${escapeHtml(stat.label)}</div>
+      <div class="ops-stat-value">${escapeHtml(stat.value)}</div>
+      <div class="ops-stat-meta">${escapeHtml(stat.meta)}</div>
+    </div>
+  `).join('');
+
+  const badges = [
+    {
+      label: data.auth_configured ? 'Auth configured' : 'Auth missing',
+      cls: data.auth_configured ? 'ok' : 'fail',
+    },
+    {
+      label: data.control_plane_enabled ? 'Control plane ready' : 'Control plane unavailable',
+      cls: data.control_plane_enabled ? 'ok' : 'warn',
+    },
+    {
+      label: data.tokenfirewall_enabled ? 'TokenFirewall enabled' : 'TokenFirewall disabled',
+      cls: data.tokenfirewall_enabled ? 'ok' : 'warn',
+    },
+    {
+      label: data.tokenfirewall_routed ? 'AI routed through gateway' : 'AI bypassing gateway',
+      cls: data.tokenfirewall_routed ? 'ok' : 'fail',
+    },
+    {
+      label: data.tokenfirewall_healthy === true ? 'Gateway healthy' : (data.tokenfirewall_healthy === false ? 'Gateway unhealthy' : 'Gateway status unknown'),
+      cls: data.tokenfirewall_healthy === true ? 'ok' : (data.tokenfirewall_healthy === false ? 'fail' : 'warn'),
+    },
+  ];
+  document.getElementById('opsBadgeRow').innerHTML = badges.map((badge) => `<span class="ops-badge ${badge.cls}">${escapeHtml(badge.label)}</span>`).join('');
+
+  const gatewayUsage = data.gateway_usage || {};
+  const budget = data.budget || {};
+  const gatewayStats = [];
+  if (data.tokenfirewall_base_url) gatewayStats.push(`Gateway ${data.tokenfirewall_base_url}`);
+  if (budget.daily_token_budget != null) gatewayStats.push(`Daily budget ${Number(budget.daily_tokens_used || 0).toLocaleString()} / ${Number(budget.daily_token_budget).toLocaleString()} tokens`);
+  if (budget.monthly_token_budget != null) gatewayStats.push(`Monthly budget ${Number(budget.monthly_tokens_used || 0).toLocaleString()} / ${Number(budget.monthly_token_budget).toLocaleString()} tokens`);
+  if (gatewayUsage.cache_hits != null) gatewayStats.push(`Cache hits ${Number(gatewayUsage.cache_hits || 0).toLocaleString()} / ${Number(gatewayUsage.total_requests || 0).toLocaleString()} requests`);
+  if (gatewayUsage.total_estimated_cost_saved != null) gatewayStats.push(`Estimated cost saved $${Number(gatewayUsage.total_estimated_cost_saved || 0).toFixed(4)}`);
+  document.getElementById('opsGatewayStats').innerHTML = gatewayStats.map((item) => `<span>${escapeHtml(item)}</span>`).join('');
+
+  const checklist = data.onboarding || [];
+  document.getElementById('opsChecklist').innerHTML = checklist.map((item) => `
+    <div class="ops-list-item ${item.done ? 'done' : ''}">
+      <div class="ops-list-icon">${item.done ? '✓' : '•'}</div>
+      <div class="ops-list-copy">
+        <strong>${escapeHtml(item.label)}</strong>
+        <span>${escapeHtml(item.detail || '')}</span>
+      </div>
+    </div>
+  `).join('');
+
+  const runs = data.recent_runs || [];
+  document.getElementById('opsRecentRuns').innerHTML = runs.length ? runs.map((run) => `
+    <div class="ops-run">
+      <div class="ops-run-copy">
+        <strong>${escapeHtml(run.question || 'Untitled query')}</strong>
+        <span>${escapeHtml(run.created_at || '')}</span>
+      </div>
+      <div class="history-item-meta">
+        <span class="${run.success ? 'ok' : 'fail'}">${run.success ? '✓' : '✗'}</span>
+        ${run.row_count != null ? `<span>${escapeHtml(String(run.row_count))} rows</span>` : ''}
+        ${run.latency_ms != null ? `<span>${escapeHtml(String(run.latency_ms))}ms</span>` : ''}
+      </div>
+    </div>
+  `).join('') : `<div class="empty-state"><p>Run a few questions and the latest workspace activity will show up here.</p></div>`;
+}
+
 window.addEventListener('middleware-auth-changed', (event) => {
   if (!event.detail) {
     window.location.replace('/');
     return;
   }
   if (event.detail.user) {
+    currentUser = event.detail.user;
     renderWorkspaceIdentity(event.detail.user);
+    loadOpsStatus();
   }
 });
 
@@ -1367,7 +1690,8 @@ async function saveConnection() {
     if (!res.ok) throw new Error(data.detail || data.message || 'Failed to save connection');
     document.getElementById('connName').value = '';
     toast(`Saved as "${data.name}" (ID: ${data.connection_id.slice(0, 8)}…)`);
-    loadSavedConnections();
+    await loadSavedConnections();
+    await loadOpsStatus();
   } catch (e) {
     toast(e.message || 'Failed to save connection');
   }
@@ -1378,8 +1702,10 @@ async function loadSavedConnections() {
     const res = await window.middlewareAuth.request(`${API}/connections/`);
     const data = await res.json();
     renderSavedConnections(data.connections || []);
+    return data.connections || [];
   } catch {
     // API may not be running yet
+    return [];
   }
 }
 
@@ -1462,7 +1788,8 @@ async function deleteConn(e, id) {
   try {
     await window.middlewareAuth.request(`${API}/connections/${id}`, { method: 'DELETE' });
     if (activeConnId === id) activeConnId = null;
-    loadSavedConnections();
+    await loadSavedConnections();
+    await loadOpsStatus();
     toast('Connection deleted');
   } catch {
     toast('Failed to delete connection');
@@ -1607,6 +1934,7 @@ async function askQuery() {
   } finally {
     btn.disabled = false;
     btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Ask';
+    loadOpsStatus();
   }
 }
 

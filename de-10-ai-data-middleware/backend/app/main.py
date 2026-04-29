@@ -13,6 +13,7 @@ from fastapi.staticfiles import StaticFiles
 from app.api.routes.auth import router as auth_router
 from app.api.routes.connections import router as connections_router
 from app.api.routes.health import router as health_router
+from app.api.routes.ops import router as ops_router
 from app.api.routes.query import router as query_router
 from app.api.routes.schema import router as schema_router
 from app.api.routes.tools import router as tools_router
@@ -142,6 +143,10 @@ TAGS_METADATA = [
         "description": "Run read-only SQL directly or ask questions in plain English across supported data sources.",
     },
     {
+        "name": "ops",
+        "description": "Runtime visibility for workspace readiness, cost controls, recent activity, and onboarding progress.",
+    },
+    {
         "name": "tools",
         "description": "Agent-compatible tool manifest and invoke endpoint (OpenAI function-calling format).",
     },
@@ -172,6 +177,7 @@ app.add_middleware(
 
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
 app.include_router(health_router, prefix="/health", tags=["health"])
+app.include_router(ops_router, prefix="/ops", tags=["ops"])
 app.include_router(connections_router, prefix="/connections", tags=["connections"])
 app.include_router(query_router, prefix="/query", tags=["query"])
 app.include_router(schema_router, prefix="/schema", tags=["schema"])

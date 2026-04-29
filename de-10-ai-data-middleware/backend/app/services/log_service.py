@@ -1,4 +1,5 @@
 import json
+from collections import deque
 from datetime import datetime
 from pathlib import Path
 
@@ -59,3 +60,25 @@ def build_query_log(
         "connection_id": connection_id,
         "latency_ms": latency_ms,
     }
+
+
+def read_recent_query_logs(limit: int = 20) -> list[dict]:
+    if limit <= 0 or not LOG_FILE.exists():
+        return []
+
+    recent_lines: deque[str] = deque(maxlen=limit)
+    with open(LOG_FILE, "r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if line:
+                recent_lines.append(line)
+
+    parsed: list[dict] = []
+    for line in reversed(recent_lines):
+        try:
+            payload = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if isinstance(payload, dict):
+            parsed.append(payload)
+    return parsed
