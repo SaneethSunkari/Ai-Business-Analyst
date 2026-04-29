@@ -1,4 +1,66 @@
 services:
+  tokenfirewall:
+    build:
+      context: ./vendor/tokenfirewall
+    container_name: ai_middleware_tokenfirewall
+    restart: always
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4.1-mini}
+      TOKENFIREWALL_FORCE_MOCK: ${TOKENFIREWALL_FORCE_MOCK:-0}
+      TOKENFIREWALL_GATEWAY_MODE: ${TOKENFIREWALL_GATEWAY_MODE:-normal}
+      TOKENFIREWALL_CHEAP_MODEL: ${TOKENFIREWALL_CHEAP_MODEL:-gpt-4o-mini}
+      TOKENFIREWALL_DEFAULT_MODEL: ${TOKENFIREWALL_DEFAULT_MODEL:-gpt-4o}
+      TOKENFIREWALL_STRONG_MODEL: ${TOKENFIREWALL_STRONG_MODEL:-gpt-4o}
+      TOKENFIREWALL_DAILY_TOKEN_BUDGET: ${TOKENFIREWALL_DAILY_TOKEN_BUDGET:-50000}
+      TOKENFIREWALL_MONTHLY_TOKEN_BUDGET: ${TOKENFIREWALL_MONTHLY_TOKEN_BUDGET:-1000000}
+      TOKENFIREWALL_CACHE_PATH: /data/cache.sqlite3
+      TOKENFIREWALL_USAGE_PATH: /data/usage.sqlite3
+    command: ["python", "-m", "tokenfirewall", "server", "--host", "0.0.0.0", "--port", "8787"]
+    ports:
+      - "8787:8787"
+    volumes:
+      - tokenfirewall_data:/data
+
+  api:
+    build:
+      context: .
+    container_name: ai_middleware_api
+    restart: always
+    depends_on:
+      - postgres
+      - tokenfirewall
+    environment:
+      API_HOST: 0.0.0.0
+      API_PORT: 8000
+      ENABLE_TOKENFIREWALL: ${ENABLE_TOKENFIREWALL:-1}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4.1-mini}
+      OPENAI_BASE_URL: http://tokenfirewall:8787/v1
+      TOKENFIREWALL_BASE_URL: http://tokenfirewall:8787
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-demo_db}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      APP_ENV: ${APP_ENV:-development}
+      APP_API_KEY: ${APP_API_KEY:-}
+      REQUIRE_API_KEY: ${REQUIRE_API_KEY:-false}
+      CORS_ALLOW_ORIGINS: ${CORS_ALLOW_ORIGINS:-http://localhost:3000,http://127.0.0.1:3000,http://localhost:8000,http://127.0.0.1:8000}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS:-localhost,127.0.0.1,testserver}
+      QUERY_TIMEOUT_MS: ${QUERY_TIMEOUT_MS:-8000}
+      DB_CONNECT_TIMEOUT_S: ${DB_CONNECT_TIMEOUT_S:-5}
+      MAX_QUERY_ROWS: ${MAX_QUERY_ROWS:-200}
+      SUPABASE_URL: ${SUPABASE_URL:-}
+      SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY:-}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY:-}
+      CONTROL_PLANE_ENCRYPTION_KEY: ${CONTROL_PLANE_ENCRYPTION_KEY:-}
+      CONTROL_PLANE_ORGANIZATION_ID: ${CONTROL_PLANE_ORGANIZATION_ID:-}
+      CONTROL_PLANE_ACTOR_USER_ID: ${CONTROL_PLANE_ACTOR_USER_ID:-}
+    ports:
+      - "8000:8000"
+
   postgres:
     image: postgres:16
     container_name: ai_middleware_postgres
@@ -11,8 +73,9 @@ services:
       - "5433:5432"
     volumes:
       - ./demo_db/init.sql:/docker-entrypoint-initdb.d/init.sql
-      - /Users/saneethsunkari/Desktop/PRACTICE/csv:/docker-entrypoint-initdb.d/csv:ro
+      - ${CSV_SEED_DIR:-./demo_db/csv}:/docker-entrypoint-initdb.d/csv:ro
       - postgres_data:/var/lib/postgresql/data
 
 volumes:
   postgres_data:
+  tokenfirewall_data:

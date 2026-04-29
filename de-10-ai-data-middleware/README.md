@@ -97,6 +97,41 @@ cp .env.example .env
 # Edit .env and set OPENAI_API_KEY=sk-...
 ```
 
+TokenFirewall routing for AI query generation is built into this repo and no longer depends on a machine-specific external path.
+
+For local Docker usage:
+
+```bash
+docker compose up --build
+```
+
+Compose starts three services: Postgres, the FastAPI backend, and TokenFirewall. The backend still uses the OpenAI SDK, but `OPENAI_BASE_URL` points to `http://tokenfirewall:8787/v1`, so natural-language SQL generation goes through TokenFirewall first for cache, budget, routing, and usage metrics. Website users do not run TokenFirewall manually.
+
+The demo database seed path is also portable now. Put the 12 CSV files under `./demo_db/csv`, or override:
+
+```bash
+CSV_SEED_DIR=/absolute/path/to/csv docker compose up --build
+```
+
+For single-service deployments such as Railway, set:
+
+```bash
+ENABLE_TOKENFIREWALL=1
+```
+
+When no external `OPENAI_BASE_URL` or `TOKENFIREWALL_BASE_URL` is configured, the backend starts an embedded local TokenFirewall gateway automatically and points OpenAI-compatible calls through `http://127.0.0.1:8787/v1`. That keeps the cost-control path active even when the website is deployed as a single app service.
+
+For non-Docker local development, you can still run TokenFirewall separately:
+
+```bash
+cd vendor/tokenfirewall
+python -m tokenfirewall server --host 127.0.0.1 --port 8787
+
+# In this project's .env for host-based uvicorn:
+TOKENFIREWALL_BASE_URL=http://127.0.0.1:8787
+# or OPENAI_BASE_URL=http://127.0.0.1:8787/v1
+```
+
 ### 2 — Start the demo database (Docker)
 
 ```bash
@@ -392,6 +427,12 @@ de-10-ai-data-middleware/
 | Variable | Required | Description |
 |---|---|---|
 | `OPENAI_API_KEY` | Yes | OpenAI API key for SQL generation |
+| `OPENAI_MODEL` | Optional | OpenAI-compatible model for SQL generation, defaults to `gpt-4.1-mini` |
+| `ENABLE_TOKENFIREWALL` | Optional | `1` enables cost-control routing; embedded mode is used when no external gateway URL is set |
+| `TOKENFIREWALL_PORT` | Optional | Port used by the embedded TokenFirewall gateway, defaults to `8787` |
+| `TOKENFIREWALL_BASE_URL` | Optional | Local TokenFirewall gateway URL, for example `http://127.0.0.1:8787` |
+| `OPENAI_BASE_URL` | Optional | Direct OpenAI-compatible base URL, for example `http://127.0.0.1:8787/v1` |
+| `CSV_SEED_DIR` | Optional | Directory containing the 12 demo CSV files for Docker Postgres initialization |
 | `SUPABASE_URL` | For auth/control plane | Supabase project URL |
 | `SUPABASE_ANON_KEY` | For browser auth | Public browser-safe Supabase key |
 | `SUPABASE_SERVICE_ROLE_KEY` | For backend control plane | Server-side Supabase admin key |

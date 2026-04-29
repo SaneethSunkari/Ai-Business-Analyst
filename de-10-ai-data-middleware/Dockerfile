@@ -10,6 +10,7 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends build-essential curl \
     && rm -rf /var/lib/apt/lists/*
 
+COPY vendor/tokenfirewall /app/vendor/tokenfirewall
 COPY backend/requirements.txt /app/backend/requirements.txt
 
 RUN pip install --upgrade pip \

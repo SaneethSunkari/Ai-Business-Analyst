@@ -6,6 +6,7 @@ pydantic==2.9.2
 openai==1.51.0
 httpx==0.27.2
 aiofiles==24.1.0
+-e ../vendor/tokenfirewall
 pymysql==1.1.1
 python-tds==1.17.1
 sqlalchemy-pytds==1.0.2

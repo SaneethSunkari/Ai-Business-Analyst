@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "TokenFirewall"
+version = "0.1.1"
+description = "A drop-in token-saving decision layer before LLM calls."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = ["tiktoken>=0.7.0"]
+authors = [{ name = "TokenFirewall Contributors" }]
+license = { text = "MIT" }
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0.0"]
+
+[project.scripts]
+tokenfirewall = "tokenfirewall.main:main"
+
+[tool.setuptools.packages.find]
+include = ["tokenfirewall*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q"

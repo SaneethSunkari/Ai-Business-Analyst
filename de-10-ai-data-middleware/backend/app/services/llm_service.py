@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 UNANSWERABLE_SQL = "SELECT 'UNANSWERABLE' AS error;"
 _client: OpenAI | None = None
+_client_config: tuple[str, str | None] | None = None
 QUESTION_STOPWORDS = {
     "a",
     "all",
@@ -36,13 +37,34 @@ QUESTION_STOPWORDS = {
 }
 
 
+def _gateway_base_url() -> str | None:
+    """Return an OpenAI-compatible base URL when a gateway is configured."""
+
+    explicit = (os.getenv("OPENAI_BASE_URL") or "").strip()
+    if explicit:
+        return explicit.rstrip("/")
+
+    gateway = (os.getenv("TOKENFIREWALL_BASE_URL") or "").strip()
+    if not gateway:
+        return None
+    gateway = gateway.rstrip("/")
+    return gateway if gateway.endswith("/v1") else f"{gateway}/v1"
+
+
 def get_openai_client() -> OpenAI:
-    global _client
-    if _client is None:
-        api_key = os.getenv("OPENAI_API_KEY")
-        if not api_key:
-            raise ValueError("OPENAI_API_KEY is not configured for AI queries.")
-        _client = OpenAI(api_key=api_key)
+    global _client, _client_config
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        raise ValueError("OPENAI_API_KEY is not configured for AI queries.")
+
+    base_url = _gateway_base_url()
+    config = (api_key, base_url)
+    if _client is None or _client_config != config:
+        kwargs = {"api_key": api_key}
+        if base_url:
+            kwargs["base_url"] = base_url
+        _client = OpenAI(**kwargs)
+        _client_config = config
     return _client
 
 
@@ -199,7 +221,7 @@ User question:
 """
 
     response = get_openai_client().chat.completions.create(
-        model="gpt-4.1-mini",
+        model=os.getenv("OPENAI_MODEL", "gpt-4.1-mini"),
         messages=[
             {
                 "role": "system",

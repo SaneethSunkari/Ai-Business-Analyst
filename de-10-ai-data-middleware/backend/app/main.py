@@ -1,17 +1,94 @@
+import atexit
+import os
+import subprocess
+import sys
+from pathlib import Path
+
 from fastapi import FastAPI
 from fastapi import Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, RedirectResponse
-import os
+from fastapi.staticfiles import StaticFiles
+
 from app.api.routes.auth import router as auth_router
-from app.services import auth_service
-from app.api.routes.health import router as health_router
 from app.api.routes.connections import router as connections_router
+from app.api.routes.health import router as health_router
 from app.api.routes.query import router as query_router
 from app.api.routes.schema import router as schema_router
 from app.api.routes.tools import router as tools_router
 from app.schemas.responses import RootResponse
+from app.services import auth_service
+
+
+_tokenfirewall_process: subprocess.Popen[str] | None = None
+
+
+def _truthy_env(name: str, default: str = "0") -> bool:
+    return os.getenv(name, default).strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _resolve_embedded_gateway_base() -> str:
+    host = os.getenv("EMBEDDED_TOKENFIREWALL_HOST", "127.0.0.1").strip() or "127.0.0.1"
+    port = os.getenv("TOKENFIREWALL_PORT", "8787").strip() or "8787"
+    return f"http://{host}:{port}"
+
+
+def _should_start_embedded_tokenfirewall() -> bool:
+    if not _truthy_env("ENABLE_TOKENFIREWALL", "0"):
+        return False
+    if os.getenv("OPENAI_BASE_URL", "").strip() or os.getenv("TOKENFIREWALL_BASE_URL", "").strip():
+        return False
+    return True
+
+
+def _terminate_embedded_tokenfirewall() -> None:
+    global _tokenfirewall_process
+    if _tokenfirewall_process is None:
+        return
+    if _tokenfirewall_process.poll() is None:
+        _tokenfirewall_process.terminate()
+        try:
+            _tokenfirewall_process.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            _tokenfirewall_process.kill()
+            _tokenfirewall_process.wait(timeout=5)
+    _tokenfirewall_process = None
+
+
+def _start_embedded_tokenfirewall() -> None:
+    global _tokenfirewall_process
+    if _tokenfirewall_process is not None and _tokenfirewall_process.poll() is None:
+        return
+
+    base_url = _resolve_embedded_gateway_base()
+    os.environ.setdefault("TOKENFIREWALL_BASE_URL", base_url)
+    os.environ.setdefault("OPENAI_BASE_URL", f"{base_url}/v1")
+
+    host = os.getenv("EMBEDDED_TOKENFIREWALL_HOST", "127.0.0.1").strip() or "127.0.0.1"
+    port = os.getenv("TOKENFIREWALL_PORT", "8787").strip() or "8787"
+    working_dir = Path(__file__).resolve().parents[2]
+    _tokenfirewall_process = subprocess.Popen(
+        [
+            sys.executable,
+            "-m",
+            "tokenfirewall",
+            "server",
+            "--host",
+            host,
+            "--port",
+            port,
+        ],
+        cwd=str(working_dir),
+        env=os.environ.copy(),
+        stdout=sys.stdout,
+        stderr=sys.stderr,
+        text=True,
+    )
+
+
+if _should_start_embedded_tokenfirewall():
+    _start_embedded_tokenfirewall()
+    atexit.register(_terminate_embedded_tokenfirewall)
 
 API_DESCRIPTION = """
 AI Data Middleware connects to multiple data source engines, inspects schema metadata,
