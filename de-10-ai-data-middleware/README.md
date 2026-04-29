@@ -124,7 +124,7 @@ When no external `OPENAI_BASE_URL` or `TOKENFIREWALL_BASE_URL` is configured, th
 For non-Docker local development, you can still run TokenFirewall separately:
 
 ```bash
-cd vendor/tokenfirewall
+cd backend/vendor/tokenfirewall
 python -m tokenfirewall server --host 127.0.0.1 --port 8787
 
 # In this project's .env for host-based uvicorn:

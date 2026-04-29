@@ -1,7 +1,7 @@
 services:
   tokenfirewall:
     build:
-      context: ./vendor/tokenfirewall
+      context: ./backend/vendor/tokenfirewall
     container_name: ai_middleware_tokenfirewall
     restart: always
     environment:
