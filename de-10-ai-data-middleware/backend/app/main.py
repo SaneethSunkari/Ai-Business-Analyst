@@ -66,7 +66,8 @@ def _start_embedded_tokenfirewall() -> None:
 
     host = os.getenv("EMBEDDED_TOKENFIREWALL_HOST", "127.0.0.1").strip() or "127.0.0.1"
     port = os.getenv("TOKENFIREWALL_PORT", "8787").strip() or "8787"
-    working_dir = Path(__file__).resolve().parents[2]
+    backend_root = Path(__file__).resolve().parents[1]
+    working_dir = backend_root
     _tokenfirewall_process = subprocess.Popen(
         [
             sys.executable,
