@@ -56,6 +56,9 @@ def _clear_session_cookies(response: Response) -> None:
 
 def _public_auth_error(exc: ValueError) -> str:
     message = str(exc)
+    if message.startswith("Could not reach the authentication service."):
+        logger.warning("Auth upstream unavailable: %s", message)
+        return "Authentication service is temporarily unavailable. Contact your administrator."
     if any(
         token in message
         for token in (
@@ -94,6 +97,12 @@ def sign_up(payload: SignUpRequest, request: Request, response: Response) -> Aut
         )
     except ValueError as exc:
         return AuthSessionResponse(success=False, error=_public_auth_error(exc))
+    except Exception:
+        logger.exception("Unexpected signup failure")
+        return AuthSessionResponse(
+            success=False,
+            error="Authentication is temporarily unavailable. Please try again.",
+        )
 
     _set_session_cookies(request, response, session)
     return AuthSessionResponse(success=True, session=AuthSessionInfo(**session))
@@ -111,6 +120,12 @@ def log_in(payload: LoginRequest, request: Request, response: Response) -> AuthS
         session = auth_service.log_in_user(email=payload.email, password=payload.password)
     except ValueError as exc:
         return AuthSessionResponse(success=False, error=_public_auth_error(exc))
+    except Exception:
+        logger.exception("Unexpected login failure")
+        return AuthSessionResponse(
+            success=False,
+            error="Authentication is temporarily unavailable. Please try again.",
+        )
 
     _set_session_cookies(request, response, session)
     return AuthSessionResponse(success=True, session=AuthSessionInfo(**session))
@@ -128,6 +143,12 @@ def refresh_session(payload: RefreshSessionRequest, request: Request, response: 
         session = auth_service.refresh_user_session(payload.refresh_token)
     except ValueError as exc:
         return AuthSessionResponse(success=False, error=_public_auth_error(exc))
+    except Exception:
+        logger.exception("Unexpected session refresh failure")
+        return AuthSessionResponse(
+            success=False,
+            error="Authentication is temporarily unavailable. Please try again.",
+        )
 
     _set_session_cookies(request, response, session)
     return AuthSessionResponse(success=True, session=AuthSessionInfo(**session))

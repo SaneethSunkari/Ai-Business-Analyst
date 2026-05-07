@@ -62,6 +62,15 @@ def _extract_error_message(response: requests.Response) -> str:
     return str(payload)
 
 
+def _request(method: str, url: str, **kwargs) -> requests.Response:
+    try:
+        return requests.request(method=method, url=url, timeout=_TIMEOUT, **kwargs)
+    except requests.RequestException as exc:
+        raise ValueError(
+            "Could not reach the authentication service. Check SUPABASE_URL and network access."
+        ) from exc
+
+
 def _raise_if_not_ok(response: requests.Response, fallback: str) -> None:
     if response.ok:
         return
@@ -99,7 +108,8 @@ def _slugify(text: str) -> str:
 
 def _first_membership(user_id: str) -> tuple[str | None, str | None]:
     base_url = _supabase_base_url()
-    response = requests.get(
+    response = _request(
+        "GET",
         f"{base_url}/rest/v1/memberships",
         headers=_service_role_headers(),
         params={
@@ -109,7 +119,6 @@ def _first_membership(user_id: str) -> tuple[str | None, str | None]:
             "order": "created_at.asc",
             "limit": "1",
         },
-        timeout=_TIMEOUT,
     )
     _raise_if_not_ok(response, "Failed to load user memberships.")
     rows = response.json()
@@ -120,7 +129,8 @@ def _first_membership(user_id: str) -> tuple[str | None, str | None]:
     if not organization_id:
         return None, None
 
-    org_response = requests.get(
+    org_response = _request(
+        "GET",
         f"{base_url}/rest/v1/organizations",
         headers=_service_role_headers(),
         params={
@@ -128,7 +138,6 @@ def _first_membership(user_id: str) -> tuple[str | None, str | None]:
             "id": f"eq.{organization_id}",
             "limit": "1",
         },
-        timeout=_TIMEOUT,
     )
     _raise_if_not_ok(org_response, "Failed to load the user's organization.")
     org_rows = org_response.json()
@@ -145,7 +154,8 @@ def ensure_user_workspace(user_id: str, email: str | None, full_name: str | None
     slug = f"{_slugify(label)}-{user_id.split('-', 1)[0]}"
 
     base_url = _supabase_base_url()
-    org_response = requests.post(
+    org_response = _request(
+        "POST",
         f"{base_url}/rest/v1/organizations",
         headers=_service_role_headers(prefer="return=representation"),
         json={
@@ -153,12 +163,12 @@ def ensure_user_workspace(user_id: str, email: str | None, full_name: str | None
             "slug": slug,
             "created_by": user_id,
         },
-        timeout=_TIMEOUT,
     )
     _raise_if_not_ok(org_response, "Failed to create the user's workspace.")
     organization_id = org_response.json()[0]["id"]
 
-    membership_response = requests.post(
+    membership_response = _request(
+        "POST",
         f"{base_url}/rest/v1/memberships",
         headers=_service_role_headers(prefer="return=minimal"),
         json={
@@ -167,7 +177,6 @@ def ensure_user_workspace(user_id: str, email: str | None, full_name: str | None
             "role": "owner",
             "status": "active",
         },
-        timeout=_TIMEOUT,
     )
     _raise_if_not_ok(membership_response, "Failed to create the user's workspace membership.")
     return organization_id, organization_name
@@ -207,7 +216,8 @@ def _session_payload(session: dict[str, Any], context: AuthContext) -> dict[str,
 
 
 def sign_up_user(email: str, password: str, full_name: str) -> dict[str, Any]:
-    response = requests.post(
+    response = _request(
+        "POST",
         f"{_supabase_base_url()}/auth/v1/admin/users",
         headers=_service_role_headers(),
         json={
@@ -216,18 +226,17 @@ def sign_up_user(email: str, password: str, full_name: str) -> dict[str, Any]:
             "email_confirm": True,
             "user_metadata": {"full_name": full_name.strip()},
         },
-        timeout=_TIMEOUT,
     )
     _raise_if_not_ok(response, "Failed to create the user.")
     return log_in_user(email=email, password=password)
 
 
 def log_in_user(email: str, password: str) -> dict[str, Any]:
-    response = requests.post(
+    response = _request(
+        "POST",
         f"{_supabase_base_url()}/auth/v1/token?grant_type=password",
         headers=_auth_headers(),
         json={"email": email.strip(), "password": password},
-        timeout=_TIMEOUT,
     )
     _raise_if_not_ok(response, "Login failed.")
     session = response.json()
@@ -239,11 +248,11 @@ def log_in_user(email: str, password: str) -> dict[str, Any]:
 
 
 def refresh_user_session(refresh_token: str) -> dict[str, Any]:
-    response = requests.post(
+    response = _request(
+        "POST",
         f"{_supabase_base_url()}/auth/v1/token?grant_type=refresh_token",
         headers=_auth_headers(),
         json={"refresh_token": refresh_token},
-        timeout=_TIMEOUT,
     )
     _raise_if_not_ok(response, "Session refresh failed.")
     session = response.json()
@@ -255,19 +264,19 @@ def refresh_user_session(refresh_token: str) -> dict[str, Any]:
 
 
 def log_out_user(access_token: str) -> None:
-    response = requests.post(
+    response = _request(
+        "POST",
         f"{_supabase_base_url()}/auth/v1/logout",
         headers=_auth_headers(access_token),
-        timeout=_TIMEOUT,
     )
     _raise_if_not_ok(response, "Logout failed.")
 
 
 def get_auth_context_from_token(access_token: str) -> AuthContext:
-    response = requests.get(
+    response = _request(
+        "GET",
         f"{_supabase_base_url()}/auth/v1/user",
         headers=_auth_headers(access_token),
-        timeout=_TIMEOUT,
     )
     _raise_if_not_ok(response, "Authentication failed.")
     return _context_from_user_payload(response.json())
