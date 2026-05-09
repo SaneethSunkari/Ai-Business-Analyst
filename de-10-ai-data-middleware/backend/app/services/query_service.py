@@ -92,6 +92,7 @@ def execute_sql_query(
         header_row_overrides = fetch_header_row_overrides(
             engine=engine,
             table_columns={table_name: load_columns(table_name) for table_name in table_names},
+            engine_key=engine_key,
             schema_name=schema_name,
         )
         rewritten_sql = rewrite_query_with_header_row_overrides(

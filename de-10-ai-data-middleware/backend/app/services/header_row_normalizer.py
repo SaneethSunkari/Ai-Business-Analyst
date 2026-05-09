@@ -8,6 +8,7 @@ from sqlalchemy.engine import Engine
 
 GENERIC_COLUMN_PATTERN = re.compile(r"^c(\d+)$", re.IGNORECASE)
 NORMALIZED_CTE_PREFIX = "__adm_norm_"
+SIMPLE_IDENTIFIER_PATTERN = re.compile(r"^[A-Za-z_][A-Za-z0-9_$]*$")
 
 
 def is_sequential_generic_columns(column_names: list[str]) -> bool:
@@ -63,15 +64,23 @@ def quote_literal(value: str) -> str:
     return "'" + value.replace("'", "''") + "'"
 
 
-def qualified_table_name(table_name: str, schema_name: str | None = None) -> str:
+def source_identifier(identifier: str, engine_key: str) -> str:
+    text = str(identifier).strip()
+    if SIMPLE_IDENTIFIER_PATTERN.fullmatch(text):
+        return text
+    return quote_identifier(text)
+
+
+def qualified_table_name(table_name: str, engine_key: str, schema_name: str | None = None) -> str:
     if schema_name:
-        return f"{quote_identifier(schema_name)}.{quote_identifier(table_name)}"
-    return quote_identifier(table_name)
+        return f"{source_identifier(schema_name, engine_key)}.{source_identifier(table_name, engine_key)}"
+    return source_identifier(table_name, engine_key)
 
 
 def fetch_header_row_overrides(
     engine: Engine,
     table_columns: dict[str, list[dict[str, Any]]],
+    engine_key: str,
     schema_name: str | None = None,
 ) -> dict[str, dict[str, list[str]]]:
     overrides: dict[str, dict[str, list[str]]] = {}
@@ -83,7 +92,7 @@ def fetch_header_row_overrides(
                 continue
 
             try:
-                qualified_name = qualified_table_name(table_name, schema_name)
+                qualified_name = qualified_table_name(table_name, engine_key, schema_name)
                 result = connection.exec_driver_sql(f"SELECT * FROM {qualified_name} LIMIT 1")
                 sample_rows = [list(row) for row in result.fetchall()]
             except Exception:
@@ -156,18 +165,18 @@ def rewrite_query_with_header_row_overrides(
         physical_columns = override["physical_columns"]
         logical_columns = override["logical_columns"]
         select_parts = [
-            f"{quote_identifier(physical)} AS {quote_identifier(logical)}"
+            f"{source_identifier(physical, engine_key)} AS {source_identifier(logical, engine_key)}"
             for physical, logical in zip(physical_columns, logical_columns)
         ]
         filter_parts = [
-            f"COALESCE({_cast_to_text(quote_identifier(physical), engine_key)}, '') = {quote_literal(logical)}"
+            f"COALESCE({_cast_to_text(source_identifier(physical, engine_key), engine_key)}, '') = {quote_literal(logical)}"
             for physical, logical in zip(physical_columns, logical_columns)
         ]
 
         cte_parts.append(
             f"{cte_name} AS ("
             f"SELECT {', '.join(select_parts)} "
-            f"FROM {qualified_table_name(table_name, schema_name)} "
+            f"FROM {qualified_table_name(table_name, engine_key, schema_name)} "
             f"WHERE NOT ({' AND '.join(filter_parts)})"
             f")"
         )

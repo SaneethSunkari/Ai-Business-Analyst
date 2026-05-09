@@ -161,6 +161,7 @@ def get_schema_metadata(
         header_row_overrides = fetch_header_row_overrides(
             engine=engine,
             table_columns=schema_info["tables"],
+            engine_key=engine_key,
             schema_name=schema_name,
         )
         if header_row_overrides:
