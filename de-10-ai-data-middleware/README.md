@@ -47,19 +47,6 @@ Your Question (plain English)
 Any AI agent (OpenAI, Claude, LangChain, AutoGen) can plug into this middleware via the **OpenAI function-calling manifest** at `GET /tools/manifest` — no custom integration code needed.
 
 ---
-## 🚀 Demo
-
-🎥 Watch the system in action (2 min):  
-👉 https://youtu.be/hMyuesQavrM
-
-This demo shows:
-- connecting to a live database
-- asking natural language questions
-- SQL generation and execution
-- real results returned from the database
-
----
-
 ## Features
 
 - **Natural language → SQL** — ask questions in plain English; GPT-4.1-mini generates dialect-aware SQL against your live schema
@@ -91,8 +78,8 @@ This repo now contains both the working prototype and the architecture for the p
 ### 1 — Clone & configure
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/de-10-ai-data-middleware.git
-cd de-10-ai-data-middleware
+git clone https://github.com/SaneethSunkari/Ai-Business-Analyst.git
+cd Ai-Business-Analyst/de-10-ai-data-middleware
 
 cp .env.example .env
 # Edit .env and set OPENAI_API_KEY=sk-...
