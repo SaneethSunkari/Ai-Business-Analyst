@@ -1911,9 +1911,19 @@ async function askQuery() {
       body: JSON.stringify(getPayload({ question: q })),
     });
     const data = await res.json();
+    const normalized = data.success ? normalizeTabularData(data.columns, data.rows) : null;
     const ms = Date.now() - start;
-    aiLastResult = data;
-    pushHistory({ type: 'ask', question: q, sql: data.sql, ok: data.success, rows: data.row_count, ms });
+    aiLastResult = data.success
+      ? { ...data, columns: normalized.columns, rows: normalized.rows, row_count: normalized.rows.length, inferredHeader: normalized.inferredHeader }
+      : data;
+    pushHistory({
+      type: 'ask',
+      question: q,
+      sql: data.sql,
+      ok: data.success,
+      rows: data.success ? normalized.rows.length : data.row_count,
+      ms,
+    });
 
     document.getElementById('aiResultTitle').textContent = `"${q}"`;
     if (data.sql) {
@@ -1923,8 +1933,8 @@ async function askQuery() {
     if (data.success) {
       const meta = document.getElementById('aiResultMeta');
       meta.style.display = 'flex';
-      meta.innerHTML = `<span>${data.row_count ?? data.rows?.length ?? 0} rows</span><span style="color:var(--muted)">${ms}ms</span>`;
-      document.getElementById('aiTableWrap').innerHTML = renderTable(data.columns, data.rows);
+      meta.innerHTML = `<span>${normalized.rows.length} rows</span><span style="color:var(--muted)">${ms}ms</span>`;
+      document.getElementById('aiTableWrap').innerHTML = renderTable(normalized.columns, normalized.rows, normalized.inferredHeader);
     } else {
       document.getElementById('aiTableWrap').innerHTML = `<div class="error-box">${data.error || 'Unknown error'}</div>`;
     }
@@ -1961,15 +1971,18 @@ async function runSQL() {
       body: JSON.stringify(getPayload({ sql })),
     });
     const data = await res.json();
+    const normalized = data.success ? normalizeTabularData(data.columns, data.rows) : null;
     const ms = Date.now() - start;
-    sqlLastResult = data;
-    pushHistory({ type: 'sql', question: sql, ok: data.success, rows: data.rows?.length, ms });
+    sqlLastResult = data.success
+      ? { ...data, columns: normalized.columns, rows: normalized.rows, row_count: normalized.rows.length, inferredHeader: normalized.inferredHeader }
+      : data;
+    pushHistory({ type: 'sql', question: sql, ok: data.success, rows: data.success ? normalized.rows.length : data.rows?.length, ms });
 
     if (data.success) {
       const meta = document.getElementById('sqlResultMeta');
       meta.style.display = 'flex';
-      meta.innerHTML = `<span>${data.rows?.length ?? 0} rows</span><span style="color:var(--muted)">${ms}ms</span>`;
-      document.getElementById('sqlTableWrap').innerHTML = renderTable(data.columns, data.rows);
+      meta.innerHTML = `<span>${normalized.rows.length} rows</span><span style="color:var(--muted)">${ms}ms</span>`;
+      document.getElementById('sqlTableWrap').innerHTML = renderTable(normalized.columns, normalized.rows, normalized.inferredHeader);
     } else {
       document.getElementById('sqlTableWrap').innerHTML = `<div class="error-box">${data.error || 'Unknown error'}</div>`;
     }
@@ -1993,22 +2006,77 @@ function clearAI() {
 function clearSQL() { document.getElementById('sqlInput').value = ''; }
 
 // ── TABLE RENDERER ──
-function renderTable(columns, rows) {
+function isSequentialGenericColumns(columns) {
+  return Array.isArray(columns)
+    && columns.length > 0
+    && columns.every((column, index) => {
+      const match = String(column ?? '').trim().match(/^c(\d+)$/i);
+      return match && Number(match[1]) === index + 1;
+    });
+}
+
+function isHeaderLikeValue(value) {
+  if (typeof value !== 'string') return false;
+  const text = value.trim();
+  if (!text || text.length > 80) return false;
+  if (!/[A-Za-z_]/.test(text)) return false;
+  if (/^\d+$/.test(text)) return false;
+  if (/^\d{4}-\d{2}-\d{2}/.test(text)) return false;
+  return true;
+}
+
+function normalizeTabularData(columns, rows) {
+  const safeColumns = Array.isArray(columns) ? columns.map((column) => String(column ?? '')) : [];
+  const safeRows = Array.isArray(rows)
+    ? rows.filter(Array.isArray).map((row) => row.slice())
+    : [];
+
+  if (!isSequentialGenericColumns(safeColumns) || safeRows.length === 0) {
+    return { columns: safeColumns, rows: safeRows, inferredHeader: false };
+  }
+
+  const candidateHeader = safeRows[0];
+  if (candidateHeader.length !== safeColumns.length) {
+    return { columns: safeColumns, rows: safeRows, inferredHeader: false };
+  }
+
+  const headerLikeCount = candidateHeader.filter(isHeaderLikeValue).length;
+  const uniqueHeaderCount = new Set(
+    candidateHeader.map((value) => String(value ?? '').trim().toLowerCase()).filter(Boolean)
+  ).size;
+
+  if (headerLikeCount < Math.ceil(candidateHeader.length * 0.6) || uniqueHeaderCount !== candidateHeader.length) {
+    return { columns: safeColumns, rows: safeRows, inferredHeader: false };
+  }
+
+  return {
+    columns: candidateHeader.map((value) => String(value ?? '').trim() || 'column'),
+    rows: safeRows.slice(1),
+    inferredHeader: true,
+  };
+}
+
+function renderTable(columns, rows, inferredHeader = false) {
   if (!columns || !rows) return '<div class="empty-state"><p>No data returned.</p></div>';
-  if (rows.length === 0) return '<div class="empty-state"><p>Query returned 0 rows.</p></div>';
   const MAX = 500;
   const shown = rows.slice(0, MAX);
+  const emptyMessage = inferredHeader
+    ? 'The source returned only a header row. Showing promoted column names.'
+    : 'Query returned 0 rows.';
   return `
     <div class="results-wrap">
       <table>
-        <thead><tr>${columns.map(c=>`<th>${c}</th>`).join('')}</tr></thead>
-        <tbody>${shown.map(row=>`<tr>${row.map(v=>
+        <thead><tr>${columns.map(c=>`<th>${escapeHtml(c)}</th>`).join('')}</tr></thead>
+        <tbody>${shown.length
+          ? shown.map(row=>`<tr>${row.map(v=>
           v===null||v===undefined
             ? `<td class="null-val">null</td>`
-            : `<td title="${String(v).replace(/"/g,'&quot;')}">${String(v)}</td>`
-        ).join('')}</tr>`).join('')}</tbody>
+            : `<td title="${escapeHtml(String(v))}">${escapeHtml(String(v))}</td>`
+        ).join('')}</tr>`).join('')
+          : `<tr><td colspan="${Math.max(columns.length, 1)}" style="color:var(--muted);text-align:center;padding:18px">${emptyMessage}</td></tr>`}</tbody>
       </table>
     </div>
+    ${inferredHeader ? `<div style="padding:7px 7px 0;font-size:0.73rem;color:var(--muted);text-align:center">Promoted the first row into column names because the source returned generic headers.</div>` : ''}
     ${rows.length > MAX ? `<div style="padding:7px;font-size:0.73rem;color:var(--muted);text-align:center">Showing first ${MAX} of ${rows.length} rows</div>` : ''}`;
 }
 

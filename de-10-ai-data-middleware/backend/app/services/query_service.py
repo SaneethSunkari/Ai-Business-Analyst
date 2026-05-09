@@ -1,9 +1,13 @@
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine, inspect, text
 from sqlalchemy.exc import SQLAlchemyError
 from time import perf_counter
 from app.services.db_url import build_db_url
 from app.services.error_service import clean_db_error_message
 from app.services.extended_source_service import execute_special_query, handles_special_engine
+from app.services.header_row_normalizer import (
+    fetch_header_row_overrides,
+    rewrite_query_with_header_row_overrides,
+)
 from app.services.llm_service import UNANSWERABLE_SQL, generate_sql_from_question
 from app.services.log_service import build_query_log, write_query_log
 from app.services.object_store_service import execute_object_store_sql
@@ -70,8 +74,34 @@ def execute_sql_query(
     )
     engine = create_engine(db_url)
     try:
+        schema_name = (options or {}).get("schema") or None
+        inspector = inspect(engine)
+
+        def load_columns(table_name: str) -> list[dict[str, str]]:
+            try:
+                raw_columns = inspector.get_columns(table_name, schema=schema_name) if schema_name else inspector.get_columns(table_name)
+            except TypeError:
+                raw_columns = inspector.get_columns(table_name)
+            return [{"name": column["name"]} for column in raw_columns]
+
+        try:
+            table_names = inspector.get_table_names(schema=schema_name) if schema_name else inspector.get_table_names()
+        except TypeError:
+            table_names = inspector.get_table_names()
+
+        header_row_overrides = fetch_header_row_overrides(
+            engine=engine,
+            table_columns={table_name: load_columns(table_name) for table_name in table_names},
+            schema_name=schema_name,
+        )
+        rewritten_sql = rewrite_query_with_header_row_overrides(
+            sql=sql,
+            overrides=header_row_overrides,
+            engine_key=engine_key,
+            schema_name=schema_name,
+        )
         with engine.connect() as connection:
-            result = connection.execute(text(sql))
+            result = connection.execute(text(rewritten_sql))
             rows = result.fetchall()
             columns = list(result.keys())
         return {"success": True, "columns": columns, "rows": [list(row) for row in rows]}

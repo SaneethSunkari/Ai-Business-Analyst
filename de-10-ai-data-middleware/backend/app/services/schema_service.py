@@ -1,6 +1,10 @@
 from sqlalchemy import create_engine, inspect
 from app.services.db_url import build_db_url
 from app.services.extended_source_service import get_special_schema_metadata, handles_special_engine
+from app.services.header_row_normalizer import (
+    apply_header_row_overrides,
+    fetch_header_row_overrides,
+)
 from app.services.object_store_service import get_object_store_schema_metadata
 
 
@@ -153,6 +157,17 @@ def get_schema_metadata(
                 continue
             seen_relationships.add(key)
             schema_info["relationships"].append(rel)
+
+        header_row_overrides = fetch_header_row_overrides(
+            engine=engine,
+            table_columns=schema_info["tables"],
+            schema_name=schema_name,
+        )
+        if header_row_overrides:
+            schema_info["tables"] = apply_header_row_overrides(
+                schema_info["tables"],
+                header_row_overrides,
+            )
 
         return schema_info
     finally:
