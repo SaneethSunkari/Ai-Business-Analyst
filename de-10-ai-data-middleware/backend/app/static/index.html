@@ -1556,6 +1556,12 @@ const SUGGESTIONS = [
   'Top 10 most expensive encounters',
 ];
 
+const DASHBOARD_STARTERS = [
+  'Create a dashboard of patient count by state',
+  'Show monthly patient births as a trend dashboard',
+  'Build an executive summary of patient demographics',
+];
+
 // ── INIT ──
 document.addEventListener('DOMContentLoaded', async () => {
   const user = await window.middlewareAuth.requireAuth('/');
@@ -2302,11 +2308,6 @@ function refreshDashboard() {
 }
 
 async function runDashboardCopilot(prefilledPrompt = null) {
-  if (!dashboardLastResult?.columns?.length) {
-    toast('Run Ask AI or SQL Runner first');
-    return;
-  }
-
   const input = document.getElementById('dashboardPrompt');
   const question = String(prefilledPrompt || input?.value || '').trim();
   if (!question) {
@@ -2321,6 +2322,54 @@ async function runDashboardCopilot(prefilledPrompt = null) {
   }
 
   try {
+    if (!dashboardLastResult?.columns?.length) {
+      if (!connected && !activeConnId) {
+        throw new Error('Test your connection first');
+      }
+
+      const res = await window.middlewareAuth.request(`${API}/query/ask`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(getPayload({ question })),
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error || 'Failed to create dashboard');
+
+      const normalized = normalizeTabularData(data.columns, data.rows);
+      aiLastResult = {
+        ...data,
+        columns: normalized.columns,
+        rows: normalized.rows,
+        row_count: normalized.rows.length,
+        inferredHeader: normalized.inferredHeader,
+      };
+      pushHistory({
+        type: 'ask',
+        question,
+        sql: data.sql,
+        ok: true,
+        rows: normalized.rows.length,
+        ms: 0,
+      });
+
+      setDashboardResult({
+        source: 'Dashboard AI',
+        title: question,
+        sql: data.sql,
+        columns: normalized.columns,
+        rows: normalized.rows,
+        row_count: normalized.rows.length,
+        dashboard: data.dashboard || null,
+        explanation: data.explanation || null,
+        confidence: data.confidence || null,
+        tables_used: data.tables_used || [],
+        follow_ups: data.follow_ups || [],
+      });
+      if (input && !prefilledPrompt) input.value = '';
+      toast('Dashboard created');
+      return;
+    }
+
     const res = await window.middlewareAuth.request(`${API}/query/dashboard`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -2351,9 +2400,10 @@ async function runDashboardCopilot(prefilledPrompt = null) {
   } catch (error) {
     toast(error.message || 'Failed to update dashboard');
   } finally {
+    loadOpsStatus();
     if (btn) {
       btn.disabled = false;
-      btn.textContent = 'Create dashboard';
+      btn.textContent = dashboardLastResult?.columns?.length ? 'Update dashboard' : 'Create dashboard';
     }
   }
 }
@@ -2371,11 +2421,12 @@ function renderDashboard() {
   const label = document.getElementById('dashboardSourceLabel');
 
   if (!dashboardLastResult?.columns?.length) {
-    label.textContent = 'Visual view of the latest result';
+    label.textContent = 'Plain-English dashboard creation';
     body.innerHTML = `
+      ${renderDashboardCopilot()}
       <div class="empty-state">
         <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19h16"/><rect x="5" y="10" width="3" height="7"/><rect x="10.5" y="6" width="3" height="11"/><rect x="16" y="3" width="3" height="14"/></svg>
-        <p>Run Ask AI or SQL Runner first. The dashboard view will turn the latest result into KPI cards and a visual summary.</p>
+        <p>Ask for a dashboard in plain English and Dashboard AI will fetch the data, generate the SQL-backed answer, and turn it into a stakeholder-friendly view. You can also use it later to refine the latest Ask AI or SQL Runner result.</p>
       </div>`;
     return;
   }
@@ -2438,18 +2489,19 @@ function renderDashboard() {
     </div>`;
 }
 
-function renderDashboardCopilot(dashboard) {
-  const followUps = dashboard.followUps || [];
+function renderDashboardCopilot(dashboard = null) {
+  const hasResult = Boolean(dashboardLastResult?.columns?.length);
+  const followUps = hasResult ? (dashboard?.followUps || []) : DASHBOARD_STARTERS;
   return `
     <div class="dashboard-copilot">
       <div class="dashboard-copilot-head">
         <strong>Dashboard AI</strong>
-        <span>Use plain English to reshape the dashboard for stakeholders.</span>
+        <span>${hasResult ? 'Use plain English to reshape the dashboard for stakeholders.' : 'Describe the dashboard you want and Dashboard AI will create the first view directly from your connected source.'}</span>
       </div>
-      <textarea id="dashboardPrompt" class="sql-editor" rows="3" placeholder="Make this a bar chart by region, show only top 5, or explain the biggest change."></textarea>
+      <textarea id="dashboardPrompt" class="sql-editor" rows="3" placeholder="${hasResult ? 'Make this a bar chart by region, show only top 5, or explain the biggest change.' : 'Show patient count by state, create a monthly trend dashboard, or build an executive summary for stakeholders.'}"></textarea>
       <div class="dashboard-copilot-actions">
         <button class="btn btn-ghost btn-sm" type="button" onclick="clearDashboardPrompt()">Clear</button>
-        <button class="btn btn-primary btn-sm" id="dashboardCopilotBtn" type="button" onclick="runDashboardCopilot()">Create dashboard</button>
+        <button class="btn btn-primary btn-sm" id="dashboardCopilotBtn" type="button" onclick="runDashboardCopilot()">${hasResult ? 'Update dashboard' : 'Create dashboard'}</button>
       </div>
       ${followUps.length ? `
         <div class="dashboard-chip-row">
