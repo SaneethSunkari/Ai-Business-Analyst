@@ -557,6 +557,13 @@
       margin-top: -4px;
       margin-bottom: 10px;
     }
+    .dashboard-card-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
     .dashboard-chart-frame {
       width: 100%;
       overflow: hidden;
@@ -619,6 +626,26 @@
     .dashboard-meta-item:last-child {
       border-bottom: none;
       padding-bottom: 0;
+    }
+    .dashboard-answer-card {
+      margin-bottom: 14px;
+      padding: 14px;
+      border-radius: 12px;
+      background: linear-gradient(180deg, rgba(63,185,80,0.08), rgba(255,255,255,0.02));
+      border: 1px solid rgba(63,185,80,0.18);
+    }
+    .dashboard-answer-label {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .dashboard-answer-text {
+      font-size: 0.9rem;
+      line-height: 1.7;
+      color: var(--text);
     }
     .dashboard-meta-key {
       color: var(--muted);
@@ -1561,6 +1588,7 @@ const DASHBOARD_STARTERS = [
   'Show monthly patient births as a trend dashboard',
   'Build an executive summary of patient demographics',
 ];
+const ROW_COUNT_MEASURE = '__row_count__';
 
 // ── INIT ──
 document.addEventListener('DOMContentLoaded', async () => {
@@ -2436,6 +2464,7 @@ function renderDashboard() {
 
   body.innerHTML = `
     ${renderDashboardCopilot(dashboard)}
+    ${renderDashboardAnswer(dashboard)}
     ${renderDashboardTrust(dashboard)}
     ${renderDashboardToolbar(dashboardLastResult, dashboard.dashboardOptions)}
     <div class="dashboard-grid">
@@ -2451,6 +2480,7 @@ function renderDashboard() {
       <div class="dashboard-chart-card">
         <div class="dashboard-card-title">${escapeHtml(dashboard.chartTitle)}</div>
         <div class="dashboard-card-subtitle">${escapeHtml(dashboard.chartSubtitle)}</div>
+        ${renderDashboardActions(dashboard)}
         <div class="dashboard-chart-frame">${renderDashboardChart(dashboard.chart)}</div>
         <div class="dashboard-legend">
           ${dashboard.legend.map((item) => `<span class="dashboard-bullet">${escapeHtml(item)}</span>`).join('')}
@@ -2530,6 +2560,23 @@ function renderDashboardTrust(dashboard) {
     </div>`;
 }
 
+function renderDashboardAnswer(dashboard) {
+  return `
+    <div class="dashboard-answer-card">
+      <div class="dashboard-answer-label">Plain-English answer</div>
+      <div class="dashboard-answer-text">${escapeHtml(buildPlainEnglishAnswer(dashboardLastResult, dashboard))}</div>
+    </div>`;
+}
+
+function renderDashboardActions(dashboard) {
+  return `
+    <div class="dashboard-card-actions">
+      <button class="btn btn-ghost btn-sm" type="button" onclick="downloadDashboardPNG()">${dashboard.chart?.type === 'empty' || dashboard.chart?.type === 'table' ? 'Download view' : 'Download chart PNG'}</button>
+      <button class="btn btn-ghost btn-sm" type="button" onclick="downloadDashboardCSV()">Download CSV</button>
+      <button class="btn btn-ghost btn-sm" type="button" onclick="downloadDashboardSummary()">Download summary</button>
+    </div>`;
+}
+
 function renderDashboardToolbar(result, options) {
   const view = dashboardPrefs?.view || 'auto';
   const dimension = dashboardPrefs?.dimension || '';
@@ -2561,6 +2608,7 @@ function renderDashboardToolbar(result, options) {
         <label>Measure</label>
         <select onchange="updateDashboardPref('measure', this.value)">
           <option value="">Auto</option>
+          <option value="${ROW_COUNT_MEASURE}" ${measure === ROW_COUNT_MEASURE ? 'selected' : ''}>Row count</option>
           ${(options.measures || []).map((item) => `<option value="${escapeHtml(item.name)}" ${measure === item.name ? 'selected' : ''}>${escapeHtml(item.name)}</option>`).join('')}
         </select>
       </div>
@@ -2589,16 +2637,110 @@ function clearDashboardPrompt() {
   if (input) input.value = '';
 }
 
+function getCategoryProfileScore(profile, rows) {
+  const labels = rows
+    .map((row) => row[profile.index])
+    .filter((value) => value !== null && value !== undefined && String(value).trim() !== '')
+    .map((value) => String(value).trim());
+  if (!labels.length) return -Infinity;
+  const uniqueCount = new Set(labels).size;
+  if (uniqueCount <= 1) return -Infinity;
+  const repetition = labels.length / uniqueCount;
+  const compactnessBonus = uniqueCount <= Math.min(12, Math.max(4, Math.ceil(labels.length * 0.7))) ? 3 : 0;
+  return repetition * 10 + compactnessBonus - uniqueCount;
+}
+
+function pickBestCategoryProfile(categoryColumns, rows) {
+  return [...categoryColumns]
+    .sort((a, b) => getCategoryProfileScore(b, rows) - getCategoryProfileScore(a, rows))[0] || null;
+}
+
+function hasMeaningfulChartCandidate(dateColumns, categoryColumns, numericColumns, rows) {
+  if (!rows.length) return false;
+  if (dateColumns.length) return true;
+  if (numericColumns.length) return true;
+  return Boolean(pickBestCategoryProfile(categoryColumns, rows));
+}
+
+function getSyntheticRowCountMeasure() {
+  return { name: ROW_COUNT_MEASURE, label: 'Row count', kind: 'numeric', index: -1, synthetic: true };
+}
+
+function getMeasureLabel(profile) {
+  if (!profile) return 'Value';
+  return profile.synthetic || profile.name === ROW_COUNT_MEASURE ? 'Row count' : profile.name;
+}
+
+function isIdentifierLikeName(name) {
+  return /\b(id|zip|zipcode|postal|ssn|passport|driver|drivers|phone|account|code)\b/i.test(String(name || ''))
+    || /(^id$|_id$|id$)/i.test(String(name || ''));
+}
+
+function getNumericMeasureScore(profile, rows) {
+  const values = rows
+    .map((row) => toNumber(row[profile.index]))
+    .filter((value) => Number.isFinite(value));
+  if (!values.length) return -Infinity;
+
+  const uniqueCount = new Set(values).size;
+  const uniquenessRatio = uniqueCount / values.length;
+  const name = String(profile.name || '');
+  const metricBonus = /(count|total|cost|price|amount|revenue|sales|score|value|quantity|dispense|days)/i.test(name) ? 6 : 0;
+  const identifierPenalty = isIdentifierLikeName(name) ? 8 : 0;
+  const uniquenessPenalty = uniquenessRatio > 0.85 ? 4 : 0;
+  return metricBonus - identifierPenalty - uniquenessPenalty;
+}
+
+function pickBestMeasureProfile(numericColumns, rows) {
+  const ranked = [...numericColumns]
+    .sort((a, b) => getNumericMeasureScore(b, rows) - getNumericMeasureScore(a, rows));
+  const best = ranked[0];
+  if (!best) return null;
+  return getNumericMeasureScore(best, rows) > 0 ? best : null;
+}
+
+function buildAggregatedSeries(rows, dimensionProfile, measureProfile, mode = 'bar', topN = 8) {
+  if (!dimensionProfile) return [];
+  const grouped = new Map();
+
+  rows.forEach((row) => {
+    const rawLabel = row[dimensionProfile.index];
+    if (rawLabel === null || rawLabel === undefined) return;
+    const label = String(rawLabel).trim();
+    if (!label) return;
+
+    let increment = 1;
+    if (measureProfile && !measureProfile.synthetic && measureProfile.name !== ROW_COUNT_MEASURE) {
+      increment = toNumber(row[measureProfile.index]);
+      if (!Number.isFinite(increment)) return;
+    }
+
+    grouped.set(label, (grouped.get(label) || 0) + increment);
+  });
+
+  const series = [...grouped.entries()].map(([label, value]) => ({ label, value }));
+  if (mode === 'line') {
+    return series.sort((a, b) => String(a.label).localeCompare(String(b.label)));
+  }
+  return series.sort((a, b) => b.value - a.value).slice(0, topN);
+}
+
 function createDefaultDashboardPrefs(result) {
   const dashboard = result.dashboard || {};
   const profiles = getColumnProfiles(result.columns || [], result.rows || []);
   const numericColumns = profiles.filter((profile) => profile.kind === 'numeric');
   const dateColumns = profiles.filter((profile) => profile.kind === 'date');
   const categoryColumns = profiles.filter((profile) => profile.kind === 'category');
+  const defaultCategory = pickBestCategoryProfile(categoryColumns, result.rows || []) || categoryColumns[0] || null;
+  const preferredMeasure = pickBestMeasureProfile(numericColumns, result.rows || []) || getSyntheticRowCountMeasure();
+  const shouldPreferChart = dashboard.view === 'table' && hasMeaningfulChartCandidate(dateColumns, categoryColumns, numericColumns, result.rows || []);
+  const defaultDimension = preferredMeasure.synthetic
+    ? ((defaultCategory || dateColumns[0] || {}).name || '')
+    : ((dateColumns[0] || defaultCategory || {}).name || '');
   return {
-    view: dashboard.view || 'auto',
-    dimension: dashboard.dimension || (dateColumns[0] || categoryColumns[0] || {}).name || '',
-    measure: dashboard.measure || (numericColumns[0] || {}).name || '',
+    view: shouldPreferChart ? 'auto' : (dashboard.view || 'auto'),
+    dimension: dashboard.dimension || defaultDimension,
+    measure: dashboard.measure || preferredMeasure.name || '',
     topN: dashboard.top_n || 8,
   };
 }
@@ -2616,8 +2758,11 @@ function buildDashboardModel(result, prefs = null) {
   const dateColumns = profiles.filter((profile) => profile.kind === 'date');
   const categoryColumns = profiles.filter((profile) => profile.kind === 'category');
   const topN = Math.min(20, Math.max(3, prefs?.topN || 8));
-  const dimensionProfile = profiles.find((profile) => profile.name === prefs?.dimension) || dateColumns[0] || categoryColumns[0] || null;
-  const measureProfile = profiles.find((profile) => profile.name === prefs?.measure) || numericColumns[0] || null;
+  const bestCategoryProfile = pickBestCategoryProfile(categoryColumns, rows) || categoryColumns[0] || null;
+  const bestMeasureProfile = pickBestMeasureProfile(numericColumns, rows);
+  const dimensionProfile = profiles.find((profile) => profile.name === prefs?.dimension) || dateColumns[0] || bestCategoryProfile || null;
+  const requestedMeasure = prefs?.measure === ROW_COUNT_MEASURE ? getSyntheticRowCountMeasure() : profiles.find((profile) => profile.name === prefs?.measure);
+  const measureProfile = requestedMeasure || bestMeasureProfile || getSyntheticRowCountMeasure();
 
   const baseKpis = [
     {
@@ -2658,7 +2803,7 @@ function buildDashboardModel(result, prefs = null) {
   let legend = [];
   let note = aiDashboard.explanation || 'Use Ask AI for business questions and SQL Runner for direct control. The dashboard automatically chooses a simple presentation from the returned rows.';
   const dashboardOptions = {
-    dimensions: [...dateColumns, ...categoryColumns],
+    dimensions: [...dateColumns, ...(bestCategoryProfile ? [bestCategoryProfile] : []), ...categoryColumns.filter((profile) => profile.name !== bestCategoryProfile?.name)],
     measures: numericColumns,
   };
 
@@ -2716,54 +2861,41 @@ function buildDashboardModel(result, prefs = null) {
     };
   }
 
-  if ((prefs?.view === 'line' && dimensionProfile && measureProfile) || (!prefs?.view || prefs?.view === 'auto') && dateColumns.length && numericColumns.length) {
+  if ((prefs?.view === 'line' && dimensionProfile) || ((!prefs?.view || prefs?.view === 'auto') && dateColumns.length && bestMeasureProfile)) {
     const dimension = prefs?.view === 'line' ? dimensionProfile : dateColumns[0];
-    const measure = prefs?.view === 'line' ? measureProfile : numericColumns[0];
-    const series = rows
-      .map((row) => ({
-        label: String(row[dimension.index] ?? ''),
-        value: toNumber(row[measure.index]),
-      }))
-      .filter((item) => item.label && Number.isFinite(item.value))
-      .sort((a, b) => String(a.label).localeCompare(String(b.label)));
+    const measure = prefs?.view === 'line' ? measureProfile : (bestMeasureProfile || getSyntheticRowCountMeasure());
+    const series = buildAggregatedSeries(rows, dimension, measure, 'line', topN);
     chart = { type: 'line', points: series, dimension: dimension.name, measure: measure.name };
     chartKindLabel = 'Trend chart';
-    chartTitle = `${measure.name} over ${dimension.name}`;
+    chartTitle = `${getMeasureLabel(measure)} over ${dimension.name}`;
     chartSubtitle = 'Best when a time-like field is present in the result';
     if (series.length) {
       const last = series[series.length - 1];
       const first = series[0];
       insights = [
-        `${measure.name} spans ${series.length} points across ${dimension.name}.`,
+        `${getMeasureLabel(measure)} spans ${series.length} points across ${dimension.name}.`,
         `The latest visible value is ${formatCompactNumber(last.value)} at ${last.label}.`,
         `The first visible value is ${formatCompactNumber(first.value)} at ${first.label}.`,
       ];
-      legend = [`X-axis: ${dimension.name}`, `Y-axis: ${measure.name}`];
+      legend = [`X-axis: ${dimension.name}`, `Y-axis: ${getMeasureLabel(measure)}`];
     }
-  } else if ((prefs?.view === 'bar' && dimensionProfile && measureProfile) || (!prefs?.view || prefs?.view === 'auto') && categoryColumns.length && numericColumns.length) {
-    const dimension = prefs?.view === 'bar' ? dimensionProfile : categoryColumns[0];
-    const measure = prefs?.view === 'bar' ? measureProfile : numericColumns[0];
-    const bars = rows
-      .map((row) => ({
-        label: String(row[dimension.index] ?? ''),
-        value: toNumber(row[measure.index]),
-      }))
-      .filter((item) => item.label && Number.isFinite(item.value))
-      .sort((a, b) => b.value - a.value)
-      .slice(0, topN);
+  } else if ((prefs?.view === 'bar' && dimensionProfile) || ((!prefs?.view || prefs?.view === 'auto') && bestCategoryProfile)) {
+    const dimension = prefs?.view === 'bar' ? dimensionProfile : bestCategoryProfile;
+    const measure = prefs?.view === 'bar' ? measureProfile : (bestMeasureProfile || getSyntheticRowCountMeasure());
+    const bars = buildAggregatedSeries(rows, dimension, measure, 'bar', topN);
     chart = { type: 'bar', bars, dimension: dimension.name, measure: measure.name };
     chartKindLabel = 'Ranked comparison';
-    chartTitle = `${measure.name} by ${dimension.name}`;
+    chartTitle = `${getMeasureLabel(measure)} by ${dimension.name}`;
     chartSubtitle = 'Top categories from the latest result set';
     if (bars.length) {
       const leader = bars[0];
       const trailer = bars[bars.length - 1];
       insights = [
-        `${leader.label} leads with ${formatCompactNumber(leader.value)} ${measure.name}.`,
+        `${leader.label} leads with ${formatCompactNumber(leader.value)} ${getMeasureLabel(measure)}.`,
         `${bars.length} categories are shown in the current comparison.`,
         `${trailer.label} is the lowest visible category at ${formatCompactNumber(trailer.value)}.`,
       ];
-      legend = [`Bars ranked by ${measure.name}`, `Dimension: ${dimension.name}`];
+      legend = [`Bars ranked by ${getMeasureLabel(measure)}`, `Dimension: ${dimension.name}`];
     }
   } else if (numericColumns.length) {
     const measure = numericColumns[0];
@@ -2871,6 +3003,7 @@ function renderDashboardChart(chart) {
 }
 
 function renderBarChart(chart) {
+  const measureLabel = chart.measure === ROW_COUNT_MEASURE ? 'Row count' : chart.measure;
   const width = 760;
   const height = 320;
   const left = 150;
@@ -2894,7 +3027,7 @@ function renderBarChart(chart) {
   }).join('');
 
   return `
-    <svg class="dashboard-chart-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(chart.measure)} by ${escapeHtml(chart.dimension)}">
+    <svg class="dashboard-chart-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(measureLabel)} by ${escapeHtml(chart.dimension)}">
       <defs>
         <linearGradient id="barGrad" x1="0%" x2="100%">
           <stop offset="0%" stop-color="#58a6ff"/>
@@ -2907,6 +3040,7 @@ function renderBarChart(chart) {
 }
 
 function renderLineChart(chart) {
+  const measureLabel = chart.measure === ROW_COUNT_MEASURE ? 'Row count' : chart.measure;
   const width = 760;
   const height = 320;
   const left = 56;
@@ -2941,7 +3075,7 @@ function renderLineChart(chart) {
   `).join('');
 
   return `
-    <svg class="dashboard-chart-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(chart.measure)} over ${escapeHtml(chart.dimension)}">
+    <svg class="dashboard-chart-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(measureLabel)} over ${escapeHtml(chart.dimension)}">
       <defs>
         <linearGradient id="lineFill" x1="0%" x2="0%" y1="0%" y2="100%">
           <stop offset="0%" stop-color="rgba(88,166,255,0.35)"/>
@@ -2958,6 +3092,117 @@ function renderLineChart(chart) {
 
 function truncateLabel(label, max) {
   return label.length > max ? `${label.slice(0, max - 1)}…` : label;
+}
+
+function buildPlainEnglishAnswer(result, dashboard) {
+  const question = result?.title || 'the current question';
+  const chart = dashboard?.chart || {};
+  const rowCount = result?.row_count ?? result?.rows?.length ?? 0;
+
+  if (chart.type === 'bar' && chart.bars?.length) {
+    const leader = chart.bars[0];
+    return `For "${question}", the dashboard compares ${getMeasureLabel({ name: chart.measure, synthetic: chart.measure === ROW_COUNT_MEASURE })} by ${chart.dimension}. ${leader.label} is the leading category at ${formatCompactNumber(leader.value)}. ${chart.bars.length} categories are shown for quick stakeholder review.`;
+  }
+
+  if (chart.type === 'line' && chart.points?.length) {
+    const first = chart.points[0];
+    const last = chart.points[chart.points.length - 1];
+    return `For "${question}", the dashboard shows the trend of ${getMeasureLabel({ name: chart.measure, synthetic: chart.measure === ROW_COUNT_MEASURE })} over ${chart.dimension}. The visible series runs from ${first.label} to ${last.label}, and the latest point is ${formatCompactNumber(last.value)}.`;
+  }
+
+  if (chart.type === 'table') {
+    return `For "${question}", the query returned ${formatCompactNumber(rowCount)} rows. This result is currently best reviewed as a table, but you can ask Dashboard AI to switch it into a chart, ranking, or trend view.`;
+  }
+
+  return `For "${question}", the current result contains ${formatCompactNumber(rowCount)} rows. Use Dashboard AI to ask for a chart, top categories, trends, or an executive summary in plain English.`;
+}
+
+function downloadDashboardCSV() {
+  if (!dashboardLastResult?.columns || !dashboardLastResult?.rows) {
+    toast('No dashboard data to export');
+    return;
+  }
+  const csv = [dashboardLastResult.columns, ...dashboardLastResult.rows]
+    .map((row) => row.map((value) => `"${String(value ?? '').replace(/"/g, '""')}"`).join(','))
+    .join('\n');
+  const a = Object.assign(document.createElement('a'), {
+    href: URL.createObjectURL(new Blob([csv], { type: 'text/csv' })),
+    download: `dashboard_${Date.now()}.csv`,
+  });
+  a.click();
+  toast('Dashboard CSV downloaded');
+}
+
+function downloadDashboardSummary() {
+  if (!dashboardLastResult?.columns?.length) {
+    toast('No dashboard summary to export');
+    return;
+  }
+  const dashboard = buildDashboardModel(dashboardLastResult, dashboardPrefs);
+  const summary = [
+    `Question: ${dashboardLastResult.title}`,
+    `Source: ${dashboardLastResult.source}`,
+    `Plain-English answer: ${buildPlainEnglishAnswer(dashboardLastResult, dashboard)}`,
+    `Confidence: ${(dashboard.confidence || dashboardLastResult.confidence || 'medium').toUpperCase()}`,
+    `Tables used: ${(dashboardLastResult.tables_used || []).join(', ') || 'Current result set'}`,
+    '',
+    'Business insights:',
+    ...dashboard.insights.map((item, index) => `${index + 1}. ${item}`),
+    '',
+    dashboardLastResult.sql ? `SQL:\n${dashboardLastResult.sql}` : '',
+  ].filter(Boolean).join('\n');
+
+  const a = Object.assign(document.createElement('a'), {
+    href: URL.createObjectURL(new Blob([summary], { type: 'text/plain' })),
+    download: `dashboard_summary_${Date.now()}.txt`,
+  });
+  a.click();
+  toast('Dashboard summary downloaded');
+}
+
+function downloadDashboardPNG() {
+  const svg = document.querySelector('#dashboardBody .dashboard-chart-svg');
+  if (!svg) {
+    downloadDashboardSummary();
+    return;
+  }
+
+  const viewBox = (svg.getAttribute('viewBox') || '0 0 760 320').split(/\s+/).map(Number);
+  const [, , width = 760, height = 320] = viewBox;
+  const serialized = new XMLSerializer().serializeToString(svg);
+  const blob = new Blob([serialized], { type: 'image/svg+xml;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const img = new Image();
+
+  img.onload = () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#0d1117';
+    ctx.fillRect(0, 0, width, height);
+    ctx.drawImage(img, 0, 0, width, height);
+    URL.revokeObjectURL(url);
+    canvas.toBlob((pngBlob) => {
+      if (!pngBlob) {
+        toast('Could not render chart download');
+        return;
+      }
+      const a = Object.assign(document.createElement('a'), {
+        href: URL.createObjectURL(pngBlob),
+        download: `dashboard_chart_${Date.now()}.png`,
+      });
+      a.click();
+      toast('Dashboard chart downloaded');
+    });
+  };
+
+  img.onerror = () => {
+    URL.revokeObjectURL(url);
+    toast('Could not render chart download');
+  };
+
+  img.src = url;
 }
 
 // ── TABLE RENDERER ──
