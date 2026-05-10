@@ -406,6 +406,30 @@
       grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
       gap: 12px;
     }
+    .dashboard-toolbar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .dashboard-toolbar .form-row {
+      margin-bottom: 0;
+    }
+    .dashboard-toolbar label {
+      font-size: 0.68rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .dashboard-toolbar-note {
+      grid-column: 1 / -1;
+      font-size: 0.75rem;
+      color: var(--muted);
+      line-height: 1.55;
+    }
     .dashboard-kpi {
       background: linear-gradient(180deg, rgba(88,166,255,0.08), rgba(255,255,255,0.02));
       border: 1px solid rgba(88,166,255,0.16);
@@ -1443,6 +1467,7 @@ let schemaData = null;
 let aiLastResult = null;
 let sqlLastResult = null;
 let dashboardLastResult = null;
+let dashboardPrefs = null;
 let activeConnId = null;  // currently selected saved connection
 let databaseCatalog = {};
 let savedConnectionsById = {};
@@ -2191,6 +2216,7 @@ function refreshDashboard() {
 
 function setDashboardResult(result) {
   dashboardLastResult = result;
+  dashboardPrefs = createDefaultDashboardPrefs(result);
   if (document.getElementById('tab-dashboard').classList.contains('active')) {
     renderDashboard();
   }
@@ -2210,10 +2236,11 @@ function renderDashboard() {
     return;
   }
 
-  const dashboard = buildDashboardModel(dashboardLastResult);
+  const dashboard = buildDashboardModel(dashboardLastResult, dashboardPrefs);
   label.textContent = `${dashboardLastResult.source} · ${dashboardLastResult.row_count} rows`;
 
   body.innerHTML = `
+    ${renderDashboardToolbar(dashboardLastResult, dashboard.dashboardOptions)}
     <div class="dashboard-grid">
       ${dashboard.kpis.map((kpi) => `
         <div class="dashboard-kpi">
@@ -2265,13 +2292,87 @@ function renderDashboard() {
     </div>`;
 }
 
-function buildDashboardModel(result) {
-  const columns = result.columns || [];
-  const rows = result.rows || [];
-  const profiles = columns.map((name, index) => profileColumn(name, rows, index));
+function renderDashboardToolbar(result, options) {
+  const view = dashboardPrefs?.view || 'auto';
+  const dimension = dashboardPrefs?.dimension || '';
+  const measure = dashboardPrefs?.measure || '';
+  const topN = dashboardPrefs?.topN || 8;
+
+  return `
+    <div class="dashboard-toolbar">
+      <div class="form-row">
+        <label>View type</label>
+        <select onchange="updateDashboardPref('view', this.value)">
+          ${[
+            ['auto', 'Auto'],
+            ['bar', 'Bar chart'],
+            ['line', 'Line chart'],
+            ['kpi', 'KPI cards'],
+            ['table', 'Table view'],
+          ].map(([key, label]) => `<option value="${key}" ${view === key ? 'selected' : ''}>${label}</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-row">
+        <label>Group by</label>
+        <select onchange="updateDashboardPref('dimension', this.value)">
+          <option value="">Auto</option>
+          ${(options.dimensions || []).map((item) => `<option value="${escapeHtml(item.name)}" ${dimension === item.name ? 'selected' : ''}>${escapeHtml(item.name)}</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-row">
+        <label>Measure</label>
+        <select onchange="updateDashboardPref('measure', this.value)">
+          <option value="">Auto</option>
+          ${(options.measures || []).map((item) => `<option value="${escapeHtml(item.name)}" ${measure === item.name ? 'selected' : ''}>${escapeHtml(item.name)}</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-row">
+        <label>Top rows</label>
+        <input type="number" min="3" max="20" value="${topN}" onchange="updateDashboardPref('topN', this.value)" />
+      </div>
+      <div class="dashboard-toolbar-note">
+        Stakeholder mode keeps it simple: choose the view, group by field, and metric. Leave everything on Auto for the fastest dashboard.
+      </div>
+    </div>`;
+}
+
+function updateDashboardPref(key, value) {
+  if (!dashboardPrefs) dashboardPrefs = {};
+  if (key === 'topN') {
+    dashboardPrefs.topN = Math.min(20, Math.max(3, parseInt(value, 10) || 8));
+  } else {
+    dashboardPrefs[key] = value;
+  }
+  renderDashboard();
+}
+
+function createDefaultDashboardPrefs(result) {
+  const profiles = getColumnProfiles(result.columns || [], result.rows || []);
   const numericColumns = profiles.filter((profile) => profile.kind === 'numeric');
   const dateColumns = profiles.filter((profile) => profile.kind === 'date');
   const categoryColumns = profiles.filter((profile) => profile.kind === 'category');
+  return {
+    view: 'auto',
+    dimension: (dateColumns[0] || categoryColumns[0] || {}).name || '',
+    measure: (numericColumns[0] || {}).name || '',
+    topN: 8,
+  };
+}
+
+function getColumnProfiles(columns, rows) {
+  return columns.map((name, index) => profileColumn(name, rows, index));
+}
+
+function buildDashboardModel(result, prefs = null) {
+  const columns = result.columns || [];
+  const rows = result.rows || [];
+  const profiles = getColumnProfiles(columns, rows);
+  const numericColumns = profiles.filter((profile) => profile.kind === 'numeric');
+  const dateColumns = profiles.filter((profile) => profile.kind === 'date');
+  const categoryColumns = profiles.filter((profile) => profile.kind === 'category');
+  const topN = Math.min(20, Math.max(3, prefs?.topN || 8));
+  const dimensionProfile = profiles.find((profile) => profile.name === prefs?.dimension) || dateColumns[0] || categoryColumns[0] || null;
+  const measureProfile = profiles.find((profile) => profile.name === prefs?.measure) || numericColumns[0] || null;
 
   const baseKpis = [
     {
@@ -2311,10 +2412,42 @@ function buildDashboardModel(result) {
   let insights = [];
   let legend = [];
   let note = 'Use Ask AI for business questions and SQL Runner for direct control. The dashboard automatically chooses a simple presentation from the returned rows.';
+  const dashboardOptions = {
+    dimensions: [...dateColumns, ...categoryColumns],
+    measures: numericColumns,
+  };
 
-  if (dateColumns.length && numericColumns.length) {
-    const dimension = dateColumns[0];
-    const measure = numericColumns[0];
+  if (prefs?.view === 'table') {
+    chart = { type: 'table', columns, rows };
+    chartKindLabel = 'Table view';
+    chartTitle = 'Full result table';
+    chartSubtitle = 'Best when stakeholders want to review exact rows before deciding on a chart.';
+    insights = [
+      'Table view is useful when the returned rows are already the final answer.',
+      'Switch to Bar or Line for a faster executive summary.',
+      'Use Ask AI to refine the question into a metric + grouping if you want a stronger visual.',
+    ];
+    legend = ['Showing the same result set with a stakeholder-friendly wrapper'];
+    return { kpis: baseKpis.slice(0, 4), chart, chartKindLabel, chartTitle, chartSubtitle, insights, legend, note, dashboardOptions };
+  }
+
+  if (prefs?.view === 'kpi') {
+    chart = { type: 'empty' };
+    chartKindLabel = 'KPI overview';
+    chartTitle = 'Executive KPI summary';
+    chartSubtitle = 'Simple cards designed for stakeholder review';
+    insights = [
+      'KPI mode keeps the output lightweight and presentation-friendly.',
+      'If you want trend or comparison context, switch back to Auto, Bar, or Line.',
+      'This is best for totals, counts, averages, and single-row summaries.',
+    ];
+    legend = ['KPI mode hides the chart and focuses on headline numbers'];
+    return { kpis: baseKpis.slice(0, 4), chart, chartKindLabel, chartTitle, chartSubtitle, insights, legend, note, dashboardOptions };
+  }
+
+  if ((prefs?.view === 'line' && dimensionProfile && measureProfile) || (!prefs?.view || prefs?.view === 'auto') && dateColumns.length && numericColumns.length) {
+    const dimension = prefs?.view === 'line' ? dimensionProfile : dateColumns[0];
+    const measure = prefs?.view === 'line' ? measureProfile : numericColumns[0];
     const series = rows
       .map((row) => ({
         label: String(row[dimension.index] ?? ''),
@@ -2336,9 +2469,9 @@ function buildDashboardModel(result) {
       ];
       legend = [`X-axis: ${dimension.name}`, `Y-axis: ${measure.name}`];
     }
-  } else if (categoryColumns.length && numericColumns.length) {
-    const dimension = categoryColumns[0];
-    const measure = numericColumns[0];
+  } else if ((prefs?.view === 'bar' && dimensionProfile && measureProfile) || (!prefs?.view || prefs?.view === 'auto') && categoryColumns.length && numericColumns.length) {
+    const dimension = prefs?.view === 'bar' ? dimensionProfile : categoryColumns[0];
+    const measure = prefs?.view === 'bar' ? measureProfile : numericColumns[0];
     const bars = rows
       .map((row) => ({
         label: String(row[dimension.index] ?? ''),
@@ -2346,7 +2479,7 @@ function buildDashboardModel(result) {
       }))
       .filter((item) => item.label && Number.isFinite(item.value))
       .sort((a, b) => b.value - a.value)
-      .slice(0, 8);
+      .slice(0, topN);
     chart = { type: 'bar', bars, dimension: dimension.name, measure: measure.name };
     chartKindLabel = 'Ranked comparison';
     chartTitle = `${measure.name} by ${dimension.name}`;
@@ -2403,6 +2536,7 @@ function buildDashboardModel(result) {
     insights: insights.length ? insights : ['The latest result is available, but there was not enough structured data to derive a stronger narrative yet.'],
     legend,
     note,
+    dashboardOptions,
   };
 }
 
@@ -2456,6 +2590,7 @@ function renderDashboardChart(chart) {
   if (!chart || chart.type === 'empty') {
     return `<div class="empty-state"><p>No strong chart could be generated from the current result. The table is still available in Ask AI or SQL Runner.</p></div>`;
   }
+  if (chart.type === 'table') return renderTable(chart.columns, chart.rows);
   if (chart.type === 'bar') return renderBarChart(chart);
   if (chart.type === 'line') return renderLineChart(chart);
   return `<div class="empty-state"><p>Chart type not supported yet.</p></div>`;
