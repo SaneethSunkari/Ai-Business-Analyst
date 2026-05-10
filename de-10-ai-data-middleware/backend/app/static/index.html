@@ -2335,6 +2335,37 @@ function refreshDashboard() {
   renderDashboard();
 }
 
+function isDashboardRefinementPrompt(question) {
+  const text = String(question || '').trim().toLowerCase();
+  if (!text) return false;
+
+  const refinementPatterns = [
+    /^make this\b/,
+    /^change this\b/,
+    /^change to\b/,
+    /^turn this\b/,
+    /^switch to\b/,
+    /^show this\b/,
+    /^show only\b/,
+    /^top \d+\b/,
+    /^filter to\b/,
+    /^group by\b/,
+    /^break (it )?down by\b/,
+    /^explain\b/,
+    /^summarize\b/,
+    /^highlight\b/,
+    /^compare\b/,
+    /^use a\b/,
+    /^use an\b/,
+  ];
+
+  if (refinementPatterns.some((pattern) => pattern.test(text))) {
+    return true;
+  }
+
+  return false;
+}
+
 async function runDashboardCopilot(prefilledPrompt = null) {
   const input = document.getElementById('dashboardPrompt');
   const question = String(prefilledPrompt || input?.value || '').trim();
@@ -2350,7 +2381,9 @@ async function runDashboardCopilot(prefilledPrompt = null) {
   }
 
   try {
-    if (!dashboardLastResult?.columns?.length) {
+    const shouldCreateFreshDashboard = !dashboardLastResult?.columns?.length || !isDashboardRefinementPrompt(question);
+
+    if (shouldCreateFreshDashboard) {
       if (!connected && !activeConnId) {
         throw new Error('Test your connection first');
       }
@@ -2394,7 +2427,7 @@ async function runDashboardCopilot(prefilledPrompt = null) {
         follow_ups: data.follow_ups || [],
       });
       if (input && !prefilledPrompt) input.value = '';
-      toast('Dashboard created');
+      toast('Dashboard generated');
       return;
     }
 
@@ -2431,7 +2464,7 @@ async function runDashboardCopilot(prefilledPrompt = null) {
     loadOpsStatus();
     if (btn) {
       btn.disabled = false;
-      btn.textContent = dashboardLastResult?.columns?.length ? 'Update dashboard' : 'Create dashboard';
+      btn.textContent = 'Run Dashboard AI';
     }
   }
 }
@@ -2526,12 +2559,12 @@ function renderDashboardCopilot(dashboard = null) {
     <div class="dashboard-copilot">
       <div class="dashboard-copilot-head">
         <strong>Dashboard AI</strong>
-        <span>${hasResult ? 'Use plain English to reshape the dashboard for stakeholders.' : 'Describe the dashboard you want and Dashboard AI will create the first view directly from your connected source.'}</span>
+        <span>${hasResult ? 'Ask a new business question or use plain English to reshape the current dashboard for stakeholders.' : 'Describe the dashboard you want and Dashboard AI will create the first view directly from your connected source.'}</span>
       </div>
-      <textarea id="dashboardPrompt" class="sql-editor" rows="3" placeholder="${hasResult ? 'Make this a bar chart by region, show only top 5, or explain the biggest change.' : 'Show patient count by state, create a monthly trend dashboard, or build an executive summary for stakeholders.'}"></textarea>
+      <textarea id="dashboardPrompt" class="sql-editor" rows="3" placeholder="${hasResult ? 'Count patients by ethnicity, show patient count by birth year, or make this a bar chart and show only top 5.' : 'Show patient count by state, create a monthly trend dashboard, or build an executive summary for stakeholders.'}"></textarea>
       <div class="dashboard-copilot-actions">
         <button class="btn btn-ghost btn-sm" type="button" onclick="clearDashboardPrompt()">Clear</button>
-        <button class="btn btn-primary btn-sm" id="dashboardCopilotBtn" type="button" onclick="runDashboardCopilot()">${hasResult ? 'Update dashboard' : 'Create dashboard'}</button>
+        <button class="btn btn-primary btn-sm" id="dashboardCopilotBtn" type="button" onclick="runDashboardCopilot()">Run Dashboard AI</button>
       </div>
       ${followUps.length ? `
         <div class="dashboard-chip-row">
