@@ -1,7 +1,11 @@
+import re
+from typing import Any
+
 from sqlalchemy import create_engine, inspect, text
 from sqlalchemy.exc import SQLAlchemyError
 from time import perf_counter
 from app.services.db_url import build_db_url
+from app.services.dashboard_service import generate_dashboard_spec
 from app.services.error_service import clean_db_error_message
 from app.services.extended_source_service import execute_special_query, handles_special_engine
 from app.services.header_row_normalizer import (
@@ -17,6 +21,25 @@ from app.services.sql_validator import validate_read_only_sql
 
 def clean_error_message(error: str) -> str:
     return clean_db_error_message(error)
+
+
+def extract_tables_used(sql: str) -> list[str]:
+    return sorted(
+        {
+            match.lower()
+            for match in re.findall(r"\b(?:from|join)\s+([a-zA-Z_][a-zA-Z0-9_]*)", sql, flags=re.IGNORECASE)
+        }
+    )
+
+
+def infer_confidence(tables_used: list[str], row_count: int) -> str:
+    if row_count == 0:
+        return "low"
+    if len(tables_used) <= 1:
+        return "high"
+    if len(tables_used) <= 2:
+        return "medium"
+    return "low"
 
 
 def execute_sql_query(
@@ -222,6 +245,18 @@ def execute_nl_query(
 
     columns = query_result.get("columns", [])
     rows = query_result.get("rows", [])
+    tables_used = extract_tables_used(generated_sql)
+    dashboard = generate_dashboard_spec(
+        question=question,
+        columns=columns,
+        rows=rows,
+        source_question=question,
+    )
+    confidence = dashboard.get("confidence") or infer_confidence(tables_used, len(rows))
+    explanation = dashboard.get("explanation") or (
+        f"Generated a read-only query using {len(tables_used) or 1} table(s) and returned {len(rows)} rows."
+    )
+    follow_ups = dashboard.get("follow_ups") or []
     write_query_log(
         build_query_log(
             question=question,
@@ -242,4 +277,30 @@ def execute_nl_query(
         "columns": columns,
         "rows": rows,
         "row_count": len(rows),
+        "explanation": explanation,
+        "confidence": confidence,
+        "tables_used": tables_used,
+        "follow_ups": follow_ups,
+        "dashboard": dashboard,
+    }
+
+
+def refine_dashboard_plan(
+    question: str,
+    columns: list[str],
+    rows: list[list[str | int | float | bool | None]],
+    source_question: str | None = None,
+    current_dashboard: dict[str, Any] | None = None,
+):
+    dashboard = generate_dashboard_spec(
+        question=question,
+        columns=columns,
+        rows=rows,
+        source_question=source_question,
+        current_dashboard=current_dashboard,
+    )
+    return {
+        "success": True,
+        "question": question,
+        "dashboard": dashboard,
     }

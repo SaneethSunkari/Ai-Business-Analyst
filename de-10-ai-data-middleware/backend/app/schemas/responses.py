@@ -105,6 +105,19 @@ class QueryResultResponse(BaseModel):
     error: str | None = None
 
 
+class DashboardSpec(BaseModel):
+    view: str
+    title: str | None = None
+    subtitle: str | None = None
+    dimension: str | None = None
+    measure: str | None = None
+    top_n: int | None = None
+    explanation: str | None = None
+    confidence: str | None = None
+    insights: list[str] = Field(default_factory=list)
+    follow_ups: list[str] = Field(default_factory=list)
+
+
 class AskQueryResponse(BaseModel):
     success: bool
     question: str
@@ -112,6 +125,18 @@ class AskQueryResponse(BaseModel):
     columns: list[str] | None = None
     rows: list[list[RowValue]] | None = None
     row_count: int | None = None
+    explanation: str | None = None
+    confidence: str | None = None
+    tables_used: list[str] = Field(default_factory=list)
+    follow_ups: list[str] = Field(default_factory=list)
+    dashboard: DashboardSpec | None = None
+    error: str | None = None
+
+
+class DashboardPlanResponse(BaseModel):
+    success: bool
+    question: str
+    dashboard: DashboardSpec | None = None
     error: str | None = None
 
 

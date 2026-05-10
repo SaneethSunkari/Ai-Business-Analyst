@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Header, HTTPException
+from app.schemas.dashboard import DashboardRefineRequest
 from app.schemas.query import QueryRequest
 from app.schemas.ai_query import AIQueryRequest
-from app.schemas.responses import AskQueryResponse, QueryResultResponse
-from app.services.query_service import execute_sql_query, execute_nl_query
+from app.schemas.responses import AskQueryResponse, DashboardPlanResponse, QueryResultResponse
+from app.services.query_service import execute_sql_query, execute_nl_query, refine_dashboard_plan
 from app.services import connection_registry as registry
 from app.services import auth_service
 
@@ -84,4 +85,21 @@ def ask_query(
         username=params["username"],
         password=params["password"],
         options=params["options"],
+    )
+
+
+@router.post(
+    "/dashboard",
+    response_model=DashboardPlanResponse,
+    response_model_exclude_none=True,
+    summary="Refine Dashboard In Plain English",
+    description="Turns a query result into a stakeholder-friendly dashboard plan, or refines an existing dashboard using plain-English instructions.",
+)
+def refine_dashboard(payload: DashboardRefineRequest) -> DashboardPlanResponse:
+    return refine_dashboard_plan(
+        question=payload.question,
+        columns=payload.columns,
+        rows=payload.rows,
+        source_question=payload.source_question,
+        current_dashboard=payload.current_dashboard,
     )

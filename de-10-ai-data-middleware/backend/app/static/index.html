@@ -430,6 +430,78 @@
       color: var(--muted);
       line-height: 1.55;
     }
+    .dashboard-copilot {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 14px;
+      padding: 14px;
+      border-radius: 12px;
+      background: linear-gradient(180deg, rgba(88,166,255,0.06), rgba(255,255,255,0.02));
+      border: 1px solid rgba(88,166,255,0.12);
+    }
+    .dashboard-copilot-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: baseline;
+      flex-wrap: wrap;
+    }
+    .dashboard-copilot-head strong {
+      font-size: 0.86rem;
+    }
+    .dashboard-copilot-head span {
+      font-size: 0.74rem;
+      color: var(--muted);
+    }
+    .dashboard-copilot-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+    .dashboard-chip-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .dashboard-chip {
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(88,166,255,0.2);
+      background: rgba(88,166,255,0.08);
+      color: var(--text);
+      font-size: 0.74rem;
+      cursor: pointer;
+      transition: border-color var(--tr), background var(--tr);
+    }
+    .dashboard-chip:hover {
+      border-color: var(--accent);
+      background: rgba(88,166,255,0.16);
+    }
+    .dashboard-trust {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .dashboard-trust-card {
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .dashboard-trust-label {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      font-weight: 700;
+      margin-bottom: 7px;
+    }
+    .dashboard-trust-value {
+      font-size: 0.82rem;
+      line-height: 1.55;
+      color: var(--text);
+    }
     .dashboard-kpi {
       background: linear-gradient(180deg, rgba(88,166,255,0.08), rgba(255,255,255,0.02));
       border: 1px solid rgba(88,166,255,0.16);
@@ -2122,7 +2194,12 @@ async function askQuery() {
     if (data.success) {
       const meta = document.getElementById('aiResultMeta');
       meta.style.display = 'flex';
-      meta.innerHTML = `<span>${normalized.rows.length} rows</span><span style="color:var(--muted)">${ms}ms</span>`;
+      meta.innerHTML = `
+        <span>${normalized.rows.length} rows</span>
+        <span style="color:var(--muted)">${ms}ms</span>
+        ${data.confidence ? `<span style="color:var(--accent2)">Confidence: ${escapeHtml(data.confidence)}</span>` : ''}
+        ${data.tables_used?.length ? `<span style="color:var(--muted)">Tables: ${escapeHtml(data.tables_used.join(', '))}</span>` : ''}
+      `;
       document.getElementById('aiTableWrap').innerHTML = renderTable(normalized.columns, normalized.rows, normalized.inferredHeader);
       setDashboardResult({
         source: 'Ask AI',
@@ -2131,6 +2208,11 @@ async function askQuery() {
         columns: normalized.columns,
         rows: normalized.rows,
         row_count: normalized.rows.length,
+        dashboard: data.dashboard || null,
+        explanation: data.explanation || null,
+        confidence: data.confidence || null,
+        tables_used: data.tables_used || [],
+        follow_ups: data.follow_ups || [],
       });
     } else {
       document.getElementById('aiTableWrap').innerHTML = `<div class="error-box">${data.error || 'Unknown error'}</div>`;
@@ -2187,6 +2269,11 @@ async function runSQL() {
         columns: normalized.columns,
         rows: normalized.rows,
         row_count: normalized.rows.length,
+        dashboard: null,
+        explanation: null,
+        confidence: null,
+        tables_used: [],
+        follow_ups: [],
       });
     } else {
       document.getElementById('sqlTableWrap').innerHTML = `<div class="error-box">${data.error || 'Unknown error'}</div>`;
@@ -2212,6 +2299,63 @@ function clearSQL() { document.getElementById('sqlInput').value = ''; }
 
 function refreshDashboard() {
   renderDashboard();
+}
+
+async function runDashboardCopilot(prefilledPrompt = null) {
+  if (!dashboardLastResult?.columns?.length) {
+    toast('Run Ask AI or SQL Runner first');
+    return;
+  }
+
+  const input = document.getElementById('dashboardPrompt');
+  const question = String(prefilledPrompt || input?.value || '').trim();
+  if (!question) {
+    toast('Describe the dashboard you want');
+    return;
+  }
+
+  const btn = document.getElementById('dashboardCopilotBtn');
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>';
+  }
+
+  try {
+    const res = await window.middlewareAuth.request(`${API}/query/dashboard`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        question,
+        source_question: dashboardLastResult.title,
+        columns: dashboardLastResult.columns,
+        rows: dashboardLastResult.rows.slice(0, 150),
+        current_dashboard: dashboardLastResult.dashboard || null,
+      }),
+    });
+    const data = await res.json();
+    if (!data.success || !data.dashboard) throw new Error(data.error || 'Failed to create dashboard');
+
+    dashboardLastResult.dashboard = data.dashboard;
+    dashboardLastResult.explanation = data.dashboard.explanation || dashboardLastResult.explanation;
+    dashboardLastResult.confidence = data.dashboard.confidence || dashboardLastResult.confidence;
+    dashboardLastResult.follow_ups = data.dashboard.follow_ups || dashboardLastResult.follow_ups || [];
+    dashboardPrefs = {
+      view: data.dashboard.view || 'auto',
+      dimension: data.dashboard.dimension || '',
+      measure: data.dashboard.measure || '',
+      topN: data.dashboard.top_n || dashboardPrefs?.topN || 8,
+    };
+    renderDashboard();
+    if (input && !prefilledPrompt) input.value = '';
+    toast('Dashboard updated');
+  } catch (error) {
+    toast(error.message || 'Failed to update dashboard');
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = 'Create dashboard';
+    }
+  }
 }
 
 function setDashboardResult(result) {
@@ -2240,6 +2384,8 @@ function renderDashboard() {
   label.textContent = `${dashboardLastResult.source} · ${dashboardLastResult.row_count} rows`;
 
   body.innerHTML = `
+    ${renderDashboardCopilot(dashboard)}
+    ${renderDashboardTrust(dashboard)}
     ${renderDashboardToolbar(dashboardLastResult, dashboard.dashboardOptions)}
     <div class="dashboard-grid">
       ${dashboard.kpis.map((kpi) => `
@@ -2288,6 +2434,46 @@ function renderDashboard() {
             </div>
           </div>
         </div>
+      </div>
+    </div>`;
+}
+
+function renderDashboardCopilot(dashboard) {
+  const followUps = dashboard.followUps || [];
+  return `
+    <div class="dashboard-copilot">
+      <div class="dashboard-copilot-head">
+        <strong>Dashboard AI</strong>
+        <span>Use plain English to reshape the dashboard for stakeholders.</span>
+      </div>
+      <textarea id="dashboardPrompt" class="sql-editor" rows="3" placeholder="Make this a bar chart by region, show only top 5, or explain the biggest change."></textarea>
+      <div class="dashboard-copilot-actions">
+        <button class="btn btn-ghost btn-sm" type="button" onclick="clearDashboardPrompt()">Clear</button>
+        <button class="btn btn-primary btn-sm" id="dashboardCopilotBtn" type="button" onclick="runDashboardCopilot()">Create dashboard</button>
+      </div>
+      ${followUps.length ? `
+        <div class="dashboard-chip-row">
+          ${followUps.map((item) => `<button class="dashboard-chip" type="button" onclick='runDashboardCopilot(${escapeJsString(item)})'>${escapeHtml(item)}</button>`).join('')}
+        </div>
+      ` : ''}
+    </div>`;
+}
+
+function renderDashboardTrust(dashboard) {
+  const tables = dashboardLastResult.tables_used || [];
+  return `
+    <div class="dashboard-trust">
+      <div class="dashboard-trust-card">
+        <div class="dashboard-trust-label">AI explanation</div>
+        <div class="dashboard-trust-value">${escapeHtml(dashboard.explanation || dashboard.note || 'Dashboard generated from the latest verified query result.')}</div>
+      </div>
+      <div class="dashboard-trust-card">
+        <div class="dashboard-trust-label">Confidence</div>
+        <div class="dashboard-trust-value">${escapeHtml((dashboard.confidence || dashboardLastResult.confidence || 'medium').toUpperCase())}</div>
+      </div>
+      <div class="dashboard-trust-card">
+        <div class="dashboard-trust-label">Tables used</div>
+        <div class="dashboard-trust-value">${tables.length ? escapeHtml(tables.join(', ')) : 'Result-driven dashboard from the current dataset'}</div>
       </div>
     </div>`;
 }
@@ -2346,16 +2532,22 @@ function updateDashboardPref(key, value) {
   renderDashboard();
 }
 
+function clearDashboardPrompt() {
+  const input = document.getElementById('dashboardPrompt');
+  if (input) input.value = '';
+}
+
 function createDefaultDashboardPrefs(result) {
+  const dashboard = result.dashboard || {};
   const profiles = getColumnProfiles(result.columns || [], result.rows || []);
   const numericColumns = profiles.filter((profile) => profile.kind === 'numeric');
   const dateColumns = profiles.filter((profile) => profile.kind === 'date');
   const categoryColumns = profiles.filter((profile) => profile.kind === 'category');
   return {
-    view: 'auto',
-    dimension: (dateColumns[0] || categoryColumns[0] || {}).name || '',
-    measure: (numericColumns[0] || {}).name || '',
-    topN: 8,
+    view: dashboard.view || 'auto',
+    dimension: dashboard.dimension || (dateColumns[0] || categoryColumns[0] || {}).name || '',
+    measure: dashboard.measure || (numericColumns[0] || {}).name || '',
+    topN: dashboard.top_n || 8,
   };
 }
 
@@ -2364,6 +2556,7 @@ function getColumnProfiles(columns, rows) {
 }
 
 function buildDashboardModel(result, prefs = null) {
+  const aiDashboard = result.dashboard || {};
   const columns = result.columns || [];
   const rows = result.rows || [];
   const profiles = getColumnProfiles(columns, rows);
@@ -2407,11 +2600,11 @@ function buildDashboardModel(result, prefs = null) {
 
   let chart;
   let chartKindLabel = 'Summary';
-  let chartTitle = 'Visual summary';
-  let chartSubtitle = 'Auto-generated from the latest result';
+  let chartTitle = aiDashboard.title || 'Visual summary';
+  let chartSubtitle = aiDashboard.subtitle || 'Auto-generated from the latest result';
   let insights = [];
   let legend = [];
-  let note = 'Use Ask AI for business questions and SQL Runner for direct control. The dashboard automatically chooses a simple presentation from the returned rows.';
+  let note = aiDashboard.explanation || 'Use Ask AI for business questions and SQL Runner for direct control. The dashboard automatically chooses a simple presentation from the returned rows.';
   const dashboardOptions = {
     dimensions: [...dateColumns, ...categoryColumns],
     measures: numericColumns,
@@ -2428,7 +2621,20 @@ function buildDashboardModel(result, prefs = null) {
       'Use Ask AI to refine the question into a metric + grouping if you want a stronger visual.',
     ];
     legend = ['Showing the same result set with a stakeholder-friendly wrapper'];
-    return { kpis: baseKpis.slice(0, 4), chart, chartKindLabel, chartTitle, chartSubtitle, insights, legend, note, dashboardOptions };
+    return {
+      kpis: baseKpis.slice(0, 4),
+      chart,
+      chartKindLabel,
+      chartTitle,
+      chartSubtitle,
+      insights,
+      legend,
+      note,
+      dashboardOptions,
+      followUps: aiDashboard.follow_ups || result.follow_ups || [],
+      confidence: aiDashboard.confidence || result.confidence || 'medium',
+      explanation: aiDashboard.explanation || note,
+    };
   }
 
   if (prefs?.view === 'kpi') {
@@ -2442,7 +2648,20 @@ function buildDashboardModel(result, prefs = null) {
       'This is best for totals, counts, averages, and single-row summaries.',
     ];
     legend = ['KPI mode hides the chart and focuses on headline numbers'];
-    return { kpis: baseKpis.slice(0, 4), chart, chartKindLabel, chartTitle, chartSubtitle, insights, legend, note, dashboardOptions };
+    return {
+      kpis: baseKpis.slice(0, 4),
+      chart,
+      chartKindLabel,
+      chartTitle,
+      chartSubtitle,
+      insights,
+      legend,
+      note,
+      dashboardOptions,
+      followUps: aiDashboard.follow_ups || result.follow_ups || [],
+      confidence: aiDashboard.confidence || result.confidence || 'medium',
+      explanation: aiDashboard.explanation || note,
+    };
   }
 
   if ((prefs?.view === 'line' && dimensionProfile && measureProfile) || (!prefs?.view || prefs?.view === 'auto') && dateColumns.length && numericColumns.length) {
@@ -2531,12 +2750,15 @@ function buildDashboardModel(result, prefs = null) {
     kpis: baseKpis.slice(0, 4),
     chart,
     chartKindLabel,
-    chartTitle,
-    chartSubtitle,
-    insights: insights.length ? insights : ['The latest result is available, but there was not enough structured data to derive a stronger narrative yet.'],
+    chartTitle: aiDashboard.title || chartTitle,
+    chartSubtitle: aiDashboard.subtitle || chartSubtitle,
+    insights: (aiDashboard.insights && aiDashboard.insights.length ? aiDashboard.insights : insights).length ? (aiDashboard.insights && aiDashboard.insights.length ? aiDashboard.insights : insights) : ['The latest result is available, but there was not enough structured data to derive a stronger narrative yet.'],
     legend,
-    note,
+    note: aiDashboard.explanation || note,
     dashboardOptions,
+    followUps: aiDashboard.follow_ups || result.follow_ups || [],
+    confidence: aiDashboard.confidence || result.confidence || 'medium',
+    explanation: aiDashboard.explanation || note,
   };
 }
 
@@ -2851,6 +3073,10 @@ function escapeHtml(value) {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
+}
+
+function escapeJsString(value) {
+  return JSON.stringify(String(value));
 }
 
 // ── TOAST ──
