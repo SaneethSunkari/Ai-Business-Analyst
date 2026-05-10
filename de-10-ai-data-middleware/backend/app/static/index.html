@@ -401,6 +401,148 @@
     }
     .tab-panel { display: none; flex-direction: column; gap: 16px; }
     .tab-panel.active { display: flex; }
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+    }
+    .dashboard-kpi {
+      background: linear-gradient(180deg, rgba(88,166,255,0.08), rgba(255,255,255,0.02));
+      border: 1px solid rgba(88,166,255,0.16);
+      border-radius: 12px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-height: 108px;
+    }
+    .dashboard-kpi-label {
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+    }
+    .dashboard-kpi-value {
+      font-size: 1.7rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      line-height: 1.1;
+    }
+    .dashboard-kpi-meta {
+      font-size: 0.76rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .dashboard-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.85fr);
+      gap: 14px;
+      align-items: start;
+    }
+    .dashboard-chart-card,
+    .dashboard-insight-card,
+    .dashboard-meta-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+    }
+    .dashboard-card-title {
+      font-size: 0.86rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+    .dashboard-card-subtitle {
+      font-size: 0.74rem;
+      color: var(--muted);
+      margin-top: -4px;
+      margin-bottom: 10px;
+    }
+    .dashboard-chart-frame {
+      width: 100%;
+      overflow: hidden;
+      border-radius: 10px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border: 1px solid rgba(255,255,255,0.04);
+      padding: 12px;
+    }
+    .dashboard-chart-svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .dashboard-legend {
+      margin-top: 10px;
+      font-size: 0.73rem;
+      color: var(--muted);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .dashboard-bullet {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .dashboard-bullet::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 3px rgba(88,166,255,0.12);
+    }
+    .dashboard-insight-list {
+      display: grid;
+      gap: 10px;
+    }
+    .dashboard-insight {
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: rgba(88,166,255,0.06);
+      border: 1px solid rgba(88,166,255,0.1);
+      font-size: 0.78rem;
+      line-height: 1.55;
+      color: var(--text);
+    }
+    .dashboard-meta-list {
+      display: grid;
+      gap: 9px;
+    }
+    .dashboard-meta-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 0.78rem;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .dashboard-meta-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+    .dashboard-meta-key {
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-size: 0.68rem;
+      font-weight: 700;
+    }
+    .dashboard-meta-value {
+      color: var(--text);
+      text-align: right;
+      max-width: 60%;
+      word-break: break-word;
+    }
+    .dashboard-note {
+      font-size: 0.75rem;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-top: 12px;
+    }
 
     /* launchpad */
     .hero-panel {
@@ -896,6 +1038,7 @@
   <nav class="nav-tabs">
     <button class="nav-tab active" id="ntab-ask"    onclick="switchTab('ask')">Ask AI</button>
     <button class="nav-tab"        id="ntab-sql"    onclick="switchTab('sql')">SQL Runner</button>
+    <button class="nav-tab"        id="ntab-dashboard" onclick="switchTab('dashboard')">Dashboard</button>
     <button class="nav-tab"        id="ntab-schema" onclick="switchTab('schema')">Schema</button>
     <button class="nav-tab"        id="ntab-agent"  onclick="switchTab('agent')">Agent Tools</button>
     <button class="nav-tab"        id="ntab-ops"    onclick="switchTab('ops')">Ops</button>
@@ -1101,6 +1244,25 @@
       </div>
     </div>
 
+    <!-- DASHBOARD -->
+    <div class="tab-panel" id="tab-dashboard">
+      <div class="card">
+        <div class="card-header">
+          <span>Dashboard</span>
+          <div style="display:flex;gap:8px;align-items:center">
+            <span style="font-size:0.7rem;color:var(--muted);font-weight:400" id="dashboardSourceLabel">Visual view of the latest result</span>
+            <button class="btn btn-ghost btn-sm" onclick="refreshDashboard()">Refresh</button>
+          </div>
+        </div>
+        <div class="card-body" id="dashboardBody">
+          <div class="empty-state">
+            <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19h16"/><rect x="5" y="10" width="3" height="7"/><rect x="10.5" y="6" width="3" height="11"/><rect x="16" y="3" width="3" height="14"/></svg>
+            <p>Run Ask AI or SQL Runner first. The dashboard view will turn the latest result into KPI cards and a visual summary.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- SCHEMA -->
     <div class="tab-panel" id="tab-schema">
       <div class="card">
@@ -1280,6 +1442,7 @@ let connected = false;
 let schemaData = null;
 let aiLastResult = null;
 let sqlLastResult = null;
+let dashboardLastResult = null;
 let activeConnId = null;  // currently selected saved connection
 let databaseCatalog = {};
 let savedConnectionsById = {};
@@ -1490,6 +1653,7 @@ function switchTab(id) {
   const panel = document.getElementById('tab-' + id);
   if (btn) btn.classList.add('active');
   if (panel) panel.classList.add('active');
+  if (id === 'dashboard') renderDashboard();
 }
 
 // ── DB TYPE ──
@@ -1935,6 +2099,14 @@ async function askQuery() {
       meta.style.display = 'flex';
       meta.innerHTML = `<span>${normalized.rows.length} rows</span><span style="color:var(--muted)">${ms}ms</span>`;
       document.getElementById('aiTableWrap').innerHTML = renderTable(normalized.columns, normalized.rows, normalized.inferredHeader);
+      setDashboardResult({
+        source: 'Ask AI',
+        title: q,
+        sql: data.sql,
+        columns: normalized.columns,
+        rows: normalized.rows,
+        row_count: normalized.rows.length,
+      });
     } else {
       document.getElementById('aiTableWrap').innerHTML = `<div class="error-box">${data.error || 'Unknown error'}</div>`;
     }
@@ -1983,6 +2155,14 @@ async function runSQL() {
       meta.style.display = 'flex';
       meta.innerHTML = `<span>${normalized.rows.length} rows</span><span style="color:var(--muted)">${ms}ms</span>`;
       document.getElementById('sqlTableWrap').innerHTML = renderTable(normalized.columns, normalized.rows, normalized.inferredHeader);
+      setDashboardResult({
+        source: 'SQL Runner',
+        title: 'Custom SQL result',
+        sql,
+        columns: normalized.columns,
+        rows: normalized.rows,
+        row_count: normalized.rows.length,
+      });
     } else {
       document.getElementById('sqlTableWrap').innerHTML = `<div class="error-box">${data.error || 'Unknown error'}</div>`;
     }
@@ -2004,6 +2184,372 @@ function clearAI() {
 }
 
 function clearSQL() { document.getElementById('sqlInput').value = ''; }
+
+function refreshDashboard() {
+  renderDashboard();
+}
+
+function setDashboardResult(result) {
+  dashboardLastResult = result;
+  if (document.getElementById('tab-dashboard').classList.contains('active')) {
+    renderDashboard();
+  }
+}
+
+function renderDashboard() {
+  const body = document.getElementById('dashboardBody');
+  const label = document.getElementById('dashboardSourceLabel');
+
+  if (!dashboardLastResult?.columns?.length) {
+    label.textContent = 'Visual view of the latest result';
+    body.innerHTML = `
+      <div class="empty-state">
+        <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19h16"/><rect x="5" y="10" width="3" height="7"/><rect x="10.5" y="6" width="3" height="11"/><rect x="16" y="3" width="3" height="14"/></svg>
+        <p>Run Ask AI or SQL Runner first. The dashboard view will turn the latest result into KPI cards and a visual summary.</p>
+      </div>`;
+    return;
+  }
+
+  const dashboard = buildDashboardModel(dashboardLastResult);
+  label.textContent = `${dashboardLastResult.source} · ${dashboardLastResult.row_count} rows`;
+
+  body.innerHTML = `
+    <div class="dashboard-grid">
+      ${dashboard.kpis.map((kpi) => `
+        <div class="dashboard-kpi">
+          <div class="dashboard-kpi-label">${escapeHtml(kpi.label)}</div>
+          <div class="dashboard-kpi-value">${escapeHtml(kpi.value)}</div>
+          <div class="dashboard-kpi-meta">${escapeHtml(kpi.meta)}</div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="dashboard-layout">
+      <div class="dashboard-chart-card">
+        <div class="dashboard-card-title">${escapeHtml(dashboard.chartTitle)}</div>
+        <div class="dashboard-card-subtitle">${escapeHtml(dashboard.chartSubtitle)}</div>
+        <div class="dashboard-chart-frame">${renderDashboardChart(dashboard.chart)}</div>
+        <div class="dashboard-legend">
+          ${dashboard.legend.map((item) => `<span class="dashboard-bullet">${escapeHtml(item)}</span>`).join('')}
+        </div>
+        <div class="dashboard-note">${escapeHtml(dashboard.note)}</div>
+      </div>
+      <div style="display:grid;gap:14px">
+        <div class="dashboard-insight-card">
+          <div class="dashboard-card-title">Business insights</div>
+          <div class="dashboard-insight-list">
+            ${dashboard.insights.map((item) => `<div class="dashboard-insight">${escapeHtml(item)}</div>`).join('')}
+          </div>
+        </div>
+        <div class="dashboard-meta-card">
+          <div class="dashboard-card-title">Dashboard context</div>
+          <div class="dashboard-meta-list">
+            <div class="dashboard-meta-item">
+              <span class="dashboard-meta-key">Source</span>
+              <span class="dashboard-meta-value">${escapeHtml(dashboardLastResult.source)}</span>
+            </div>
+            <div class="dashboard-meta-item">
+              <span class="dashboard-meta-key">Rows used</span>
+              <span class="dashboard-meta-value">${escapeHtml(String(dashboardLastResult.row_count))}</span>
+            </div>
+            <div class="dashboard-meta-item">
+              <span class="dashboard-meta-key">Primary view</span>
+              <span class="dashboard-meta-value">${escapeHtml(dashboard.chartKindLabel)}</span>
+            </div>
+            <div class="dashboard-meta-item">
+              <span class="dashboard-meta-key">Question</span>
+              <span class="dashboard-meta-value">${escapeHtml(dashboardLastResult.title)}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function buildDashboardModel(result) {
+  const columns = result.columns || [];
+  const rows = result.rows || [];
+  const profiles = columns.map((name, index) => profileColumn(name, rows, index));
+  const numericColumns = profiles.filter((profile) => profile.kind === 'numeric');
+  const dateColumns = profiles.filter((profile) => profile.kind === 'date');
+  const categoryColumns = profiles.filter((profile) => profile.kind === 'category');
+
+  const baseKpis = [
+    {
+      label: 'Rows returned',
+      value: formatCompactNumber(rows.length),
+      meta: `${columns.length} columns in the result set`,
+    },
+  ];
+
+  if (rows.length === 1) {
+    const row = rows[0];
+    numericColumns.slice(0, 3).forEach((profile) => {
+      baseKpis.push({
+        label: profile.name,
+        value: formatSmartValue(row[profile.index]),
+        meta: 'Single-row answer surfaced as KPI',
+      });
+    });
+  } else if (numericColumns.length) {
+    numericColumns.slice(0, 3).forEach((profile) => {
+      const values = rows.map((row) => toNumber(row[profile.index])).filter((value) => Number.isFinite(value));
+      if (!values.length) return;
+      const total = values.reduce((sum, value) => sum + value, 0);
+      const max = Math.max(...values);
+      baseKpis.push({
+        label: profile.name,
+        value: formatCompactNumber(total),
+        meta: `Max ${formatCompactNumber(max)}`,
+      });
+    });
+  }
+
+  let chart;
+  let chartKindLabel = 'Summary';
+  let chartTitle = 'Visual summary';
+  let chartSubtitle = 'Auto-generated from the latest result';
+  let insights = [];
+  let legend = [];
+  let note = 'Use Ask AI for business questions and SQL Runner for direct control. The dashboard automatically chooses a simple presentation from the returned rows.';
+
+  if (dateColumns.length && numericColumns.length) {
+    const dimension = dateColumns[0];
+    const measure = numericColumns[0];
+    const series = rows
+      .map((row) => ({
+        label: String(row[dimension.index] ?? ''),
+        value: toNumber(row[measure.index]),
+      }))
+      .filter((item) => item.label && Number.isFinite(item.value))
+      .sort((a, b) => String(a.label).localeCompare(String(b.label)));
+    chart = { type: 'line', points: series, dimension: dimension.name, measure: measure.name };
+    chartKindLabel = 'Trend chart';
+    chartTitle = `${measure.name} over ${dimension.name}`;
+    chartSubtitle = 'Best when a time-like field is present in the result';
+    if (series.length) {
+      const last = series[series.length - 1];
+      const first = series[0];
+      insights = [
+        `${measure.name} spans ${series.length} points across ${dimension.name}.`,
+        `The latest visible value is ${formatCompactNumber(last.value)} at ${last.label}.`,
+        `The first visible value is ${formatCompactNumber(first.value)} at ${first.label}.`,
+      ];
+      legend = [`X-axis: ${dimension.name}`, `Y-axis: ${measure.name}`];
+    }
+  } else if (categoryColumns.length && numericColumns.length) {
+    const dimension = categoryColumns[0];
+    const measure = numericColumns[0];
+    const bars = rows
+      .map((row) => ({
+        label: String(row[dimension.index] ?? ''),
+        value: toNumber(row[measure.index]),
+      }))
+      .filter((item) => item.label && Number.isFinite(item.value))
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 8);
+    chart = { type: 'bar', bars, dimension: dimension.name, measure: measure.name };
+    chartKindLabel = 'Ranked comparison';
+    chartTitle = `${measure.name} by ${dimension.name}`;
+    chartSubtitle = 'Top categories from the latest result set';
+    if (bars.length) {
+      const leader = bars[0];
+      const trailer = bars[bars.length - 1];
+      insights = [
+        `${leader.label} leads with ${formatCompactNumber(leader.value)} ${measure.name}.`,
+        `${bars.length} categories are shown in the current comparison.`,
+        `${trailer.label} is the lowest visible category at ${formatCompactNumber(trailer.value)}.`,
+      ];
+      legend = [`Bars ranked by ${measure.name}`, `Dimension: ${dimension.name}`];
+    }
+  } else if (numericColumns.length) {
+    const measure = numericColumns[0];
+    const series = rows
+      .map((row, index) => ({ label: `Row ${index + 1}`, value: toNumber(row[measure.index]) }))
+      .filter((item) => Number.isFinite(item.value))
+      .slice(0, 12);
+    chart = { type: 'line', points: series, dimension: 'Result order', measure: measure.name };
+    chartKindLabel = 'Sequence view';
+    chartTitle = `${measure.name} across returned rows`;
+    chartSubtitle = 'Fallback trend when the result contains a numeric measure but no clear category/time field';
+    if (series.length) {
+      const maxPoint = [...series].sort((a, b) => b.value - a.value)[0];
+      insights = [
+        `${measure.name} varies across ${series.length} visible rows.`,
+        `The highest visible point is ${formatCompactNumber(maxPoint.value)} at ${maxPoint.label}.`,
+        `This fallback chart is useful for spotting outliers quickly.`,
+      ];
+      legend = [`Measure: ${measure.name}`, 'X-axis follows the returned row order'];
+    }
+  } else {
+    chart = { type: 'empty' };
+    chartKindLabel = 'Table-first result';
+    chartTitle = 'No strong chart candidate found';
+    chartSubtitle = 'The current result is better suited to table review than charting';
+    insights = [
+      'This result does not expose a clear numeric measure for charting.',
+      'Stakeholders can still review the returned table and refine the question.',
+      'A follow-up that asks for totals, trends, or rankings will produce a stronger dashboard.',
+    ];
+    legend = ['Try asking for revenue, counts, totals, trends, or top/bottom comparisons'];
+    note = 'This tab prefers clarity over forcing a weak chart. Ask for a metric plus a category or time field to get a stronger dashboard.';
+  }
+
+  return {
+    kpis: baseKpis.slice(0, 4),
+    chart,
+    chartKindLabel,
+    chartTitle,
+    chartSubtitle,
+    insights: insights.length ? insights : ['The latest result is available, but there was not enough structured data to derive a stronger narrative yet.'],
+    legend,
+    note,
+  };
+}
+
+function profileColumn(name, rows, index) {
+  const values = rows.map((row) => row[index]).filter((value) => value !== null && value !== undefined && String(value).trim() !== '');
+  if (!values.length) return { name, index, kind: 'category' };
+
+  const numericCount = values.filter((value) => isNumericValue(value)).length;
+  const dateCount = values.filter((value) => isDateValue(value)).length;
+
+  if (numericCount / values.length >= 0.85) return { name, index, kind: 'numeric' };
+  if (dateCount / values.length >= 0.85) return { name, index, kind: 'date' };
+  return { name, index, kind: 'category' };
+}
+
+function isNumericValue(value) {
+  if (typeof value === 'number') return Number.isFinite(value);
+  if (typeof value !== 'string') return false;
+  const text = value.trim().replace(/,/g, '');
+  if (!text) return false;
+  return /^-?\d+(\.\d+)?$/.test(text);
+}
+
+function isDateValue(value) {
+  if (value instanceof Date) return true;
+  if (typeof value !== 'string') return false;
+  const text = value.trim();
+  if (!text) return false;
+  if (!/^\d{4}-\d{2}-\d{2}/.test(text) && !/^\d{1,2}\/\d{1,2}\/\d{2,4}/.test(text)) return false;
+  return !Number.isNaN(Date.parse(text));
+}
+
+function toNumber(value) {
+  if (typeof value === 'number') return value;
+  if (typeof value === 'string') return Number(value.replace(/,/g, '').trim());
+  return NaN;
+}
+
+function formatCompactNumber(value) {
+  const num = Number(value);
+  if (!Number.isFinite(num)) return '—';
+  return new Intl.NumberFormat(undefined, { notation: Math.abs(num) >= 1000 ? 'compact' : 'standard', maximumFractionDigits: 1 }).format(num);
+}
+
+function formatSmartValue(value) {
+  if (value === null || value === undefined || value === '') return '—';
+  return isNumericValue(value) ? formatCompactNumber(toNumber(value)) : String(value);
+}
+
+function renderDashboardChart(chart) {
+  if (!chart || chart.type === 'empty') {
+    return `<div class="empty-state"><p>No strong chart could be generated from the current result. The table is still available in Ask AI or SQL Runner.</p></div>`;
+  }
+  if (chart.type === 'bar') return renderBarChart(chart);
+  if (chart.type === 'line') return renderLineChart(chart);
+  return `<div class="empty-state"><p>Chart type not supported yet.</p></div>`;
+}
+
+function renderBarChart(chart) {
+  const width = 760;
+  const height = 320;
+  const left = 150;
+  const right = 24;
+  const top = 20;
+  const bottom = 24;
+  const plotWidth = width - left - right;
+  const slotHeight = (height - top - bottom) / Math.max(chart.bars.length, 1);
+  const max = Math.max(...chart.bars.map((bar) => bar.value), 1);
+
+  const bars = chart.bars.map((bar, index) => {
+    const y = top + index * slotHeight + 6;
+    const barHeight = Math.max(slotHeight - 14, 16);
+    const barWidth = Math.max((bar.value / max) * plotWidth, 2);
+    const label = escapeHtml(truncateLabel(bar.label, 22));
+    return `
+      <text x="${left - 10}" y="${y + barHeight / 2 + 4}" text-anchor="end" fill="#8b949e" font-size="12">${label}</text>
+      <rect x="${left}" y="${y}" width="${barWidth}" height="${barHeight}" rx="8" fill="url(#barGrad)" />
+      <text x="${left + barWidth + 8}" y="${y + barHeight / 2 + 4}" fill="#e6edf3" font-size="12">${escapeHtml(formatCompactNumber(bar.value))}</text>
+    `;
+  }).join('');
+
+  return `
+    <svg class="dashboard-chart-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(chart.measure)} by ${escapeHtml(chart.dimension)}">
+      <defs>
+        <linearGradient id="barGrad" x1="0%" x2="100%">
+          <stop offset="0%" stop-color="#58a6ff"/>
+          <stop offset="100%" stop-color="#3fb950"/>
+        </linearGradient>
+      </defs>
+      <rect x="0" y="0" width="${width}" height="${height}" rx="14" fill="rgba(255,255,255,0.01)"/>
+      ${bars}
+    </svg>`;
+}
+
+function renderLineChart(chart) {
+  const width = 760;
+  const height = 320;
+  const left = 56;
+  const right = 20;
+  const top = 18;
+  const bottom = 44;
+  const plotWidth = width - left - right;
+  const plotHeight = height - top - bottom;
+  const max = Math.max(...chart.points.map((point) => point.value), 1);
+  const min = Math.min(...chart.points.map((point) => point.value), 0);
+  const range = Math.max(max - min, 1);
+  const points = chart.points.map((point, index) => {
+    const x = left + (chart.points.length === 1 ? plotWidth / 2 : (index / (chart.points.length - 1)) * plotWidth);
+    const y = top + plotHeight - (((point.value - min) / range) * plotHeight);
+    return { ...point, x, y };
+  });
+  const polyline = points.map((point) => `${point.x},${point.y}`).join(' ');
+  const yTicks = Array.from({ length: 4 }, (_, index) => {
+    const ratio = index / 3;
+    const value = max - ratio * range;
+    const y = top + ratio * plotHeight;
+    return `
+      <line x1="${left}" y1="${y}" x2="${width - right}" y2="${y}" stroke="rgba(255,255,255,0.08)" stroke-dasharray="3 6"/>
+      <text x="${left - 10}" y="${y + 4}" text-anchor="end" fill="#8b949e" font-size="11">${escapeHtml(formatCompactNumber(value))}</text>
+    `;
+  }).join('');
+  const xLabels = points.filter((_, index) => index === 0 || index === points.length - 1 || index === Math.floor(points.length / 2)).map((point) => `
+    <text x="${point.x}" y="${height - 14}" text-anchor="middle" fill="#8b949e" font-size="11">${escapeHtml(truncateLabel(point.label, 16))}</text>
+  `).join('');
+  const circles = points.map((point) => `
+    <circle cx="${point.x}" cy="${point.y}" r="4.5" fill="#58a6ff" stroke="#08111c" stroke-width="2"/>
+  `).join('');
+
+  return `
+    <svg class="dashboard-chart-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(chart.measure)} over ${escapeHtml(chart.dimension)}">
+      <defs>
+        <linearGradient id="lineFill" x1="0%" x2="0%" y1="0%" y2="100%">
+          <stop offset="0%" stop-color="rgba(88,166,255,0.35)"/>
+          <stop offset="100%" stop-color="rgba(88,166,255,0.02)"/>
+        </linearGradient>
+      </defs>
+      <rect x="0" y="0" width="${width}" height="${height}" rx="14" fill="rgba(255,255,255,0.01)"/>
+      ${yTicks}
+      <polyline fill="none" stroke="#58a6ff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="${polyline}"/>
+      ${circles}
+      ${xLabels}
+    </svg>`;
+}
+
+function truncateLabel(label, max) {
+  return label.length > max ? `${label.slice(0, max - 1)}…` : label;
+}
 
 // ── TABLE RENDERER ──
 function isSequentialGenericColumns(columns) {
