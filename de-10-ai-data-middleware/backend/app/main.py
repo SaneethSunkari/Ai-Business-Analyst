@@ -1,15 +1,18 @@
 import atexit
+import json
 import os
 import subprocess
 import sys
 from pathlib import Path
+from typing import Any
 
 from fastapi import FastAPI
-from fastapi import Request
+from fastapi import Header, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, RedirectResponse
+from fastapi.responses import FileResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 
+from app.api.routes import ops as ops_route_module
 from app.api.routes.auth import router as auth_router
 from app.api.routes.connections import router as connections_router
 from app.api.routes.health import router as health_router
@@ -18,7 +21,8 @@ from app.api.routes.query import router as query_router
 from app.api.routes.schema import router as schema_router
 from app.api.routes.tools import router as tools_router
 from app.schemas.responses import RootResponse
-from app.services import auth_service
+from app.services import auth_service, query_service
+from app.services.dashboard_service import generate_dashboard_spec
 
 
 _tokenfirewall_process: subprocess.Popen[str] | None = None
@@ -185,6 +189,278 @@ app.include_router(tools_router, prefix="/tools", tags=["tools"])
 
 _static_dir = os.path.join(os.path.dirname(__file__), "static")
 app.mount("/static", StaticFiles(directory=_static_dir), name="static")
+
+_demo_data_dir = Path(__file__).resolve().parent / "demo_data"
+_demo_catalog = [
+    {
+        "id": "finance_demo",
+        "name": "Finance Demo",
+        "description": "General ledger, accounts, departments, and transaction activity for analytics validation.",
+        "database_file": "finance.db",
+        "tables": ["accounts", "transactions", "cost_centers", "departments"],
+        "sample_questions": [
+            "Total expenses by department this year",
+            "Top 10 accounts by balance",
+            "Monthly transaction volume last 6 months",
+        ],
+    },
+    {
+        "id": "retail_demo",
+        "name": "Retail Demo",
+        "description": "Products, customers, orders, and inventory for commerce analytics validation.",
+        "database_file": "retail.db",
+        "tables": ["products", "orders", "order_items", "customers", "inventory"],
+        "sample_questions": [
+            "Top 20 products by revenue",
+            "Return rate by category",
+            "Customer count by region",
+        ],
+    },
+    {
+        "id": "hr_demo",
+        "name": "HR Demo",
+        "description": "Employees, departments, salaries, and performance reviews for people analytics validation.",
+        "database_file": "hr.db",
+        "tables": ["employees", "departments", "salaries", "performance_reviews"],
+        "sample_questions": [
+            "Average salary by department",
+            "Headcount by location",
+            "Top performers by review score",
+        ],
+    },
+    {
+        "id": "saas_demo",
+        "name": "SaaS Demo",
+        "description": "Users, plans, subscriptions, invoices, and product events for recurring-revenue analytics validation.",
+        "database_file": "saas.db",
+        "tables": ["users", "subscriptions", "invoices", "events", "plans"],
+        "sample_questions": [
+            "Monthly recurring revenue by plan",
+            "Active users last 30 days",
+            "Churn count by month",
+        ],
+    },
+]
+
+
+def _read_access_token(authorization: str | None, request: Request) -> str | None:
+    if authorization:
+        parts = authorization.strip().split(" ", 1)
+        if len(parts) == 2 and parts[0].lower() == "bearer" and parts[1].strip():
+            return parts[1].strip()
+    return request.cookies.get("adm_access_token")
+
+
+def _require_authenticated_context(request: Request, authorization: str | None):
+    access_token = _read_access_token(authorization, request)
+    if not access_token:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    try:
+        context = auth_service.get_auth_context_from_token(access_token)
+    except ValueError as exc:
+        raise HTTPException(status_code=401, detail=str(exc)) from exc
+    if not context:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    return context
+
+
+def _load_redis_client() -> object | None:
+    redis_url = os.getenv("REDIS_URL", "redis://localhost:6379").strip() or "redis://localhost:6379"
+    try:
+        import redis  # type: ignore
+
+        client = redis.Redis.from_url(redis_url, decode_responses=True)
+        client.ping()
+        app.state.redis_client = client
+        app.state.redis_available = True
+        query_service.configure_query_cache(client, backend_name="redis")
+        return client
+    except Exception:
+        app.state.redis_client = None
+        app.state.redis_available = False
+        query_service.configure_query_cache(None, backend_name="memory")
+        return None
+
+
+def _wrap_ops_status_builder() -> None:
+    original_builder = ops_route_module.build_ops_status
+
+    def _patched_build_ops_status(*args, **kwargs):
+        payload = original_builder(*args, **kwargs)
+        payload["query_cache"] = query_service.get_query_cache_stats()
+        gateway_usage = payload.get("gateway_usage") or {}
+        if isinstance(gateway_usage, dict):
+            cache_stats = query_service.get_query_cache_stats()
+            gateway_usage.setdefault("cache_hits", cache_stats["cache_hits"])
+            gateway_usage.setdefault("total_requests", cache_stats["total_requests"])
+            payload["gateway_usage"] = gateway_usage
+        return payload
+
+    ops_route_module.build_ops_status = _patched_build_ops_status
+
+
+def _build_demo_source_payload() -> list[dict[str, Any]]:
+    sources: list[dict[str, Any]] = []
+    for demo in _demo_catalog:
+        database_path = (_demo_data_dir / demo["database_file"]).resolve()
+        sources.append(
+            {
+                "id": demo["id"],
+                "name": demo["name"],
+                "description": demo["description"],
+                "source_kind": "database",
+                "engine_key": "sqlite",
+                "db_type": "sqlite",
+                "badge": "SQLite",
+                "database": str(database_path),
+                "host": "",
+                "port": None,
+                "username": "",
+                "password": "",
+                "options": {},
+                "tables": demo["tables"],
+                "sample_questions": demo["sample_questions"],
+                "connect_payload": {
+                    "name": demo["name"],
+                    "source_kind": "database",
+                    "engine_key": "sqlite",
+                    "db_type": "sqlite",
+                    "database": str(database_path),
+                    "host": "",
+                    "port": None,
+                    "username": "",
+                    "password": "",
+                    "options": {},
+                },
+            }
+        )
+    return sources
+
+
+@app.on_event("startup")
+def initialize_runtime_cache() -> None:
+    _wrap_ops_status_builder()
+    _load_redis_client()
+
+
+@app.on_event("shutdown")
+def shutdown_runtime_cache() -> None:
+    redis_client = getattr(app.state, "redis_client", None)
+    if redis_client is None:
+        return
+    close = getattr(redis_client, "close", None)
+    if callable(close):
+        close()
+
+
+async def _read_response_body(response: Response) -> bytes:
+    if hasattr(response, "body") and response.body is not None:
+        return response.body
+    chunks = [chunk async for chunk in response.body_iterator]
+    return b"".join(chunks)
+
+
+@app.middleware("http")
+async def inject_runtime_cache_metadata(request: Request, call_next):
+    response = await call_next(request)
+    if request.url.path not in {"/query/ask", "/ops/status"}:
+        return response
+    content_type = response.headers.get("content-type", "")
+    if "application/json" not in content_type.lower():
+        return response
+
+    body = await _read_response_body(response)
+    try:
+        payload = json.loads(body.decode("utf-8"))
+    except Exception:
+        return Response(
+            content=body,
+            status_code=response.status_code,
+            headers={key: value for key, value in response.headers.items() if key.lower() != "content-length"},
+            media_type=response.media_type,
+            background=response.background,
+        )
+
+    if request.url.path == "/query/ask" and isinstance(payload, dict):
+        payload.update(query_service.get_last_query_cache_metadata())
+    if request.url.path == "/ops/status" and isinstance(payload, dict):
+        payload["query_cache"] = query_service.get_query_cache_stats()
+
+    return Response(
+        content=json.dumps(payload),
+        status_code=response.status_code,
+        headers={key: value for key, value in response.headers.items() if key.lower() != "content-length"},
+        media_type="application/json",
+        background=response.background,
+    )
+
+
+@app.delete("/cache/all", summary="Clear All Query Cache")
+def clear_all_query_cache(
+    request: Request,
+    authorization: str | None = Header(None),
+):
+    _require_authenticated_context(request, authorization)
+    return query_service.clear_all_cache()
+
+
+@app.delete("/cache/{connection_id}", summary="Clear Connection Query Cache")
+def clear_connection_query_cache(
+    connection_id: str,
+    request: Request,
+    authorization: str | None = Header(None),
+):
+    _require_authenticated_context(request, authorization)
+    return query_service.clear_connection_cache(connection_id)
+
+
+@app.post("/dashboard/generate", include_in_schema=False)
+def generate_dashboard_plan(
+    payload: dict[str, Any],
+    request: Request,
+    authorization: str | None = Header(None),
+):
+    _require_authenticated_context(request, authorization)
+
+    question = str(payload.get("question") or "").strip()
+    if not question:
+        raise HTTPException(status_code=400, detail="Question is required")
+
+    columns = payload.get("columns") or []
+    rows = payload.get("rows") or []
+    if not isinstance(columns, list) or not isinstance(rows, list):
+        raise HTTPException(status_code=400, detail="Columns and rows must be lists")
+
+    dashboard = generate_dashboard_spec(
+        question=question,
+        columns=[str(column) for column in columns],
+        rows=rows,
+        source_question=payload.get("source_question"),
+        current_dashboard=payload.get("current_dashboard") if isinstance(payload.get("current_dashboard"), dict) else None,
+        schema_metadata=payload.get("schema_metadata") if isinstance(payload.get("schema_metadata"), dict) else None,
+    )
+
+    return {
+        "success": True,
+        "question": question,
+        "dashboard": dashboard,
+        "dashboard_plan": dashboard.get("dashboard_plan", {}),
+        "follow_ups": dashboard.get("follow_ups", []),
+        "summary": dashboard.get("summary"),
+        "confidence": dashboard.get("confidence"),
+    }
+
+
+@app.get(
+    "/demo",
+    summary="List Demo Data Sources",
+    description="Returns pre-configured cross-domain SQLite demo sources that can be connected without entering credentials.",
+)
+def list_demo_sources():
+    return {
+        "success": True,
+        "connections": _build_demo_source_payload(),
+    }
 
 
 @app.get("/ui", include_in_schema=False)

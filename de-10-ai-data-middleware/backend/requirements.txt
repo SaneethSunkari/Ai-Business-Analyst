@@ -21,3 +21,4 @@ trino==0.336.0
 simple-salesforce==1.12.9
 pymongo==4.15.3
 kafka-python==2.2.15
+redis==5.0.1

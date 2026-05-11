@@ -158,6 +158,33 @@ http://localhost:8000/
 
 ---
 
+## Cross-domain demo sources
+
+The repo now includes four prebuilt SQLite validation databases in [`backend/app/demo_data/`](backend/app/demo_data/):
+
+- `finance.db` — accounts, transactions, cost centers, departments
+- `retail.db` — products, orders, order items, customers, inventory
+- `hr.db` — employees, departments, salaries, performance reviews
+- `saas.db` — users, subscriptions, invoices, events, plans
+
+Use the one-click demo catalog endpoint to discover them:
+
+```bash
+curl http://localhost:8000/demo
+```
+
+That endpoint returns preconfigured SQLite connection payloads, absolute database paths, table lists, and sample questions so the UI or any client can connect without entering credentials.
+
+To rebuild the sample databases locally:
+
+```bash
+python backend/app/demo_data/build_demo_databases.py
+```
+
+See [`backend/app/demo_data/README.md`](backend/app/demo_data/README.md) for the full per-database table lists and sample questions.
+
+---
+
 ## Demo database
 
 The Docker PostgreSQL instance ships with **12 CSV-backed healthcare tables**:
@@ -201,6 +228,7 @@ The Docker PostgreSQL instance ships with **12 CSV-backed healthcare tables**:
 
 | Method | Endpoint | Description |
 |---|---|---|
+| `GET` | `/demo` | List pre-configured SQLite demo sources for one-click validation |
 | `POST` | `/connections/test` | Test a connection (inline creds or `connection_id`) |
 | `POST` | `/connections/register` | Save credentials → returns `connection_id` |
 | `GET` | `/connections/` | List all saved connections |

@@ -77,6 +77,14 @@
       color: var(--accent);
       box-shadow: inset 0 0 0 1px rgba(88,166,255,0.14);
     }
+    .nav-tab[disabled] {
+      opacity: 0.46;
+      cursor: not-allowed;
+      pointer-events: auto;
+    }
+    .nav-tab.hidden-dev {
+      display: none;
+    }
     .status-pill {
       display: flex;
       align-items: center;
@@ -393,6 +401,317 @@
       font-size: 0.73rem; padding: 2px 0; color: var(--muted);
     }
     .schema-col-type { color: var(--warn); font-family: monospace; font-size: 0.7rem; }
+    .source-summary-card {
+      display: grid;
+      gap: 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: linear-gradient(180deg, rgba(88,166,255,0.06), rgba(255,255,255,0.01));
+      border-radius: 14px;
+      padding: 14px;
+    }
+    .source-summary-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .source-summary-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.76rem;
+      color: var(--muted);
+    }
+    .source-summary-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--muted);
+    }
+    .source-summary-dot.connected {
+      background: var(--accent2);
+      box-shadow: 0 0 10px rgba(63,185,80,0.65);
+    }
+    .source-summary-name {
+      font-size: 0.96rem;
+      font-weight: 700;
+      color: #f5f7ff;
+    }
+    .source-summary-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      font-size: 0.76rem;
+      color: var(--muted);
+    }
+    .source-summary-sync {
+      font-size: 0.74rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .source-summary-actions {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .source-empty-card {
+      min-height: 210px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      gap: 10px;
+      border-radius: 16px;
+      border: 1px dashed rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.02);
+      padding: 22px 16px;
+      color: var(--muted);
+    }
+    .source-empty-card strong {
+      color: #eef1ff;
+      font-size: 1rem;
+      display: block;
+      margin-bottom: 4px;
+    }
+    .source-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(2,6,12,0.76);
+      backdrop-filter: blur(10px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 28px;
+      z-index: 450;
+    }
+    .source-modal.open {
+      display: flex;
+    }
+    .source-modal-card {
+      width: min(1040px, 100%);
+      max-height: 88vh;
+      overflow: auto;
+      border-radius: 22px;
+      background: #11161f;
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 24px 60px rgba(0,0,0,0.4);
+      padding: 18px;
+      display: grid;
+      gap: 16px;
+    }
+    .source-modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .source-modal-copy {
+      display: grid;
+      gap: 5px;
+    }
+    .source-modal-copy h3 {
+      font-size: 1.05rem;
+      color: #f5f7ff;
+    }
+    .source-modal-copy p {
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+    .source-modal-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 16px;
+      align-items: start;
+    }
+    .source-panel {
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      background: rgba(255,255,255,0.02);
+      padding: 16px;
+    }
+    .source-panel-title {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      font-weight: 700;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .workspace-empty-state {
+      min-height: 52vh;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 24px;
+    }
+    .workspace-empty-card {
+      width: min(680px, 100%);
+      display: grid;
+      gap: 14px;
+      place-items: center;
+      padding: 34px 28px;
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: linear-gradient(180deg, rgba(91,61,245,0.1), rgba(255,255,255,0.02));
+    }
+    .workspace-empty-card h3 {
+      font-size: 1.2rem;
+      color: #f5f7ff;
+    }
+    .workspace-empty-card p {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.65;
+      max-width: 560px;
+    }
+    .schema-browser {
+      display: grid;
+      grid-template-columns: 290px 1fr;
+      gap: 16px;
+      min-height: 60vh;
+    }
+    .schema-browser-sidebar,
+    .schema-browser-detail,
+    .schema-relationships {
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      background: rgba(255,255,255,0.02);
+    }
+    .schema-browser-sidebar {
+      padding: 14px;
+      display: grid;
+      gap: 12px;
+      align-content: start;
+    }
+    .schema-table-list {
+      display: grid;
+      gap: 8px;
+      max-height: 56vh;
+      overflow: auto;
+      padding-right: 4px;
+    }
+    .schema-table-item {
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.06);
+      background: #121721;
+      cursor: pointer;
+      text-align: left;
+      transition: border-color var(--tr), background var(--tr);
+      color: inherit;
+    }
+    .schema-table-item.active,
+    .schema-table-item:hover {
+      border-color: rgba(88,166,255,0.4);
+      background: rgba(88,166,255,0.08);
+    }
+    .schema-table-item-name {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      font-size: 0.83rem;
+      font-weight: 700;
+      color: #eef1ff;
+    }
+    .schema-table-item-meta {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    .schema-browser-detail {
+      padding: 16px;
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+    .schema-detail-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: start;
+      flex-wrap: wrap;
+    }
+    .schema-columns-grid {
+      display: grid;
+      gap: 8px;
+      max-height: 48vh;
+      overflow: auto;
+      padding-right: 4px;
+    }
+    .schema-column-card {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(120px, 0.8fr) auto;
+      gap: 12px;
+      align-items: center;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: #121721;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .schema-column-name {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #f4f7ff;
+      word-break: break-word;
+    }
+    .schema-column-type {
+      color: var(--warn);
+      font-family: monospace;
+      font-size: 0.74rem;
+    }
+    .semantic-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 0.66rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      border: 1px solid rgba(255,255,255,0.08);
+      text-transform: uppercase;
+    }
+    .semantic-badge.dimension { color: #9fd1ff; background: rgba(88,166,255,0.12); }
+    .semantic-badge.measure { color: #7ee7b2; background: rgba(34,197,94,0.12); }
+    .semantic-badge.date { color: #facc15; background: rgba(250,204,21,0.12); }
+    .semantic-badge.id { color: #c4b5fd; background: rgba(91,61,245,0.14); }
+    .semantic-badge.text { color: #fca5a5; background: rgba(239,68,68,0.12); }
+    .schema-relationships {
+      margin-top: 16px;
+      padding: 16px;
+      display: grid;
+      gap: 10px;
+    }
+    .schema-relationship-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      padding: 10px 12px;
+      background: #121721;
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 12px;
+      font-size: 0.78rem;
+      color: #e7ebff;
+    }
+    .confidence-badge {
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 0.64rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .confidence-badge.high { color: #7ee7b2; background: rgba(34,197,94,0.12); }
+    .confidence-badge.medium { color: #fde68a; background: rgba(250,204,21,0.12); }
+    .confidence-badge.low { color: #fca5a5; background: rgba(239,68,68,0.12); }
 
     /* ── CONTENT ── */
     .content {
@@ -401,62 +720,287 @@
     }
     .tab-panel { display: none; flex-direction: column; gap: 16px; }
     .tab-panel.active { display: flex; }
-    .dashboard-grid {
+    .dashboard-shell {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      min-height: 70vh;
+    }
+    .dashboard-tab-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .dashboard-tab-list {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .dashboard-tab-chip {
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: #14141d;
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 0.78rem;
+      font-weight: 600;
+      transition: all var(--tr);
+    }
+    .dashboard-tab-chip.active {
+      background: rgba(91,61,245,0.18);
+      border-color: rgba(91,61,245,0.5);
+      color: #fff;
+      box-shadow: 0 0 0 1px rgba(91,61,245,0.2) inset;
+    }
+    .dashboard-tab-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .dashboard-summary-banner {
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(91,61,245,0.16), rgba(26,26,36,0.88));
+      border: 1px solid rgba(91,61,245,0.24);
+      color: #f5f7ff;
+      font-size: 0.95rem;
+      line-height: 1.65;
+    }
+    .dashboard-meta-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 12px;
     }
-    .dashboard-toolbar {
+    .dashboard-meta-card {
+      background: #1a1a24;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      padding: 14px;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 10px;
-      margin-bottom: 14px;
-      padding: 12px;
-      border-radius: 12px;
-      background: rgba(255,255,255,0.02);
-      border: 1px solid rgba(255,255,255,0.05);
+      gap: 8px;
     }
-    .dashboard-toolbar .form-row {
-      margin-bottom: 0;
-    }
-    .dashboard-toolbar label {
+    .dashboard-meta-label {
       font-size: 0.68rem;
-      letter-spacing: 0.06em;
       text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      font-weight: 700;
     }
-    .dashboard-toolbar-note {
-      grid-column: 1 / -1;
+    .dashboard-meta-value {
+      color: #f4f5ff;
+      font-size: 0.86rem;
+      line-height: 1.55;
+    }
+    .dashboard-filter-bar {
+      display: grid;
+      gap: 12px;
+      padding: 14px;
+      border-radius: 14px;
+      background: #14141d;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .dashboard-filter-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .dashboard-filter-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+    .dashboard-filter-help {
       font-size: 0.75rem;
       color: var(--muted);
       line-height: 1.55;
     }
-    .dashboard-copilot {
+    .dashboard-kpi-strip {
       display: grid;
-      gap: 10px;
-      margin-bottom: 14px;
-      padding: 14px;
-      border-radius: 12px;
-      background: linear-gradient(180deg, rgba(88,166,255,0.06), rgba(255,255,255,0.02));
-      border: 1px solid rgba(88,166,255,0.12);
-    }
-    .dashboard-copilot-head {
-      display: flex;
-      justify-content: space-between;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 12px;
-      align-items: baseline;
-      flex-wrap: wrap;
     }
-    .dashboard-copilot-head strong {
-      font-size: 0.86rem;
+    .dashboard-kpi-card {
+      background: linear-gradient(180deg, rgba(91,61,245,0.15), rgba(26,26,36,0.96));
+      border: 1px solid rgba(91,61,245,0.3);
+      border-radius: 14px;
+      padding: 16px;
+      display: grid;
+      gap: 8px;
+      min-height: 120px;
     }
-    .dashboard-copilot-head span {
-      font-size: 0.74rem;
+    .dashboard-kpi-title {
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+    }
+    .dashboard-kpi-number {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.04em;
+    }
+    .dashboard-kpi-insight {
+      font-size: 0.78rem;
+      color: #d6dbff;
+      line-height: 1.5;
+    }
+    .dashboard-panel-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      align-items: start;
+    }
+    .dashboard-panel-card {
+      background: #1a1a24;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      padding: 14px;
+      display: grid;
+      gap: 12px;
+      min-height: 320px;
+      position: relative;
+    }
+    .dashboard-panel-card.expanded {
+      grid-column: 1 / -1;
+    }
+    .dashboard-panel-head {
+      display: flex;
+      gap: 12px;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .dashboard-panel-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #f6f7ff;
+    }
+    .dashboard-panel-type {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
       color: var(--muted);
     }
-    .dashboard-copilot-actions {
-      display: flex;
-      gap: 8px;
-      justify-content: flex-end;
+    .dashboard-panel-menu {
+      position: relative;
+    }
+    .dashboard-panel-menu > summary {
+      list-style: none;
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      cursor: pointer;
+      color: var(--muted);
+    }
+    .dashboard-panel-menu > summary::-webkit-details-marker {
+      display: none;
+    }
+    .dashboard-panel-menu-list {
+      position: absolute;
+      right: 0;
+      top: calc(100% + 8px);
+      min-width: 170px;
+      background: #12121a;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      box-shadow: 0 18px 32px rgba(0,0,0,0.35);
+      padding: 8px;
+      display: grid;
+      gap: 6px;
+      z-index: 6;
+    }
+    .dashboard-panel-menu-list button {
+      width: 100%;
+      border: 0;
+      background: transparent;
+      color: #eef1ff;
+      text-align: left;
+      padding: 8px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.78rem;
+    }
+    .dashboard-panel-menu-list button:hover {
+      background: rgba(91,61,245,0.12);
+    }
+    .dashboard-panel-chart-wrap {
+      min-height: 240px;
+      border-radius: 12px;
+      padding: 12px;
+      background: #12121a;
+      border: 1px solid rgba(255,255,255,0.05);
+      position: relative;
+    }
+    .dashboard-panel-chart-wrap canvas {
+      width: 100% !important;
+      height: 240px !important;
+    }
+    .dashboard-panel-insight {
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(91,61,245,0.08);
+      border: 1px solid rgba(91,61,245,0.16);
+      color: #dfe3ff;
+      font-size: 0.79rem;
+      line-height: 1.55;
+    }
+    .dashboard-table-wrap {
+      overflow: auto;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.06);
+      background: #111117;
+    }
+    .dashboard-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.76rem;
+    }
+    .dashboard-table th,
+    .dashboard-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      text-align: left;
+      white-space: nowrap;
+    }
+    .dashboard-table th {
+      color: #cfd5f7;
+      cursor: pointer;
+      position: sticky;
+      top: 0;
+      background: #171723;
+    }
+    .dashboard-empty {
+      min-height: 220px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      color: var(--muted);
+      background: #12121a;
+      border: 1px dashed rgba(255,255,255,0.08);
+      border-radius: 14px;
+      padding: 18px;
+    }
+    .dashboard-prompt-dock {
+      position: sticky;
+      bottom: 0;
+      z-index: 4;
+      display: grid;
+      gap: 10px;
+      padding: 14px;
+      border-radius: 16px 16px 0 0;
+      background: linear-gradient(180deg, rgba(15,15,17,0.88), rgba(15,15,17,0.98));
+      border: 1px solid rgba(255,255,255,0.08);
+      backdrop-filter: blur(12px);
     }
     .dashboard-chip-row {
       display: flex;
@@ -464,207 +1008,103 @@
       flex-wrap: wrap;
     }
     .dashboard-chip {
-      padding: 6px 10px;
+      padding: 7px 11px;
       border-radius: 999px;
-      border: 1px solid rgba(88,166,255,0.2);
-      background: rgba(88,166,255,0.08);
-      color: var(--text);
+      border: 1px solid rgba(91,61,245,0.26);
+      background: rgba(91,61,245,0.1);
+      color: #eef1ff;
       font-size: 0.74rem;
       cursor: pointer;
-      transition: border-color var(--tr), background var(--tr);
     }
     .dashboard-chip:hover {
-      border-color: var(--accent);
-      background: rgba(88,166,255,0.16);
+      background: rgba(91,61,245,0.16);
+      border-color: rgba(91,61,245,0.42);
     }
-    .dashboard-trust {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 10px;
-      margin-bottom: 14px;
-    }
-    .dashboard-trust-card {
-      padding: 12px;
-      border-radius: 12px;
-      background: rgba(255,255,255,0.02);
-      border: 1px solid rgba(255,255,255,0.05);
-    }
-    .dashboard-trust-label {
-      font-size: 0.68rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--muted);
-      font-weight: 700;
-      margin-bottom: 7px;
-    }
-    .dashboard-trust-value {
-      font-size: 0.82rem;
-      line-height: 1.55;
-      color: var(--text);
-    }
-    .dashboard-kpi {
-      background: linear-gradient(180deg, rgba(88,166,255,0.08), rgba(255,255,255,0.02));
-      border: 1px solid rgba(88,166,255,0.16);
-      border-radius: 12px;
-      padding: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      min-height: 108px;
-    }
-    .dashboard-kpi-label {
-      font-size: 0.72rem;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      font-weight: 700;
-    }
-    .dashboard-kpi-value {
-      font-size: 1.7rem;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      color: var(--text);
-      line-height: 1.1;
-    }
-    .dashboard-kpi-meta {
-      font-size: 0.76rem;
-      color: var(--muted);
-      line-height: 1.5;
-    }
-    .dashboard-layout {
-      display: grid;
-      grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.85fr);
-      gap: 14px;
-      align-items: start;
-    }
-    .dashboard-chart-card,
-    .dashboard-insight-card,
-    .dashboard-meta-card {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 14px;
-    }
-    .dashboard-card-title {
-      font-size: 0.86rem;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 10px;
-    }
-    .dashboard-card-subtitle {
-      font-size: 0.74rem;
-      color: var(--muted);
-      margin-top: -4px;
-      margin-bottom: 10px;
-    }
-    .dashboard-card-actions {
+    .dashboard-prompt-controls {
       display: flex;
       gap: 8px;
-      justify-content: flex-end;
+      justify-content: space-between;
+      align-items: center;
       flex-wrap: wrap;
-      margin-bottom: 10px;
     }
-    .dashboard-chart-frame {
-      width: 100%;
-      overflow: hidden;
-      border-radius: 10px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      border: 1px solid rgba(255,255,255,0.04);
-      padding: 12px;
-    }
-    .dashboard-chart-svg {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
-    .dashboard-legend {
-      margin-top: 10px;
-      font-size: 0.73rem;
-      color: var(--muted);
+    .dashboard-prompt-actions {
       display: flex;
+      gap: 8px;
+      align-items: center;
       flex-wrap: wrap;
-      gap: 10px;
     }
-    .dashboard-bullet {
+    .dashboard-checkbox {
       display: inline-flex;
       align-items: center;
       gap: 6px;
+      color: var(--muted);
+      font-size: 0.75rem;
     }
-    .dashboard-bullet::before {
-      content: "";
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--accent);
-      box-shadow: 0 0 0 3px rgba(88,166,255,0.12);
-    }
-    .dashboard-insight-list {
-      display: grid;
-      gap: 10px;
-    }
-    .dashboard-insight {
-      padding: 10px 12px;
-      border-radius: 10px;
-      background: rgba(88,166,255,0.06);
-      border: 1px solid rgba(88,166,255,0.1);
-      font-size: 0.78rem;
-      line-height: 1.55;
-      color: var(--text);
-    }
-    .dashboard-meta-list {
-      display: grid;
-      gap: 9px;
-    }
-    .dashboard-meta-item {
+    .dashboard-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.65);
       display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      z-index: 40;
+    }
+    .dashboard-modal-card {
+      width: min(1100px, 100%);
+      max-height: 85vh;
+      overflow: auto;
+      background: #111117;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px;
+      padding: 18px;
+      display: grid;
+      gap: 14px;
+    }
+    .dashboard-modal-head {
+      display: flex;
+      align-items: center;
       justify-content: space-between;
       gap: 12px;
-      font-size: 0.78rem;
-      padding-bottom: 8px;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
     }
-    .dashboard-meta-item:last-child {
-      border-bottom: none;
-      padding-bottom: 0;
-    }
-    .dashboard-answer-card {
-      margin-bottom: 14px;
-      padding: 14px;
-      border-radius: 12px;
-      background: linear-gradient(180deg, rgba(63,185,80,0.08), rgba(255,255,255,0.02));
-      border: 1px solid rgba(63,185,80,0.18);
-    }
-    .dashboard-answer-label {
-      font-size: 0.68rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
+    .dashboard-modal-close {
+      border: 1px solid rgba(255,255,255,0.08);
+      background: transparent;
       color: var(--muted);
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-    .dashboard-answer-text {
-      font-size: 0.9rem;
-      line-height: 1.7;
-      color: var(--text);
-    }
-    .dashboard-meta-key {
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      font-size: 0.68rem;
-      font-weight: 700;
-    }
-    .dashboard-meta-value {
-      color: var(--text);
-      text-align: right;
-      max-width: 60%;
-      word-break: break-word;
+      border-radius: 10px;
+      padding: 8px 12px;
+      cursor: pointer;
     }
     .dashboard-note {
-      font-size: 0.75rem;
+      font-size: 0.74rem;
       color: var(--muted);
-      line-height: 1.6;
-      margin-top: 12px;
+      line-height: 1.55;
+    }
+    @media (max-width: 1180px) {
+      .dashboard-panel-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+    @media (max-width: 920px) {
+      .dashboard-filter-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .dashboard-kpi-strip,
+      .dashboard-panel-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    @media (max-width: 640px) {
+      .dashboard-filter-grid {
+        grid-template-columns: 1fr;
+      }
+      .dashboard-prompt-controls {
+        align-items: stretch;
+      }
+      .dashboard-prompt-actions {
+        width: 100%;
+        justify-content: flex-end;
+      }
     }
 
     /* launchpad */
@@ -1132,6 +1572,14 @@
       .hero-panel {
         grid-template-columns: 1fr;
       }
+      .source-modal-grid,
+      .schema-browser {
+        grid-template-columns: 1fr;
+      }
+      .schema-table-list,
+      .schema-columns-grid {
+        max-height: none;
+      }
       .hero-stats,
       .insight-bar {
         grid-template-columns: 1fr;
@@ -1140,6 +1588,11 @@
         flex-wrap: wrap;
         justify-content: flex-end;
       }
+      .dashboard-kpi-strip,
+      .dashboard-panel-grid,
+      .dashboard-filter-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -1147,7 +1600,7 @@
 
 <!-- HEADER -->
 <header>
-  <div class="logo">
+  <div class="logo" id="logoTrigger" title="AI Data Middleware">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <ellipse cx="12" cy="5" rx="9" ry="3"/>
       <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
@@ -1159,13 +1612,13 @@
   </div>
 
   <nav class="nav-tabs">
-    <button class="nav-tab active" id="ntab-ask"    onclick="switchTab('ask')">Ask AI</button>
-    <button class="nav-tab"        id="ntab-sql"    onclick="switchTab('sql')">SQL Runner</button>
-    <button class="nav-tab"        id="ntab-dashboard" onclick="switchTab('dashboard')">Dashboard</button>
-    <button class="nav-tab"        id="ntab-schema" onclick="switchTab('schema')">Schema</button>
-    <button class="nav-tab"        id="ntab-agent"  onclick="switchTab('agent')">Agent Tools</button>
-    <button class="nav-tab"        id="ntab-ops"    onclick="switchTab('ops')">Ops</button>
-    <button class="nav-tab"        id="ntab-history"onclick="switchTab('history')">History</button>
+    <button class="nav-tab active" id="ntab-ask" onclick="switchTab('ask')">Ask AI</button>
+    <button class="nav-tab" id="ntab-sql" onclick="switchTab('sql')">SQL Runner</button>
+    <button class="nav-tab" id="ntab-dashboard" onclick="switchTab('dashboard')">Dashboard</button>
+    <button class="nav-tab" id="ntab-schema" onclick="switchTab('schema')">Schema</button>
+    <button class="nav-tab" id="ntab-history" onclick="switchTab('history')">History</button>
+    <button class="nav-tab hidden-dev" id="ntab-agent" onclick="switchTab('agent')">Agent Tools</button>
+    <button class="nav-tab hidden-dev" id="ntab-ops" onclick="switchTab('ops')">Ops</button>
   </nav>
 
   <div class="header-actions">
@@ -1211,79 +1664,13 @@
 
   <!-- SIDEBAR -->
   <aside class="sidebar">
-
-    <!-- DB TYPE + CREDENTIALS -->
     <div class="sidebar-section">
-      <div class="sidebar-title">Data Source Connection</div>
-
-      <div class="form-row">
-        <label>Data Source Type</label>
-        <select id="dbType" onchange="onDbTypeChange()"></select>
+      <div class="sidebar-title">Connected source</div>
+      <div id="sourceSummaryCard" class="source-summary-card"></div>
+      <div class="source-summary-actions">
+        <button class="btn btn-ghost btn-full" type="button" onclick="openSourceModal('switch')">Switch source</button>
+        <button class="btn btn-primary btn-full" type="button" onclick="openSourceModal('new')">Add new source</button>
       </div>
-
-      <div id="hostPortFields">
-        <div class="form-row-2">
-          <div class="form-row" id="hostField">
-            <label id="hostLabel">Host</label>
-            <input id="host" value="localhost" placeholder="localhost" />
-          </div>
-          <div class="form-row" id="portField">
-            <label id="portLabel">Port</label>
-            <input id="port" type="number" value="5433" placeholder="5433" />
-          </div>
-        </div>
-        <div class="form-row" id="usernameRow">
-          <label id="usernameLabel">Username</label>
-          <input id="username" value="postgres" placeholder="postgres" />
-        </div>
-        <div class="form-row" id="passwordRow">
-          <label id="passwordLabel">Password</label>
-          <input id="password" type="password" value="postgres" placeholder="••••••••" />
-        </div>
-      </div>
-
-      <div class="form-row" id="databaseRow">
-        <label id="dbLabel">Database</label>
-        <input id="database" value="demo_db" placeholder="demo_db" />
-      </div>
-      <div id="extraOptionFields"></div>
-      <div id="dbHelp" class="db-help" style="display:none"></div>
-
-      <div class="btn-row">
-        <button class="btn btn-primary" style="flex:1" id="testConnBtn" onclick="testConnection()">Test Connection</button>
-      </div>
-      <div id="connMsg" class="conn-msg"></div>
-
-      <!-- Save Connection -->
-      <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">
-        <div style="display:flex;gap:6px">
-          <input id="connName" placeholder="Connection name…" style="flex:1" />
-          <button class="btn btn-ghost btn-sm" onclick="saveConnection()" title="Save connection">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-            Save
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- SAVED CONNECTIONS -->
-    <div class="sidebar-section" id="savedSection">
-      <div class="sidebar-title">
-        <span>Saved Sources</span>
-        <span id="savedCount" style="color:var(--muted);font-size:0.68rem;font-weight:400"></span>
-      </div>
-      <div id="savedList">
-        <div style="font-size:0.76rem;color:var(--muted);padding:4px 0">No saved sources yet.</div>
-      </div>
-    </div>
-
-    <!-- SCHEMA TREE -->
-    <div class="sidebar-section" id="schemaSection" style="display:none">
-      <div class="sidebar-title">
-        <span>Schema</span>
-        <button class="btn btn-ghost btn-sm" onclick="loadSchema()">Refresh</button>
-      </div>
-      <ul class="schema-tree" id="schemaTree"></ul>
     </div>
 
   </aside>
@@ -1293,6 +1680,8 @@
 
     <!-- ASK AI -->
     <div class="tab-panel active" id="tab-ask">
+      <div id="askEmptyState" class="workspace-empty-state" style="display:none"></div>
+      <div id="askConnectedContent">
       <div class="card">
         <div class="card-header">
           <span>Ask AI</span>
@@ -1300,10 +1689,10 @@
         </div>
         <div class="card-body">
           <div class="form-row">
-            <textarea id="aiQuestion" class="sql-editor" placeholder="Show the first 5 patients" rows="6"></textarea>
+            <textarea id="aiQuestion" class="sql-editor" placeholder="Ask a business question in plain English" rows="6"></textarea>
           </div>
           <div class="suggestions" id="suggestions">
-            <span style="font-size:0.7rem;color:var(--muted);align-self:center">Try:</span>
+            <span style="font-size:0.7rem;color:var(--muted);align-self:center">Suggested prompts:</span>
           </div>
           <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
             <button class="btn btn-ghost btn-sm" type="button" onclick="clearAI()">Clear</button>
@@ -1332,10 +1721,13 @@
           <div id="aiTableWrap"></div>
         </div>
       </div>
+      </div>
     </div>
 
     <!-- SQL RUNNER -->
     <div class="tab-panel" id="tab-sql">
+      <div id="sqlEmptyState" class="workspace-empty-state" style="display:none"></div>
+      <div id="sqlConnectedContent">
       <div class="card">
         <div class="card-header">
           <span>SQL Runner</span>
@@ -1365,10 +1757,13 @@
           <div id="sqlTableWrap"></div>
         </div>
       </div>
+      </div>
     </div>
 
     <!-- DASHBOARD -->
     <div class="tab-panel" id="tab-dashboard">
+      <div id="dashboardEmptyState" class="workspace-empty-state" style="display:none"></div>
+      <div id="dashboardConnectedContent">
       <div class="card">
         <div class="card-header">
           <span>Dashboard</span>
@@ -1384,10 +1779,13 @@
           </div>
         </div>
       </div>
+      </div>
     </div>
 
     <!-- SCHEMA -->
     <div class="tab-panel" id="tab-schema">
+      <div id="schemaEmptyState" class="workspace-empty-state" style="display:none"></div>
+      <div id="schemaConnectedContent">
       <div class="card">
         <div class="card-header">
           <span>Source Schema</span>
@@ -1403,9 +1801,6 @@
           </div>
         </div>
       </div>
-      <div id="relCard" style="display:none" class="card">
-        <div class="card-header"><span>Inferred Relationships</span></div>
-        <div class="card-body" id="relList"></div>
       </div>
     </div>
 
@@ -1555,8 +1950,85 @@ POST /tools/invoke          → execute any tool by name</div>
   </section>
 </main>
 
+<div id="sourceModal" class="source-modal" onclick="closeSourceModal(event)">
+  <div class="source-modal-card" onclick="event.stopPropagation()">
+    <div class="source-modal-head">
+      <div class="source-modal-copy">
+        <h3 id="sourceModalTitle">Connect a data source</h3>
+        <p>Manage credentials in one place, then keep the workspace clean for business users.</p>
+      </div>
+      <button class="source-modal-close btn btn-ghost btn-sm" type="button" onclick="closeSourceModal()">Close</button>
+    </div>
+
+    <div class="source-modal-grid">
+      <div class="source-panel">
+        <div class="source-panel-title">Connection details</div>
+
+        <div class="form-row">
+          <label>Data Source Type</label>
+          <select id="dbType" onchange="onDbTypeChange()"></select>
+        </div>
+
+        <div id="hostPortFields">
+          <div class="form-row-2">
+            <div class="form-row" id="hostField">
+              <label id="hostLabel">Host</label>
+              <input id="host" value="localhost" placeholder="localhost" />
+            </div>
+            <div class="form-row" id="portField">
+              <label id="portLabel">Port</label>
+              <input id="port" type="number" value="5433" placeholder="5433" />
+            </div>
+          </div>
+          <div class="form-row" id="usernameRow">
+            <label id="usernameLabel">Username</label>
+            <input id="username" value="postgres" placeholder="postgres" />
+          </div>
+          <div class="form-row" id="passwordRow">
+            <label id="passwordLabel">Password</label>
+            <input id="password" type="password" value="postgres" placeholder="••••••••" />
+          </div>
+        </div>
+
+        <div class="form-row" id="databaseRow">
+          <label id="dbLabel">Database</label>
+          <input id="database" value="demo_db" placeholder="demo_db" />
+        </div>
+        <div id="extraOptionFields"></div>
+        <div id="dbHelp" class="db-help" style="display:none"></div>
+
+        <div class="btn-row">
+          <button class="btn btn-primary" style="flex:1" id="testConnBtn" onclick="testConnection()">Test Connection</button>
+        </div>
+        <div id="connMsg" class="conn-msg"></div>
+
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">
+          <div style="display:flex;gap:6px">
+            <input id="connName" placeholder="Connection name…" style="flex:1" />
+            <button class="btn btn-ghost btn-sm" onclick="saveConnection()" title="Save connection">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              Save
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="source-panel">
+        <div class="source-panel-title">
+          <span>Saved sources</span>
+          <span id="savedCount" style="color:var(--muted);font-size:0.68rem;font-weight:400"></span>
+        </div>
+        <div id="savedList">
+          <div style="font-size:0.76rem;color:var(--muted);padding:4px 0">No saved sources yet.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <script src="/static/auth.js"></script>
 <script>
 // ── STATE ──
@@ -1567,36 +2039,35 @@ let aiLastResult = null;
 let sqlLastResult = null;
 let dashboardLastResult = null;
 let dashboardPrefs = null;
+let dashboardWorkspace = null;
+let dashboardCharts = {};
+let dashboardExpandedPanel = null;
 let activeConnId = null;  // currently selected saved connection
 let databaseCatalog = {};
 let savedConnectionsById = {};
 let currentUser = null;
 let opsData = null;
+let lastSchemaSyncAt = null;
+let schemaSelectedTable = null;
+let schemaSearchTerm = '';
+let devMode = false;
+let logoClickCount = 0;
+let logoClickTimer = null;
+let dynamicAskPrompts = [];
+let dynamicDashboardPrompts = [];
 const queryHistory = [];
-
-const SUGGESTIONS = [
-  'Show the first 5 patients',
-  'List all medications and their total cost',
-  'Show provider names and organization names',
-  'How many patients are there?',
-  'Show all conditions and their descriptions',
-  'Top 10 most expensive encounters',
-];
-
-const DASHBOARD_STARTERS = [
-  'Create a dashboard of patient count by state',
-  'Show monthly patient births as a trend dashboard',
-  'Build an executive summary of patient demographics',
-];
 const ROW_COUNT_MEASURE = '__row_count__';
+const DASHBOARD_STORAGE_LIMIT = 5;
 
 // ── INIT ──
 document.addEventListener('DOMContentLoaded', async () => {
   const user = await window.middlewareAuth.requireAuth('/');
   if (!user) return;
   currentUser = user;
+  initializeWorkspaceMode();
   renderWorkspaceIdentity(user);
   renderSuggestions();
+  renderSourceSidebar();
   setupHotkeys();
   setupConnectionFieldWatchers();
   renderHistory();
@@ -1604,6 +2075,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await loadDatabaseTypes();
   await loadSavedConnections();
   await loadOpsStatus();
+  updateSourceDependentUI();
 });
 
 function renderWorkspaceIdentity(user) {
@@ -1613,6 +2085,193 @@ function renderWorkspaceIdentity(user) {
   document.getElementById('profileMenuName').textContent = user.full_name || 'Workspace user';
   document.getElementById('profileMenuEmail').textContent = user.email || 'No email available';
   document.getElementById('profileMenuWorkspace').textContent = user.organization_name || 'Personal workspace';
+}
+
+function initializeWorkspaceMode() {
+  const params = new URLSearchParams(window.location.search);
+  devMode = params.get('dev') === 'true';
+  renderDevMode();
+  const logo = document.getElementById('logoTrigger');
+  if (logo) {
+    logo.style.cursor = 'pointer';
+    logo.addEventListener('click', handleLogoTriggerClick);
+  }
+}
+
+function handleLogoTriggerClick() {
+  if (devMode) return;
+  logoClickCount += 1;
+  window.clearTimeout(logoClickTimer);
+  logoClickTimer = window.setTimeout(() => {
+    logoClickCount = 0;
+  }, 1800);
+  if (logoClickCount >= 5) {
+    devMode = true;
+    logoClickCount = 0;
+    renderDevMode();
+    toast('Developer panel unlocked');
+  }
+}
+
+function renderDevMode() {
+  document.querySelectorAll('.hidden-dev').forEach((el) => {
+    el.style.display = devMode ? 'inline-flex' : 'none';
+  });
+  if (!devMode && ['agent', 'ops'].includes(currentTabId())) {
+    switchTab(hasConnectedSource() ? 'ask' : 'history');
+  }
+}
+
+function currentTabId() {
+  const active = document.querySelector('.nav-tab.active');
+  return active?.id?.replace('ntab-', '') || 'ask';
+}
+
+function hasConnectedSource() {
+  return Boolean(connected || activeConnId);
+}
+
+function currentSourceRecord() {
+  if (activeConnId && savedConnectionsById[activeConnId]) return savedConnectionsById[activeConnId];
+  if (!connected) return null;
+  const params = getConnParams();
+  return {
+    name: params.database || params.host || 'Live source',
+    engine_key: params.engine_key,
+    source_kind: params.source_kind,
+    host: params.host,
+    port: params.port,
+    database: params.database,
+    options: params.options || {},
+  };
+}
+
+function formatRelativeSyncTime() {
+  if (!lastSchemaSyncAt) return 'Not synced yet';
+  const seconds = Math.max(0, Math.round((Date.now() - lastSchemaSyncAt.getTime()) / 1000));
+  if (seconds < 60) return 'Synced just now';
+  if (seconds < 3600) return `Synced ${Math.floor(seconds / 60)}m ago`;
+  if (seconds < 86400) return `Synced ${Math.floor(seconds / 3600)}h ago`;
+  return `Synced ${Math.floor(seconds / 86400)}d ago`;
+}
+
+function renderSourceSidebar() {
+  const wrap = document.getElementById('sourceSummaryCard');
+  const source = currentSourceRecord();
+  if (!source) {
+    wrap.innerHTML = `
+      <div class="source-empty-card">
+        <div>
+          <strong>Connect your first data source</strong>
+          <div style="font-size:0.8rem;line-height:1.6">Works with Snowflake, PostgreSQL, BigQuery, MySQL, and more.</div>
+        </div>
+        <button class="btn btn-primary" type="button" onclick="openSourceModal('new')">Connect source</button>
+      </div>
+    `;
+    return;
+  }
+
+  const badgeClass = escapeHtml(source.engine_key || 'source');
+  const label = databaseCatalog[source.engine_key]?.label || source.engine_key || 'Source';
+  wrap.innerHTML = `
+    <div class="source-summary-head">
+      <div>
+        <div class="source-summary-name">${escapeHtml(source.name || source.database || source.host || 'Connected source')}</div>
+        <div class="source-summary-meta">
+          <span class="db-badge ${badgeClass}">${escapeHtml(label)}</span>
+          <span>${escapeHtml(source.database || source.host || 'Live connection')}</span>
+        </div>
+      </div>
+      <div class="source-summary-status">
+        <span class="source-summary-dot ${connected ? 'connected' : ''}"></span>
+        <span>${connected ? 'Connected' : 'Selected'}</span>
+      </div>
+    </div>
+    <div class="source-summary-sync">${escapeHtml(formatRelativeSyncTime())}</div>
+  `;
+}
+
+function openSourceModal(mode = 'switch') {
+  const modal = document.getElementById('sourceModal');
+  const title = document.getElementById('sourceModalTitle');
+  if (mode === 'new') {
+    activeConnId = null;
+    connected = false;
+    updateStatusPill(false, 'Not connected');
+    onDbTypeChange();
+    title.textContent = 'Add a new data source';
+  } else {
+    title.textContent = 'Switch or edit data sources';
+  }
+  renderSourceSidebar();
+  updateSourceDependentUI();
+  modal.classList.add('open');
+}
+
+function closeSourceModal(event = null) {
+  if (event && event.target && event.target.id !== 'sourceModal') return;
+  document.getElementById('sourceModal').classList.remove('open');
+}
+
+function renderWorkspaceEmptyState(targetId, title, subtitle) {
+  const wrap = document.getElementById(targetId);
+  if (!wrap) return;
+  wrap.innerHTML = `
+    <div class="workspace-empty-card">
+      <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+        <ellipse cx="12" cy="5" rx="8" ry="3"></ellipse>
+        <path d="M4 5v14c0 1.66 3.58 3 8 3s8-1.34 8-3V5"></path>
+        <path d="M20 12c0 1.66-3.58 3-8 3s-8-1.34-8-3"></path>
+      </svg>
+      <h3>${escapeHtml(title)}</h3>
+      <p>${escapeHtml(subtitle)}</p>
+      <button class="btn btn-primary" type="button" onclick="openSourceModal('new')">Connect source</button>
+    </div>
+  `;
+}
+
+function updateSourceDependentUI() {
+  const connectedSource = hasConnectedSource();
+  const tabRules = {
+    ask: 'Connect a source first',
+    sql: 'Connect a source first',
+    dashboard: 'Connect a source first',
+    schema: 'Connect a source first',
+  };
+  Object.entries(tabRules).forEach(([tabId, tooltip]) => {
+    const btn = document.getElementById(`ntab-${tabId}`);
+    if (!btn) return;
+    btn.disabled = !connectedSource;
+    btn.title = connectedSource ? '' : tooltip;
+  });
+
+  const askEmpty = document.getElementById('askEmptyState');
+  const askContent = document.getElementById('askConnectedContent');
+  const sqlEmpty = document.getElementById('sqlEmptyState');
+  const sqlContent = document.getElementById('sqlConnectedContent');
+  const dashboardEmpty = document.getElementById('dashboardEmptyState');
+  const dashboardContent = document.getElementById('dashboardConnectedContent');
+  const schemaEmpty = document.getElementById('schemaEmptyState');
+  const schemaContent = document.getElementById('schemaConnectedContent');
+
+  if (!connectedSource) {
+    renderWorkspaceEmptyState('askEmptyState', 'Connect your first data source', 'Works with Snowflake, PostgreSQL, BigQuery, MySQL, and more.');
+    renderWorkspaceEmptyState('sqlEmptyState', 'Connect a source to run SQL', 'Business users can connect a source first, then run safe read-only SQL.');
+    renderWorkspaceEmptyState('dashboardEmptyState', 'Connect a source to build dashboards', 'Ask in plain English and turn live query results into stakeholder-ready visuals.');
+    renderWorkspaceEmptyState('schemaEmptyState', 'Connect a source to explore schema', 'Browse all tables, columns, semantic types, and inferred joins after a connection is ready.');
+  }
+
+  if (askEmpty) askEmpty.style.display = connectedSource ? 'none' : 'grid';
+  if (askContent) askContent.style.display = connectedSource ? '' : 'none';
+  if (sqlEmpty) sqlEmpty.style.display = connectedSource ? 'none' : 'grid';
+  if (sqlContent) sqlContent.style.display = connectedSource ? '' : 'none';
+  if (dashboardEmpty) dashboardEmpty.style.display = connectedSource ? 'none' : 'grid';
+  if (dashboardContent) dashboardContent.style.display = connectedSource ? '' : 'none';
+  if (schemaEmpty) schemaEmpty.style.display = connectedSource ? 'none' : 'grid';
+  if (schemaContent) schemaContent.style.display = connectedSource ? '' : 'none';
+
+  renderSuggestions();
+  renderSourceSidebar();
 }
 
 async function logoutWorkspace() {
@@ -1778,6 +2437,11 @@ function setupHotkeys() {
 }
 
 function switchTab(id) {
+  if (!devMode && ['agent', 'ops'].includes(id)) return;
+  if (!hasConnectedSource() && ['ask', 'sql', 'dashboard', 'schema'].includes(id)) {
+    toast('Connect a source first');
+    return;
+  }
   document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   const btn = document.getElementById('ntab-' + id);
@@ -1949,14 +2613,18 @@ async function testConnection() {
     msg.textContent = data.message;
     msg.className = 'conn-msg ' + (connected ? 'success' : 'error');
     if (connected) {
-      document.getElementById('schemaSection').style.display = 'block';
-      loadSchema();
+      renderSourceSidebar();
+      updateSourceDependentUI();
+      await loadSchema();
+      closeSourceModal();
     }
   } catch (e) {
     connected = false;
     updateStatusPill(false, 'API unreachable');
     msg.textContent = 'Could not reach the API. Is the backend running?';
     msg.className = 'conn-msg error';
+    renderSourceSidebar();
+    updateSourceDependentUI();
   } finally {
     btn.disabled = false;
     btn.innerHTML = 'Test Connection';
@@ -1984,9 +2652,11 @@ async function saveConnection() {
     const data = await res.json();
     if (!res.ok) throw new Error(data.detail || data.message || 'Failed to save connection');
     document.getElementById('connName').value = '';
+    activeConnId = data.connection_id;
     toast(`Saved as "${data.name}" (ID: ${data.connection_id.slice(0, 8)}…)`);
     await loadSavedConnections();
     await loadOpsStatus();
+    renderSourceSidebar();
   } catch (e) {
     toast(e.message || 'Failed to save connection');
   }
@@ -2041,17 +2711,22 @@ function formatConnectionOptions(options = {}) {
   return parts.length ? ` / ${parts.join(' · ')}` : '';
 }
 
-function selectSavedConn(id) {
+async function selectSavedConn(id) {
   activeConnId = activeConnId === id ? null : id;
   if (activeConnId) {
     const conn = savedConnectionsById[activeConnId];
     if (conn) setConnectionFormValues(conn);
   }
-  loadSavedConnections();
+  await loadSavedConnections();
   const label = activeConnId ? `Using saved source` : 'Not connected';
   updateStatusPill(activeConnId != null, label);
+  renderSourceSidebar();
+  updateSourceDependentUI();
   if (activeConnId) {
-    toast('Source selected — click Test to verify');
+    toast('Source selected — verifying connection');
+    await testConnection();
+  } else {
+    toast('Source cleared');
   }
 }
 
@@ -2085,6 +2760,8 @@ async function deleteConn(e, id) {
     if (activeConnId === id) activeConnId = null;
     await loadSavedConnections();
     await loadOpsStatus();
+    renderSourceSidebar();
+    updateSourceDependentUI();
     toast('Connection deleted');
   } catch {
     toast('Failed to delete connection');
@@ -2092,10 +2769,112 @@ async function deleteConn(e, id) {
 }
 
 // ── SCHEMA ──
+function normalizeSchemaTables(data) {
+  if (Array.isArray(data?.table_details) && data.table_details.length) {
+    return data.table_details.map((table) => ({
+      name: table.name,
+      row_count_estimate: table.row_count_estimate ?? null,
+      columns: (table.columns || []).map((column) => ({
+        name: column.name,
+        type: column.type,
+        semantic_type: (column.semantic_type || 'DIMENSION').toUpperCase(),
+        nullable: column.nullable,
+        is_primary_key: Boolean(column.is_primary_key),
+        sample_values: column.sample_values || [],
+      })),
+    }));
+  }
+  return Object.entries(data?.tables || {}).map(([name, columns]) => ({
+    name,
+    row_count_estimate: null,
+    columns: (columns || []).map((column) => ({
+      name: column.name,
+      type: column.type,
+      semantic_type: (column.semantic_type || 'DIMENSION').toUpperCase(),
+      nullable: column.nullable,
+      is_primary_key: Boolean(column.is_primary_key),
+      sample_values: column.sample_values || [],
+    })),
+  }));
+}
+
+function humanizeIdentifier(value) {
+  return String(value || '')
+    .replace(/_/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function chooseLargestTable(tables) {
+  return [...tables].sort((a, b) => {
+    const rowA = a.row_count_estimate ?? -1;
+    const rowB = b.row_count_estimate ?? -1;
+    if (rowA !== rowB) return rowB - rowA;
+    return (b.columns?.length || 0) - (a.columns?.length || 0);
+  })[0] || null;
+}
+
+function generateSuggestedPromptsFromSchema(data) {
+  const tables = normalizeSchemaTables(data);
+  const largest = chooseLargestTable(tables);
+  const allColumns = tables.flatMap((table) => (table.columns || []).map((column) => ({ ...column, table: table.name })));
+  const firstDimension = allColumns.find((column) => column.semantic_type === 'DIMENSION');
+  const firstMeasure = allColumns.find((column) => column.semantic_type === 'MEASURE');
+  const firstDate = allColumns.find((column) => column.semantic_type === 'DATE');
+  const domain = String(data?.domain_hint || 'generic').toLowerCase();
+  const tableName = largest?.name || tables[0]?.name || 'table';
+  const dimensionName = firstDimension?.name || 'category';
+  const measureName = firstMeasure?.name || 'amount';
+  const dateName = firstDate?.name || 'date';
+
+  const promptsByDomain = {
+    healthcare: [
+      `Count records in ${tableName} by ${dimensionName}`,
+      `Show ${measureName} by ${dimensionName} from ${tableName}`,
+      `Show ${measureName} over ${dateName} from ${tableName}`,
+      `List top 10 ${dimensionName} values from ${tableName}`,
+      `Create a dashboard for ${tableName} by ${dimensionName}`,
+    ],
+    finance: [
+      `Show total ${measureName} by ${dimensionName} from ${tableName}`,
+      `Show ${measureName} over ${dateName} from ${tableName}`,
+      `Show top 10 ${dimensionName} by ${measureName} from ${tableName}`,
+      `Create a dashboard of ${measureName} by ${dimensionName}`,
+      `Show average ${measureName} by ${dimensionName} from ${tableName}`,
+    ],
+    retail: [
+      `Show top 10 ${dimensionName} by ${measureName} from ${tableName}`,
+      `Count records in ${tableName} by ${dimensionName}`,
+      `Show ${measureName} over ${dateName} from ${tableName}`,
+      `Create a dashboard of ${measureName} by ${dimensionName}`,
+      `Show total ${measureName} by ${dimensionName} from ${tableName}`,
+    ],
+    hr: [
+      `Show average ${measureName} by ${dimensionName} from ${tableName}`,
+      `Count records in ${tableName} by ${dimensionName}`,
+      `Show ${measureName} over ${dateName} from ${tableName}`,
+      `List top 10 ${dimensionName} values from ${tableName}`,
+      `Create a dashboard of ${measureName} by ${dimensionName}`,
+    ],
+    generic: [
+      `Show top 10 rows from ${tableName}`,
+      `Count records in ${tableName} by ${dimensionName}`,
+      `Show total ${measureName} by ${dimensionName} from ${tableName}`,
+      `Show ${measureName} over ${dateName} from ${tableName}`,
+      `Create a dashboard of ${measureName} by ${dimensionName} from ${tableName}`,
+    ],
+  };
+
+  dynamicAskPrompts = promptsByDomain[domain] || promptsByDomain.generic;
+  dynamicDashboardPrompts = [
+    `Create a dashboard of ${measureName} by ${dimensionName} from ${tableName}`,
+    `Show ${measureName} over ${dateName} from ${tableName}`,
+    `Build an executive summary for ${tableName}`,
+  ];
+}
+
 async function loadSchema() {
-  const tree = document.getElementById('schemaTree');
   const body = document.getElementById('schemaTabBody');
-  tree.innerHTML = '<li style="color:var(--muted);font-size:0.78rem;padding:5px 8px;display:flex;align-items:center;gap:6px"><span class="spinner"></span> Scanning…</li>';
   body.innerHTML = '<div class="empty-state"><span class="spinner"></span><p>Scanning schema…</p></div>';
 
   try {
@@ -2107,74 +2886,97 @@ async function loadSchema() {
     const data = await res.json();
     if (data.error) throw new Error(data.error);
     schemaData = data;
-    renderSchemaTree(data);
+    lastSchemaSyncAt = new Date();
+    schemaSelectedTable = normalizeSchemaTables(data)[0]?.name || null;
+    generateSuggestedPromptsFromSchema(data);
+    renderSuggestions();
     renderSchemaTab(data);
+    renderSourceSidebar();
   } catch (e) {
-    tree.innerHTML = `<li style="color:var(--danger);font-size:0.76rem;padding:6px 8px">${e.message}</li>`;
     body.innerHTML = `<div class="error-box">${e.message}</div>`;
   }
 }
 
-function renderSchemaTree(data) {
-  const tree = document.getElementById('schemaTree');
-  tree.innerHTML = '';
-  for (const [table, cols] of Object.entries(data.tables)) {
-    const li = document.createElement('li');
-    li.innerHTML = `
-      <div class="schema-table-header" onclick="toggleTable(this)">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-        ${table}
-        <span style="margin-left:auto;font-size:0.68rem;color:var(--muted);font-weight:400">${cols.length}</span>
-      </div>
-      <div class="schema-cols">
-        ${cols.map(c => `<div class="schema-col-row"><span>${c.name}</span><span class="schema-col-type">${c.type}</span></div>`).join('')}
-      </div>`;
-    tree.appendChild(li);
-  }
-}
-
-function toggleTable(el) {
-  const cols = el.nextElementSibling;
-  cols.classList.toggle('open');
-  el.querySelector('svg').style.transform = cols.classList.contains('open') ? 'rotate(90deg)' : '';
-}
-
 function renderSchemaTab(data) {
-  const tables = Object.entries(data.tables);
-  document.getElementById('schemaTabBody').innerHTML = `
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:11px">
-      ${tables.map(([table, cols]) => `
-        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;overflow:hidden">
-          <div style="padding:9px 13px;border-bottom:1px solid var(--border);font-size:0.81rem;font-weight:700;color:var(--accent);display:flex;justify-content:space-between">
-            <span>${table}</span><span style="color:var(--muted);font-weight:400">${cols.length}</span>
-          </div>
-          <div style="padding:6px 0">
-            ${cols.slice(0,8).map(c=>`
-              <div style="display:flex;justify-content:space-between;padding:2px 13px;font-size:0.73rem">
-                <span>${c.name}</span><span style="color:var(--warn);font-family:monospace;font-size:0.69rem">${c.type}</span>
-              </div>`).join('')}
-            ${cols.length>8?`<div style="padding:2px 13px;font-size:0.7rem;color:var(--muted)">+${cols.length-8} more</div>`:''}
-          </div>
-        </div>`).join('')}
-    </div>`;
-
-  const relCard = document.getElementById('relCard');
-  const relList = document.getElementById('relList');
-  if (data.relationships?.length) {
-    relCard.style.display = 'block';
-    relList.innerHTML = data.relationships.map(r => `
-      <div class="rel-row">
-        <span class="rel-table">${r.from_table}</span><span class="rel-col">.${r.from_column}</span>
-        <span class="rel-arrow">→</span>
-        <span class="rel-table">${r.to_table}</span><span class="rel-col">.${r.to_column}</span>
-      </div>`).join('');
+  const tables = normalizeSchemaTables(data);
+  const filteredTables = tables.filter((table) => table.name.toLowerCase().includes(schemaSearchTerm.toLowerCase()));
+  if (!schemaSelectedTable || !filteredTables.some((table) => table.name === schemaSelectedTable)) {
+    schemaSelectedTable = filteredTables[0]?.name || null;
   }
+  const selectedTable = filteredTables.find((table) => table.name === schemaSelectedTable) || null;
+  document.getElementById('schemaTabBody').innerHTML = `
+    <div class="schema-browser">
+      <div class="schema-browser-sidebar">
+        <input type="search" value="${escapeHtml(schemaSearchTerm)}" oninput="setSchemaSearch(this.value)" placeholder="Search tables…" />
+        <div class="schema-table-list">
+          ${filteredTables.map((table) => `
+            <button class="schema-table-item ${schemaSelectedTable === table.name ? 'active' : ''}" type="button" onclick="selectSchemaTable('${escapeJsString(table.name)}')">
+              <div class="schema-table-item-name">
+                <span>${escapeHtml(table.name)}</span>
+                <span>${escapeHtml(formatCompactNumber(table.row_count_estimate ?? table.columns.length))}</span>
+              </div>
+              <div class="schema-table-item-meta">${escapeHtml(`${table.columns.length} columns${table.row_count_estimate != null ? ` · ~${formatCompactNumber(table.row_count_estimate)} rows` : ''}`)}</div>
+            </button>
+          `).join('') || '<div style="color:var(--muted);font-size:0.76rem">No tables match this search.</div>'}
+        </div>
+      </div>
+      <div class="schema-browser-detail">
+        ${selectedTable ? `
+          <div class="schema-detail-head">
+            <div>
+              <div class="source-summary-name">${escapeHtml(selectedTable.name)}</div>
+              <div class="source-summary-sync">${escapeHtml(selectedTable.row_count_estimate != null ? `~${formatCompactNumber(selectedTable.row_count_estimate)} rows` : `${selectedTable.columns.length} columns`)}</div>
+            </div>
+            <span class="db-badge ${escapeHtml(data.domain_hint || 'generic')}">${escapeHtml(data.domain_hint || 'generic')}</span>
+          </div>
+          <div class="schema-columns-grid">
+            ${selectedTable.columns.map((column) => `
+              <div class="schema-column-card">
+                <div class="schema-column-name">${escapeHtml(column.name)}</div>
+                <div class="schema-column-type">${escapeHtml(column.type || 'unknown')}</div>
+                <span class="semantic-badge ${String(column.semantic_type || 'dimension').toLowerCase()}">${escapeHtml(column.semantic_type || 'DIMENSION')}</span>
+              </div>
+            `).join('')}
+          </div>
+        ` : '<div class="empty-state"><p>Select a table to inspect every column and semantic tag.</p></div>'}
+      </div>
+    </div>
+    <div class="schema-relationships">
+      <div class="source-panel-title" style="margin-bottom:0">Relationships</div>
+      ${(data.relationships || []).map((r) => `
+        <div class="schema-relationship-row">
+          <span>${escapeHtml(r.from_table)}</span>
+          <strong>.${escapeHtml(r.from_column || r.from_col || '')}</strong>
+          <span>→</span>
+          <span>${escapeHtml(r.to_table)}</span>
+          <strong>.${escapeHtml(r.to_column || r.to_col || '')}</strong>
+          <span class="confidence-badge ${String(r.confidence || 'medium').toLowerCase()}">${escapeHtml(r.confidence || 'medium')}</span>
+        </div>
+      `).join('') || '<div style="color:var(--muted);font-size:0.76rem">No inferred joins were returned for this source.</div>'}
+    </div>
+  `;
+}
+
+function setSchemaSearch(value) {
+  schemaSearchTerm = value;
+  renderSchemaTab(schemaData);
+}
+
+function selectSchemaTable(name) {
+  schemaSelectedTable = name;
+  renderSchemaTab(schemaData);
 }
 
 // ── AI QUERY ──
 function renderSuggestions() {
   const wrap = document.getElementById('suggestions');
-  SUGGESTIONS.forEach(s => {
+  wrap.innerHTML = '<span style="font-size:0.7rem;color:var(--muted);align-self:center">Suggested prompts:</span>';
+  if (!hasConnectedSource()) {
+    wrap.innerHTML += '<span style="font-size:0.74rem;color:var(--muted)">Connect a source to generate prompts from the live schema.</span>';
+    return;
+  }
+  const prompts = dynamicAskPrompts.length ? dynamicAskPrompts : ['Connect a source and scan the schema to generate suggested prompts.'];
+  prompts.slice(0, 5).forEach(s => {
     const chip = document.createElement('button');
     chip.className = 'suggestion-chip';
     chip.textContent = s;
@@ -2335,11 +3137,152 @@ function refreshDashboard() {
   renderDashboard();
 }
 
+function cloneDashboardObject(value) {
+  return value == null ? null : JSON.parse(JSON.stringify(value));
+}
+
+function dashboardUid(prefix = 'dashboard') {
+  return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function getDashboardStorageKey() {
+  return `adm_dashboard_${currentUser?.organization_id || currentUser?.email || 'workspace'}`;
+}
+
+function defaultDashboardFilters() {
+  return {
+    dateRange: '30d',
+    customFrom: '',
+    customTo: '',
+    dimensionFilters: [
+      { column: '', value: '' },
+      { column: '', value: '' },
+      { column: '', value: '' },
+    ],
+  };
+}
+
+function getDashboardStarterPrompts() {
+  return dynamicDashboardPrompts.length
+    ? dynamicDashboardPrompts
+    : ['Connect a source and scan the schema to generate dashboard prompts.'];
+}
+
+function createDashboardTab(name = 'Overview') {
+  return {
+    id: dashboardUid('tab'),
+    name,
+    panels: [],
+    dashboardPlan: null,
+    result: null,
+    rawResult: null,
+    baseQuestion: '',
+    source: 'Dashboard AI',
+    summary: '',
+    confidence: 'medium',
+    followUps: [...getDashboardStarterPrompts()],
+    filters: defaultDashboardFilters(),
+    sortState: {},
+  };
+}
+
+function ensureDashboardWorkspace() {
+  if (dashboardWorkspace) return dashboardWorkspace;
+  try {
+    const saved = JSON.parse(localStorage.getItem(getDashboardStorageKey()) || 'null');
+    if (saved && Array.isArray(saved.tabs) && saved.tabs.length) {
+      dashboardWorkspace = saved;
+    }
+  } catch (error) {
+    dashboardWorkspace = null;
+  }
+  if (!dashboardWorkspace) {
+    const overview = createDashboardTab('Overview');
+    dashboardWorkspace = {
+      activeTabId: overview.id,
+      tabs: [overview],
+    };
+  }
+  return dashboardWorkspace;
+}
+
+function persistDashboardWorkspace() {
+  if (!dashboardWorkspace) return;
+  localStorage.setItem(getDashboardStorageKey(), JSON.stringify(dashboardWorkspace));
+}
+
+function getDashboardTabById(tabId) {
+  return ensureDashboardWorkspace().tabs.find((tab) => tab.id === tabId) || null;
+}
+
+function getActiveDashboardTab() {
+  const workspace = ensureDashboardWorkspace();
+  return getDashboardTabById(workspace.activeTabId) || workspace.tabs[0];
+}
+
+function getOverviewDashboardTab() {
+  return ensureDashboardWorkspace().tabs[0];
+}
+
+function setActiveDashboardTab(tabId) {
+  ensureDashboardWorkspace().activeTabId = tabId;
+  persistDashboardWorkspace();
+  renderDashboard();
+}
+
+function createNewDashboardTab() {
+  const workspace = ensureDashboardWorkspace();
+  if (workspace.tabs.length >= DASHBOARD_STORAGE_LIMIT) {
+    toast(`You can save up to ${DASHBOARD_STORAGE_LIMIT} dashboards per workspace`);
+    return;
+  }
+  const newTab = createDashboardTab(`Dashboard ${workspace.tabs.length + 1}`);
+  workspace.tabs.push(newTab);
+  workspace.activeTabId = newTab.id;
+  persistDashboardWorkspace();
+  renderDashboard();
+}
+
+function saveDashboardView() {
+  const workspace = ensureDashboardWorkspace();
+  const currentTab = getActiveDashboardTab();
+  if (!currentTab.result && !currentTab.panels.length) {
+    toast('Run a dashboard query first');
+    return;
+  }
+  const name = window.prompt('Save dashboard as:', currentTab.name === 'Overview' ? '' : currentTab.name);
+  if (!name) return;
+  const trimmed = name.trim();
+  if (!trimmed) return;
+
+  let target = workspace.tabs.find((tab) => tab.name.toLowerCase() === trimmed.toLowerCase());
+  if (!target) {
+    if (workspace.tabs.length >= DASHBOARD_STORAGE_LIMIT) {
+      toast(`You can save up to ${DASHBOARD_STORAGE_LIMIT} dashboards per workspace`);
+      return;
+    }
+    target = createDashboardTab(trimmed);
+    workspace.tabs.push(target);
+  }
+
+  Object.assign(target, cloneDashboardObject(currentTab), { id: target.id, name: trimmed });
+  workspace.activeTabId = target.id;
+  persistDashboardWorkspace();
+  toast(`Saved dashboard "${trimmed}"`);
+  renderDashboard();
+}
+
+function destroyDashboardCharts() {
+  Object.values(dashboardCharts).forEach((chart) => {
+    try { chart.destroy(); } catch (error) { /* noop */ }
+  });
+  dashboardCharts = {};
+}
+
 function isDashboardRefinementPrompt(question) {
   const text = String(question || '').trim().toLowerCase();
   if (!text) return false;
-
-  const refinementPatterns = [
+  return [
     /^make this\b/,
     /^change this\b/,
     /^change to\b/,
@@ -2355,25 +3298,248 @@ function isDashboardRefinementPrompt(question) {
     /^summarize\b/,
     /^highlight\b/,
     /^compare\b/,
-    /^use a\b/,
-    /^use an\b/,
-  ];
+    /^replace\b/,
+  ].some((pattern) => pattern.test(text));
+}
 
-  if (refinementPatterns.some((pattern) => pattern.test(text))) {
-    return true;
+function inferDashboardProfiles(columns = [], rows = []) {
+  return columns.map((name, index) => {
+    const values = rows
+      .map((row) => row[index])
+      .filter((value) => value !== null && value !== undefined && String(value).trim() !== '');
+    const numericRatio = values.length ? values.filter((value) => isNumericValue(value)).length / values.length : 0;
+    const dateRatio = values.length ? values.filter((value) => isDateValue(value)).length / values.length : 0;
+    let semanticType = 'DIMENSION';
+    if (/^id$|_id$|uuid|guid|identifier|key$/i.test(name)) semanticType = 'ID';
+    else if (/(date|time|timestamp|month|year|quarter|week|day)/i.test(name) || dateRatio >= 0.75) semanticType = 'DATE';
+    else if (/(amount|revenue|cost|count|price|quantity|salary|total|balance|value|score|rate|margin|usage)/i.test(name) || numericRatio >= 0.75) semanticType = 'MEASURE';
+    else if (/(description|detail|details|notes|body|comment|message|content|summary|reason)/i.test(name)) semanticType = 'TEXT';
+    return {
+      name,
+      index,
+      semanticType,
+      isNumeric: numericRatio >= 0.75,
+      isDate: semanticType === 'DATE' || dateRatio >= 0.75,
+      distinct: new Set(values.map((value) => String(value))).size,
+    };
+  });
+}
+
+function isNumericValue(value) {
+  if (typeof value === 'number') return Number.isFinite(value);
+  if (typeof value !== 'string') return false;
+  const text = value.trim().replace(/,/g, '');
+  return Boolean(text) && /^-?\d+(\.\d+)?$/.test(text);
+}
+
+function isDateValue(value) {
+  return parseDashboardDate(value) !== null;
+}
+
+function parseDashboardDate(value) {
+  if (value instanceof Date) return value;
+  if (typeof value !== 'string') return null;
+  const text = value.trim();
+  if (!text) return null;
+  if (/^\d{4}$/.test(text)) return new Date(`${text}-01-01T00:00:00`);
+  const parsed = Date.parse(text);
+  return Number.isNaN(parsed) ? null : new Date(parsed);
+}
+
+function toNumber(value) {
+  if (typeof value === 'number') return value;
+  if (typeof value !== 'string') return NaN;
+  return Number(value.replace(/,/g, '').trim());
+}
+
+function formatCompactNumber(value) {
+  const num = Number(value);
+  if (!Number.isFinite(num)) return '—';
+  return new Intl.NumberFormat(undefined, {
+    notation: Math.abs(num) >= 1000 ? 'compact' : 'standard',
+    maximumFractionDigits: 1,
+  }).format(num);
+}
+
+function formatSmartValue(value) {
+  if (value === null || value === undefined || value === '') return '—';
+  if (isNumericValue(value)) return formatCompactNumber(toNumber(value));
+  return String(value);
+}
+
+function normalizeDashboardPlanPayload(payload) {
+  const raw = payload?.dashboard_plan || payload?.dashboard || payload || {};
+  const plan = raw.dashboard_plan || raw;
+  const panels = Array.isArray(plan.panels) ? plan.panels : [];
+  return {
+    panels,
+    summary: plan.summary || raw.summary || '',
+    confidence: (plan.confidence || raw.confidence || 'medium').toLowerCase(),
+    follow_ups: plan.follow_ups || raw.follow_ups || [],
+    filter_fields: plan.filter_fields || [],
+    date_fields: plan.date_fields || [],
+  };
+}
+
+function assignDashboardPlan(tab, plan, { replace = true, result = null, question = null, source = null } = {}) {
+  const normalizedPlan = normalizeDashboardPlanPayload(plan);
+  const clonedPanels = normalizedPlan.panels.map((panel) => ({
+    ...cloneDashboardObject(panel),
+    id: dashboardUid('panel'),
+  }));
+  tab.panels = replace ? clonedPanels : [...(tab.panels || []), ...clonedPanels];
+  tab.dashboardPlan = normalizedPlan;
+  tab.summary = normalizedPlan.summary || tab.summary;
+  tab.confidence = normalizedPlan.confidence || tab.confidence;
+  tab.followUps = normalizedPlan.follow_ups?.length ? normalizedPlan.follow_ups : (tab.followUps || getDashboardStarterPrompts());
+  if (result) {
+    tab.result = cloneDashboardObject(result);
+    tab.rawResult = cloneDashboardObject(result);
   }
+  if (source) tab.source = source;
+  if (question && !isDashboardRefinementPrompt(question)) tab.baseQuestion = question;
+  persistDashboardWorkspace();
+}
 
-  return false;
+async function askDashboardQuestion(question) {
+  if (!connected && !activeConnId) throw new Error('Test your connection first');
+  const res = await window.middlewareAuth.request(`${API}/query/ask`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(getPayload({ question })),
+  });
+  const data = await res.json();
+  if (!data.success) throw new Error(data.error || 'Failed to fetch dashboard data');
+  const normalized = normalizeTabularData(data.columns, data.rows);
+  return {
+    source: 'Dashboard AI',
+    title: question,
+    sql: data.sql,
+    columns: normalized.columns,
+    rows: normalized.rows,
+    row_count: normalized.rows.length,
+    dashboard: data.dashboard || null,
+    explanation: data.explanation || null,
+    confidence: data.confidence || null,
+    tables_used: data.tables_used || [],
+    follow_ups: data.follow_ups || [],
+  };
+}
+
+async function requestDashboardPlan(question, result, currentDashboard = null) {
+  const res = await window.middlewareAuth.request(`${API}/dashboard/generate`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      question,
+      source_question: result?.title || question,
+      columns: result?.columns || [],
+      rows: (result?.rows || []).slice(0, 500),
+      current_dashboard: currentDashboard || null,
+      schema_metadata: schemaData || null,
+    }),
+  });
+  const data = await res.json();
+  if (!data.success) throw new Error(data.error || 'Failed to build dashboard');
+  return data;
+}
+
+function getDashboardDimensionOptions(tab, result) {
+  const semanticFields = Array.isArray(tab?.dashboardPlan?.filter_fields) ? tab.dashboardPlan.filter_fields : [];
+  const discovered = result?.columns?.length
+    ? inferDashboardProfiles(result.columns, result.rows)
+        .filter((profile) => profile.semanticType === 'DIMENSION' || profile.semanticType === 'DATE')
+        .map((profile) => profile.name)
+    : [];
+  return [...new Set([...semanticFields, ...discovered])];
+}
+
+function getDashboardFilterValues(result, columnName) {
+  if (!result?.columns?.length || !columnName) return [];
+  const index = result.columns.indexOf(columnName);
+  if (index < 0) return [];
+  return [...new Set(result.rows.map((row) => row[index]).filter((value) => value !== null && value !== undefined && String(value).trim() !== '').map((value) => String(value)))]
+    .sort((a, b) => a.localeCompare(b))
+    .slice(0, 50);
+}
+
+function getDashboardDateField(result, tab) {
+  const candidates = tab.dashboardPlan?.date_fields?.length
+    ? tab.dashboardPlan.date_fields
+    : getDashboardDimensionOptions(tab, result).filter((name) => /(date|time|year|month|quarter|week|day)/i.test(name));
+  return candidates[0] || null;
+}
+
+function applyDashboardFiltersToResult(result, filters, tab) {
+  if (!result?.rows?.length) return result;
+  const filteredRows = result.rows.filter((row) => {
+    for (const filter of filters.dimensionFilters || []) {
+      if (!filter.column || !filter.value) continue;
+      const index = result.columns.indexOf(filter.column);
+      if (index < 0 || String(row[index]) !== String(filter.value)) return false;
+    }
+
+    const dateField = getDashboardDateField(result, tab);
+    if (dateField && filters.dateRange && filters.dateRange !== 'all') {
+      const index = result.columns.indexOf(dateField);
+      const parsed = index >= 0 ? parseDashboardDate(row[index]) : null;
+      if (parsed) {
+        const now = new Date();
+        let start = null;
+        if (filters.dateRange === '7d') start = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        if (filters.dateRange === '30d') start = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        if (filters.dateRange === '90d') start = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
+        if (filters.dateRange === '12m') start = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+        if (filters.dateRange === 'custom' && (filters.customFrom || filters.customTo)) {
+          const from = filters.customFrom ? new Date(`${filters.customFrom}T00:00:00`) : null;
+          const to = filters.customTo ? new Date(`${filters.customTo}T23:59:59`) : null;
+          if (from && parsed < from) return false;
+          if (to && parsed > to) return false;
+        }
+        if (start && parsed < start) return false;
+      }
+    }
+    return true;
+  });
+
+  return {
+    ...cloneDashboardObject(result),
+    rows: filteredRows,
+    row_count: filteredRows.length,
+  };
+}
+
+function setDashboardResult(result) {
+  dashboardLastResult = cloneDashboardObject(result);
+  const overview = getOverviewDashboardTab();
+  overview.result = cloneDashboardObject(result);
+  overview.rawResult = cloneDashboardObject(result);
+  overview.baseQuestion = result.title || overview.baseQuestion;
+  overview.source = result.source || 'Dashboard AI';
+  overview.followUps = result.follow_ups?.length ? result.follow_ups : overview.followUps;
+  if (result.dashboard?.dashboard_plan || result.dashboard?.panels) {
+    assignDashboardPlan(overview, result.dashboard, {
+      replace: true,
+      result,
+      question: result.title,
+      source: result.source,
+    });
+  } else {
+    persistDashboardWorkspace();
+  }
+  if (document.getElementById('tab-dashboard').classList.contains('active')) renderDashboard();
 }
 
 async function runDashboardCopilot(prefilledPrompt = null) {
   const input = document.getElementById('dashboardPrompt');
   const question = String(prefilledPrompt || input?.value || '').trim();
   if (!question) {
-    toast('Describe the dashboard you want');
+    toast('Ask a dashboard question first');
     return;
   }
 
+  const tab = getActiveDashboardTab();
+  const replace = Boolean(document.getElementById('dashboardReplaceMode')?.checked);
   const btn = document.getElementById('dashboardCopilotBtn');
   if (btn) {
     btn.disabled = true;
@@ -2381,288 +3547,40 @@ async function runDashboardCopilot(prefilledPrompt = null) {
   }
 
   try {
-    const shouldCreateFreshDashboard = !dashboardLastResult?.columns?.length || !isDashboardRefinementPrompt(question);
+    let result = tab.result || dashboardLastResult;
+    const isRefinement = Boolean(result?.columns?.length) && isDashboardRefinementPrompt(question);
 
-    if (shouldCreateFreshDashboard) {
-      if (!connected && !activeConnId) {
-        throw new Error('Test your connection first');
-      }
-
-      const res = await window.middlewareAuth.request(`${API}/query/ask`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(getPayload({ question })),
-      });
-      const data = await res.json();
-      if (!data.success) throw new Error(data.error || 'Failed to create dashboard');
-
-      const normalized = normalizeTabularData(data.columns, data.rows);
-      aiLastResult = {
-        ...data,
-        columns: normalized.columns,
-        rows: normalized.rows,
-        row_count: normalized.rows.length,
-        inferredHeader: normalized.inferredHeader,
-      };
-      pushHistory({
-        type: 'ask',
-        question,
-        sql: data.sql,
-        ok: true,
-        rows: normalized.rows.length,
-        ms: 0,
-      });
-
-      setDashboardResult({
-        source: 'Dashboard AI',
-        title: question,
-        sql: data.sql,
-        columns: normalized.columns,
-        rows: normalized.rows,
-        row_count: normalized.rows.length,
-        dashboard: data.dashboard || null,
-        explanation: data.explanation || null,
-        confidence: data.confidence || null,
-        tables_used: data.tables_used || [],
-        follow_ups: data.follow_ups || [],
-      });
-      if (input && !prefilledPrompt) input.value = '';
-      toast('Dashboard generated');
-      return;
+    if (!isRefinement) {
+      result = await askDashboardQuestion(question);
+      dashboardLastResult = cloneDashboardObject(result);
+      tab.baseQuestion = question;
+      tab.source = 'Dashboard AI';
     }
 
-    const res = await window.middlewareAuth.request(`${API}/query/dashboard`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        question,
-        source_question: dashboardLastResult.title,
-        columns: dashboardLastResult.columns,
-        rows: dashboardLastResult.rows.slice(0, 150),
-        current_dashboard: dashboardLastResult.dashboard || null,
-      }),
-    });
-    const data = await res.json();
-    if (!data.success || !data.dashboard) throw new Error(data.error || 'Failed to create dashboard');
+    const planPayload = await requestDashboardPlan(
+      question,
+      result,
+      replace ? null : (tab.dashboardPlan || result.dashboard || null),
+    );
 
-    dashboardLastResult.dashboard = data.dashboard;
-    dashboardLastResult.explanation = data.dashboard.explanation || dashboardLastResult.explanation;
-    dashboardLastResult.confidence = data.dashboard.confidence || dashboardLastResult.confidence;
-    dashboardLastResult.follow_ups = data.dashboard.follow_ups || dashboardLastResult.follow_ups || [];
-    dashboardPrefs = {
-      view: data.dashboard.view || 'auto',
-      dimension: data.dashboard.dimension || '',
-      measure: data.dashboard.measure || '',
-      topN: data.dashboard.top_n || dashboardPrefs?.topN || 8,
-    };
-    renderDashboard();
+    assignDashboardPlan(tab, planPayload, {
+      replace: replace || !tab.panels.length || !isRefinement,
+      result,
+      question,
+      source: result.source || 'Dashboard AI',
+    });
     if (input && !prefilledPrompt) input.value = '';
-    toast('Dashboard updated');
+    toast(isRefinement ? 'Dashboard updated' : 'Dashboard generated');
+    renderDashboard();
   } catch (error) {
-    toast(error.message || 'Failed to update dashboard');
+    toast(error.message || 'Failed to generate dashboard');
   } finally {
-    loadOpsStatus();
     if (btn) {
       btn.disabled = false;
-      btn.textContent = 'Run Dashboard AI';
+      btn.textContent = 'Create dashboard';
     }
+    loadOpsStatus();
   }
-}
-
-function setDashboardResult(result) {
-  dashboardLastResult = result;
-  dashboardPrefs = createDefaultDashboardPrefs(result);
-  if (document.getElementById('tab-dashboard').classList.contains('active')) {
-    renderDashboard();
-  }
-}
-
-function renderDashboard() {
-  const body = document.getElementById('dashboardBody');
-  const label = document.getElementById('dashboardSourceLabel');
-
-  if (!dashboardLastResult?.columns?.length) {
-    label.textContent = 'Plain-English dashboard creation';
-    body.innerHTML = `
-      ${renderDashboardCopilot()}
-      <div class="empty-state">
-        <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19h16"/><rect x="5" y="10" width="3" height="7"/><rect x="10.5" y="6" width="3" height="11"/><rect x="16" y="3" width="3" height="14"/></svg>
-        <p>Ask for a dashboard in plain English and Dashboard AI will fetch the data, generate the SQL-backed answer, and turn it into a stakeholder-friendly view. You can also use it later to refine the latest Ask AI or SQL Runner result.</p>
-      </div>`;
-    return;
-  }
-
-  const dashboard = buildDashboardModel(dashboardLastResult, dashboardPrefs);
-  label.textContent = `${dashboardLastResult.source} · ${dashboardLastResult.row_count} rows`;
-
-  body.innerHTML = `
-    ${renderDashboardCopilot(dashboard)}
-    ${renderDashboardAnswer(dashboard)}
-    ${renderDashboardTrust(dashboard)}
-    ${renderDashboardToolbar(dashboardLastResult, dashboard.dashboardOptions)}
-    <div class="dashboard-grid">
-      ${dashboard.kpis.map((kpi) => `
-        <div class="dashboard-kpi">
-          <div class="dashboard-kpi-label">${escapeHtml(kpi.label)}</div>
-          <div class="dashboard-kpi-value">${escapeHtml(kpi.value)}</div>
-          <div class="dashboard-kpi-meta">${escapeHtml(kpi.meta)}</div>
-        </div>
-      `).join('')}
-    </div>
-    <div class="dashboard-layout">
-      <div class="dashboard-chart-card">
-        <div class="dashboard-card-title">${escapeHtml(dashboard.chartTitle)}</div>
-        <div class="dashboard-card-subtitle">${escapeHtml(dashboard.chartSubtitle)}</div>
-        ${renderDashboardActions(dashboard)}
-        <div class="dashboard-chart-frame">${renderDashboardChart(dashboard.chart)}</div>
-        <div class="dashboard-legend">
-          ${dashboard.legend.map((item) => `<span class="dashboard-bullet">${escapeHtml(item)}</span>`).join('')}
-        </div>
-        <div class="dashboard-note">${escapeHtml(dashboard.note)}</div>
-      </div>
-      <div style="display:grid;gap:14px">
-        <div class="dashboard-insight-card">
-          <div class="dashboard-card-title">Business insights</div>
-          <div class="dashboard-insight-list">
-            ${dashboard.insights.map((item) => `<div class="dashboard-insight">${escapeHtml(item)}</div>`).join('')}
-          </div>
-        </div>
-        <div class="dashboard-meta-card">
-          <div class="dashboard-card-title">Dashboard context</div>
-          <div class="dashboard-meta-list">
-            <div class="dashboard-meta-item">
-              <span class="dashboard-meta-key">Source</span>
-              <span class="dashboard-meta-value">${escapeHtml(dashboardLastResult.source)}</span>
-            </div>
-            <div class="dashboard-meta-item">
-              <span class="dashboard-meta-key">Rows used</span>
-              <span class="dashboard-meta-value">${escapeHtml(String(dashboardLastResult.row_count))}</span>
-            </div>
-            <div class="dashboard-meta-item">
-              <span class="dashboard-meta-key">Primary view</span>
-              <span class="dashboard-meta-value">${escapeHtml(dashboard.chartKindLabel)}</span>
-            </div>
-            <div class="dashboard-meta-item">
-              <span class="dashboard-meta-key">Question</span>
-              <span class="dashboard-meta-value">${escapeHtml(dashboardLastResult.title)}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>`;
-}
-
-function renderDashboardCopilot(dashboard = null) {
-  const hasResult = Boolean(dashboardLastResult?.columns?.length);
-  const followUps = hasResult ? (dashboard?.followUps || []) : DASHBOARD_STARTERS;
-  return `
-    <div class="dashboard-copilot">
-      <div class="dashboard-copilot-head">
-        <strong>Dashboard AI</strong>
-        <span>${hasResult ? 'Ask a new business question or use plain English to reshape the current dashboard for stakeholders.' : 'Describe the dashboard you want and Dashboard AI will create the first view directly from your connected source.'}</span>
-      </div>
-      <textarea id="dashboardPrompt" class="sql-editor" rows="3" placeholder="${hasResult ? 'Count patients by ethnicity, show patient count by birth year, or make this a bar chart and show only top 5.' : 'Show patient count by state, create a monthly trend dashboard, or build an executive summary for stakeholders.'}"></textarea>
-      <div class="dashboard-copilot-actions">
-        <button class="btn btn-ghost btn-sm" type="button" onclick="clearDashboardPrompt()">Clear</button>
-        <button class="btn btn-primary btn-sm" id="dashboardCopilotBtn" type="button" onclick="runDashboardCopilot()">Run Dashboard AI</button>
-      </div>
-      ${followUps.length ? `
-        <div class="dashboard-chip-row">
-          ${followUps.map((item) => `<button class="dashboard-chip" type="button" onclick='runDashboardCopilot(${escapeJsString(item)})'>${escapeHtml(item)}</button>`).join('')}
-        </div>
-      ` : ''}
-    </div>`;
-}
-
-function renderDashboardTrust(dashboard) {
-  const tables = dashboardLastResult.tables_used || [];
-  return `
-    <div class="dashboard-trust">
-      <div class="dashboard-trust-card">
-        <div class="dashboard-trust-label">AI explanation</div>
-        <div class="dashboard-trust-value">${escapeHtml(dashboard.explanation || dashboard.note || 'Dashboard generated from the latest verified query result.')}</div>
-      </div>
-      <div class="dashboard-trust-card">
-        <div class="dashboard-trust-label">Confidence</div>
-        <div class="dashboard-trust-value">${escapeHtml((dashboard.confidence || dashboardLastResult.confidence || 'medium').toUpperCase())}</div>
-      </div>
-      <div class="dashboard-trust-card">
-        <div class="dashboard-trust-label">Tables used</div>
-        <div class="dashboard-trust-value">${tables.length ? escapeHtml(tables.join(', ')) : 'Result-driven dashboard from the current dataset'}</div>
-      </div>
-    </div>`;
-}
-
-function renderDashboardAnswer(dashboard) {
-  return `
-    <div class="dashboard-answer-card">
-      <div class="dashboard-answer-label">Plain-English answer</div>
-      <div class="dashboard-answer-text">${escapeHtml(buildPlainEnglishAnswer(dashboardLastResult, dashboard))}</div>
-    </div>`;
-}
-
-function renderDashboardActions(dashboard) {
-  return `
-    <div class="dashboard-card-actions">
-      <button class="btn btn-ghost btn-sm" type="button" onclick="downloadDashboardPNG()">${dashboard.chart?.type === 'empty' || dashboard.chart?.type === 'table' ? 'Download view' : 'Download chart PNG'}</button>
-      <button class="btn btn-ghost btn-sm" type="button" onclick="downloadDashboardCSV()">Download CSV</button>
-      <button class="btn btn-ghost btn-sm" type="button" onclick="downloadDashboardSummary()">Download summary</button>
-    </div>`;
-}
-
-function renderDashboardToolbar(result, options) {
-  const view = dashboardPrefs?.view || 'auto';
-  const dimension = dashboardPrefs?.dimension || '';
-  const measure = dashboardPrefs?.measure || '';
-  const topN = dashboardPrefs?.topN || 8;
-
-  return `
-    <div class="dashboard-toolbar">
-      <div class="form-row">
-        <label>View type</label>
-        <select onchange="updateDashboardPref('view', this.value)">
-          ${[
-            ['auto', 'Auto'],
-            ['bar', 'Bar chart'],
-            ['line', 'Line chart'],
-            ['kpi', 'KPI cards'],
-            ['table', 'Table view'],
-          ].map(([key, label]) => `<option value="${key}" ${view === key ? 'selected' : ''}>${label}</option>`).join('')}
-        </select>
-      </div>
-      <div class="form-row">
-        <label>Group by</label>
-        <select onchange="updateDashboardPref('dimension', this.value)">
-          <option value="">Auto</option>
-          ${(options.dimensions || []).map((item) => `<option value="${escapeHtml(item.name)}" ${dimension === item.name ? 'selected' : ''}>${escapeHtml(item.name)}</option>`).join('')}
-        </select>
-      </div>
-      <div class="form-row">
-        <label>Measure</label>
-        <select onchange="updateDashboardPref('measure', this.value)">
-          <option value="">Auto</option>
-          <option value="${ROW_COUNT_MEASURE}" ${measure === ROW_COUNT_MEASURE ? 'selected' : ''}>Row count</option>
-          ${(options.measures || []).map((item) => `<option value="${escapeHtml(item.name)}" ${measure === item.name ? 'selected' : ''}>${escapeHtml(item.name)}</option>`).join('')}
-        </select>
-      </div>
-      <div class="form-row">
-        <label>Top rows</label>
-        <input type="number" min="3" max="20" value="${topN}" onchange="updateDashboardPref('topN', this.value)" />
-      </div>
-      <div class="dashboard-toolbar-note">
-        Stakeholder mode keeps it simple: choose the view, group by field, and metric. Leave everything on Auto for the fastest dashboard.
-      </div>
-    </div>`;
-}
-
-function updateDashboardPref(key, value) {
-  if (!dashboardPrefs) dashboardPrefs = {};
-  if (key === 'topN') {
-    dashboardPrefs.topN = Math.min(20, Math.max(3, parseInt(value, 10) || 8));
-  } else {
-    dashboardPrefs[key] = value;
-  }
-  renderDashboard();
 }
 
 function clearDashboardPrompt() {
@@ -2670,492 +3588,381 @@ function clearDashboardPrompt() {
   if (input) input.value = '';
 }
 
-function getCategoryProfileScore(profile, rows) {
-  const labels = rows
-    .map((row) => row[profile.index])
-    .filter((value) => value !== null && value !== undefined && String(value).trim() !== '')
-    .map((value) => String(value).trim());
-  if (!labels.length) return -Infinity;
-  const uniqueCount = new Set(labels).size;
-  if (uniqueCount <= 1) return -Infinity;
-  const repetition = labels.length / uniqueCount;
-  const compactnessBonus = uniqueCount <= Math.min(12, Math.max(4, Math.ceil(labels.length * 0.7))) ? 3 : 0;
-  return repetition * 10 + compactnessBonus - uniqueCount;
+function renderDashboard() {
+  destroyDashboardCharts();
+  const body = document.getElementById('dashboardBody');
+  const label = document.getElementById('dashboardSourceLabel');
+  const tab = getActiveDashboardTab();
+  const result = tab.result || dashboardLastResult;
+  const hasPanels = Boolean(tab.panels?.length);
+  label.textContent = result?.row_count != null ? `${tab.source || result.source || 'Dashboard'} · ${result.row_count} rows` : 'Plain-English dashboard creation';
+
+  body.innerHTML = `
+    <div class="dashboard-shell">
+      ${renderDashboardTabRow(tab)}
+      ${renderDashboardSummaryBanner(tab, result)}
+      ${renderDashboardMetaStrip(tab, result)}
+      ${renderDashboardFilterBar(tab, result)}
+      ${renderDashboardKpiStrip(tab)}
+      ${hasPanels ? `<div class="dashboard-panel-grid">${renderDashboardPanelCards(tab)}</div>` : renderDashboardEmptyState()}
+      ${renderDashboardPromptDock(tab)}
+    </div>
+  `;
+
+  mountDashboardCharts(tab);
 }
 
-function pickBestCategoryProfile(categoryColumns, rows) {
-  return [...categoryColumns]
-    .sort((a, b) => getCategoryProfileScore(b, rows) - getCategoryProfileScore(a, rows))[0] || null;
-}
-
-function hasMeaningfulChartCandidate(dateColumns, categoryColumns, numericColumns, rows) {
-  if (!rows.length) return false;
-  if (dateColumns.length) return true;
-  if (numericColumns.length) return true;
-  return Boolean(pickBestCategoryProfile(categoryColumns, rows));
-}
-
-function getSyntheticRowCountMeasure() {
-  return { name: ROW_COUNT_MEASURE, label: 'Row count', kind: 'numeric', index: -1, synthetic: true };
-}
-
-function getMeasureLabel(profile) {
-  if (!profile) return 'Value';
-  return profile.synthetic || profile.name === ROW_COUNT_MEASURE ? 'Row count' : profile.name;
-}
-
-function isIdentifierLikeName(name) {
-  return /\b(id|zip|zipcode|postal|ssn|passport|driver|drivers|phone|account|code)\b/i.test(String(name || ''))
-    || /(^id$|_id$|id$)/i.test(String(name || ''));
-}
-
-function getNumericMeasureScore(profile, rows) {
-  const values = rows
-    .map((row) => toNumber(row[profile.index]))
-    .filter((value) => Number.isFinite(value));
-  if (!values.length) return -Infinity;
-
-  const uniqueCount = new Set(values).size;
-  const uniquenessRatio = uniqueCount / values.length;
-  const name = String(profile.name || '');
-  const metricBonus = /(count|total|cost|price|amount|revenue|sales|score|value|quantity|dispense|days)/i.test(name) ? 6 : 0;
-  const identifierPenalty = isIdentifierLikeName(name) ? 8 : 0;
-  const uniquenessPenalty = uniquenessRatio > 0.85 ? 4 : 0;
-  return metricBonus - identifierPenalty - uniquenessPenalty;
-}
-
-function pickBestMeasureProfile(numericColumns, rows) {
-  const ranked = [...numericColumns]
-    .sort((a, b) => getNumericMeasureScore(b, rows) - getNumericMeasureScore(a, rows));
-  const best = ranked[0];
-  if (!best) return null;
-  return getNumericMeasureScore(best, rows) > 0 ? best : null;
-}
-
-function buildAggregatedSeries(rows, dimensionProfile, measureProfile, mode = 'bar', topN = 8) {
-  if (!dimensionProfile) return [];
-  const grouped = new Map();
-
-  rows.forEach((row) => {
-    const rawLabel = row[dimensionProfile.index];
-    if (rawLabel === null || rawLabel === undefined) return;
-    const label = String(rawLabel).trim();
-    if (!label) return;
-
-    let increment = 1;
-    if (measureProfile && !measureProfile.synthetic && measureProfile.name !== ROW_COUNT_MEASURE) {
-      increment = toNumber(row[measureProfile.index]);
-      if (!Number.isFinite(increment)) return;
-    }
-
-    grouped.set(label, (grouped.get(label) || 0) + increment);
-  });
-
-  const series = [...grouped.entries()].map(([label, value]) => ({ label, value }));
-  if (mode === 'line') {
-    return series.sort((a, b) => String(a.label).localeCompare(String(b.label)));
-  }
-  return series.sort((a, b) => b.value - a.value).slice(0, topN);
-}
-
-function createDefaultDashboardPrefs(result) {
-  const dashboard = result.dashboard || {};
-  const profiles = getColumnProfiles(result.columns || [], result.rows || []);
-  const numericColumns = profiles.filter((profile) => profile.kind === 'numeric');
-  const dateColumns = profiles.filter((profile) => profile.kind === 'date');
-  const categoryColumns = profiles.filter((profile) => profile.kind === 'category');
-  const defaultCategory = pickBestCategoryProfile(categoryColumns, result.rows || []) || categoryColumns[0] || null;
-  const preferredMeasure = pickBestMeasureProfile(numericColumns, result.rows || []) || getSyntheticRowCountMeasure();
-  const shouldPreferChart = dashboard.view === 'table' && hasMeaningfulChartCandidate(dateColumns, categoryColumns, numericColumns, result.rows || []);
-  const defaultDimension = preferredMeasure.synthetic
-    ? ((defaultCategory || dateColumns[0] || {}).name || '')
-    : ((dateColumns[0] || defaultCategory || {}).name || '');
-  return {
-    view: shouldPreferChart ? 'auto' : (dashboard.view || 'auto'),
-    dimension: dashboard.dimension || defaultDimension,
-    measure: dashboard.measure || preferredMeasure.name || '',
-    topN: dashboard.top_n || 8,
-  };
-}
-
-function getColumnProfiles(columns, rows) {
-  return columns.map((name, index) => profileColumn(name, rows, index));
-}
-
-function buildDashboardModel(result, prefs = null) {
-  const aiDashboard = result.dashboard || {};
-  const columns = result.columns || [];
-  const rows = result.rows || [];
-  const profiles = getColumnProfiles(columns, rows);
-  const numericColumns = profiles.filter((profile) => profile.kind === 'numeric');
-  const dateColumns = profiles.filter((profile) => profile.kind === 'date');
-  const categoryColumns = profiles.filter((profile) => profile.kind === 'category');
-  const topN = Math.min(20, Math.max(3, prefs?.topN || 8));
-  const bestCategoryProfile = pickBestCategoryProfile(categoryColumns, rows) || categoryColumns[0] || null;
-  const bestMeasureProfile = pickBestMeasureProfile(numericColumns, rows);
-  const dimensionProfile = profiles.find((profile) => profile.name === prefs?.dimension) || dateColumns[0] || bestCategoryProfile || null;
-  const requestedMeasure = prefs?.measure === ROW_COUNT_MEASURE ? getSyntheticRowCountMeasure() : profiles.find((profile) => profile.name === prefs?.measure);
-  const measureProfile = requestedMeasure || bestMeasureProfile || getSyntheticRowCountMeasure();
-
-  const baseKpis = [
-    {
-      label: 'Rows returned',
-      value: formatCompactNumber(rows.length),
-      meta: `${columns.length} columns in the result set`,
-    },
-  ];
-
-  if (rows.length === 1) {
-    const row = rows[0];
-    numericColumns.slice(0, 3).forEach((profile) => {
-      baseKpis.push({
-        label: profile.name,
-        value: formatSmartValue(row[profile.index]),
-        meta: 'Single-row answer surfaced as KPI',
-      });
-    });
-  } else if (numericColumns.length) {
-    numericColumns.slice(0, 3).forEach((profile) => {
-      const values = rows.map((row) => toNumber(row[profile.index])).filter((value) => Number.isFinite(value));
-      if (!values.length) return;
-      const total = values.reduce((sum, value) => sum + value, 0);
-      const max = Math.max(...values);
-      baseKpis.push({
-        label: profile.name,
-        value: formatCompactNumber(total),
-        meta: `Max ${formatCompactNumber(max)}`,
-      });
-    });
-  }
-
-  let chart;
-  let chartKindLabel = 'Summary';
-  let chartTitle = aiDashboard.title || 'Visual summary';
-  let chartSubtitle = aiDashboard.subtitle || 'Auto-generated from the latest result';
-  let insights = [];
-  let legend = [];
-  let note = aiDashboard.explanation || 'Use Ask AI for business questions and SQL Runner for direct control. The dashboard automatically chooses a simple presentation from the returned rows.';
-  const dashboardOptions = {
-    dimensions: [...dateColumns, ...(bestCategoryProfile ? [bestCategoryProfile] : []), ...categoryColumns.filter((profile) => profile.name !== bestCategoryProfile?.name)],
-    measures: numericColumns,
-  };
-
-  if (prefs?.view === 'table') {
-    chart = { type: 'table', columns, rows };
-    chartKindLabel = 'Table view';
-    chartTitle = 'Full result table';
-    chartSubtitle = 'Best when stakeholders want to review exact rows before deciding on a chart.';
-    insights = [
-      'Table view is useful when the returned rows are already the final answer.',
-      'Switch to Bar or Line for a faster executive summary.',
-      'Use Ask AI to refine the question into a metric + grouping if you want a stronger visual.',
-    ];
-    legend = ['Showing the same result set with a stakeholder-friendly wrapper'];
-    return {
-      kpis: baseKpis.slice(0, 4),
-      chart,
-      chartKindLabel,
-      chartTitle,
-      chartSubtitle,
-      insights,
-      legend,
-      note,
-      dashboardOptions,
-      followUps: aiDashboard.follow_ups || result.follow_ups || [],
-      confidence: aiDashboard.confidence || result.confidence || 'medium',
-      explanation: aiDashboard.explanation || note,
-    };
-  }
-
-  if (prefs?.view === 'kpi') {
-    chart = { type: 'empty' };
-    chartKindLabel = 'KPI overview';
-    chartTitle = 'Executive KPI summary';
-    chartSubtitle = 'Simple cards designed for stakeholder review';
-    insights = [
-      'KPI mode keeps the output lightweight and presentation-friendly.',
-      'If you want trend or comparison context, switch back to Auto, Bar, or Line.',
-      'This is best for totals, counts, averages, and single-row summaries.',
-    ];
-    legend = ['KPI mode hides the chart and focuses on headline numbers'];
-    return {
-      kpis: baseKpis.slice(0, 4),
-      chart,
-      chartKindLabel,
-      chartTitle,
-      chartSubtitle,
-      insights,
-      legend,
-      note,
-      dashboardOptions,
-      followUps: aiDashboard.follow_ups || result.follow_ups || [],
-      confidence: aiDashboard.confidence || result.confidence || 'medium',
-      explanation: aiDashboard.explanation || note,
-    };
-  }
-
-  if ((prefs?.view === 'line' && dimensionProfile) || ((!prefs?.view || prefs?.view === 'auto') && dateColumns.length && bestMeasureProfile)) {
-    const dimension = prefs?.view === 'line' ? dimensionProfile : dateColumns[0];
-    const measure = prefs?.view === 'line' ? measureProfile : (bestMeasureProfile || getSyntheticRowCountMeasure());
-    const series = buildAggregatedSeries(rows, dimension, measure, 'line', topN);
-    chart = { type: 'line', points: series, dimension: dimension.name, measure: measure.name };
-    chartKindLabel = 'Trend chart';
-    chartTitle = `${getMeasureLabel(measure)} over ${dimension.name}`;
-    chartSubtitle = 'Best when a time-like field is present in the result';
-    if (series.length) {
-      const last = series[series.length - 1];
-      const first = series[0];
-      insights = [
-        `${getMeasureLabel(measure)} spans ${series.length} points across ${dimension.name}.`,
-        `The latest visible value is ${formatCompactNumber(last.value)} at ${last.label}.`,
-        `The first visible value is ${formatCompactNumber(first.value)} at ${first.label}.`,
-      ];
-      legend = [`X-axis: ${dimension.name}`, `Y-axis: ${getMeasureLabel(measure)}`];
-    }
-  } else if ((prefs?.view === 'bar' && dimensionProfile) || ((!prefs?.view || prefs?.view === 'auto') && bestCategoryProfile)) {
-    const dimension = prefs?.view === 'bar' ? dimensionProfile : bestCategoryProfile;
-    const measure = prefs?.view === 'bar' ? measureProfile : (bestMeasureProfile || getSyntheticRowCountMeasure());
-    const bars = buildAggregatedSeries(rows, dimension, measure, 'bar', topN);
-    chart = { type: 'bar', bars, dimension: dimension.name, measure: measure.name };
-    chartKindLabel = 'Ranked comparison';
-    chartTitle = `${getMeasureLabel(measure)} by ${dimension.name}`;
-    chartSubtitle = 'Top categories from the latest result set';
-    if (bars.length) {
-      const leader = bars[0];
-      const trailer = bars[bars.length - 1];
-      insights = [
-        `${leader.label} leads with ${formatCompactNumber(leader.value)} ${getMeasureLabel(measure)}.`,
-        `${bars.length} categories are shown in the current comparison.`,
-        `${trailer.label} is the lowest visible category at ${formatCompactNumber(trailer.value)}.`,
-      ];
-      legend = [`Bars ranked by ${getMeasureLabel(measure)}`, `Dimension: ${dimension.name}`];
-    }
-  } else if (numericColumns.length) {
-    const measure = numericColumns[0];
-    const series = rows
-      .map((row, index) => ({ label: `Row ${index + 1}`, value: toNumber(row[measure.index]) }))
-      .filter((item) => Number.isFinite(item.value))
-      .slice(0, 12);
-    chart = { type: 'line', points: series, dimension: 'Result order', measure: measure.name };
-    chartKindLabel = 'Sequence view';
-    chartTitle = `${measure.name} across returned rows`;
-    chartSubtitle = 'Fallback trend when the result contains a numeric measure but no clear category/time field';
-    if (series.length) {
-      const maxPoint = [...series].sort((a, b) => b.value - a.value)[0];
-      insights = [
-        `${measure.name} varies across ${series.length} visible rows.`,
-        `The highest visible point is ${formatCompactNumber(maxPoint.value)} at ${maxPoint.label}.`,
-        `This fallback chart is useful for spotting outliers quickly.`,
-      ];
-      legend = [`Measure: ${measure.name}`, 'X-axis follows the returned row order'];
-    }
-  } else {
-    chart = { type: 'empty' };
-    chartKindLabel = 'Table-first result';
-    chartTitle = 'No strong chart candidate found';
-    chartSubtitle = 'The current result is better suited to table review than charting';
-    insights = [
-      'This result does not expose a clear numeric measure for charting.',
-      'Stakeholders can still review the returned table and refine the question.',
-      'A follow-up that asks for totals, trends, or rankings will produce a stronger dashboard.',
-    ];
-    legend = ['Try asking for revenue, counts, totals, trends, or top/bottom comparisons'];
-    note = 'This tab prefers clarity over forcing a weak chart. Ask for a metric plus a category or time field to get a stronger dashboard.';
-  }
-
-  return {
-    kpis: baseKpis.slice(0, 4),
-    chart,
-    chartKindLabel,
-    chartTitle: aiDashboard.title || chartTitle,
-    chartSubtitle: aiDashboard.subtitle || chartSubtitle,
-    insights: (aiDashboard.insights && aiDashboard.insights.length ? aiDashboard.insights : insights).length ? (aiDashboard.insights && aiDashboard.insights.length ? aiDashboard.insights : insights) : ['The latest result is available, but there was not enough structured data to derive a stronger narrative yet.'],
-    legend,
-    note: aiDashboard.explanation || note,
-    dashboardOptions,
-    followUps: aiDashboard.follow_ups || result.follow_ups || [],
-    confidence: aiDashboard.confidence || result.confidence || 'medium',
-    explanation: aiDashboard.explanation || note,
-  };
-}
-
-function profileColumn(name, rows, index) {
-  const values = rows.map((row) => row[index]).filter((value) => value !== null && value !== undefined && String(value).trim() !== '');
-  if (!values.length) return { name, index, kind: 'category' };
-
-  const numericCount = values.filter((value) => isNumericValue(value)).length;
-  const dateCount = values.filter((value) => isDateValue(value)).length;
-
-  if (numericCount / values.length >= 0.85) return { name, index, kind: 'numeric' };
-  if (dateCount / values.length >= 0.85) return { name, index, kind: 'date' };
-  return { name, index, kind: 'category' };
-}
-
-function isNumericValue(value) {
-  if (typeof value === 'number') return Number.isFinite(value);
-  if (typeof value !== 'string') return false;
-  const text = value.trim().replace(/,/g, '');
-  if (!text) return false;
-  return /^-?\d+(\.\d+)?$/.test(text);
-}
-
-function isDateValue(value) {
-  if (value instanceof Date) return true;
-  if (typeof value !== 'string') return false;
-  const text = value.trim();
-  if (!text) return false;
-  if (!/^\d{4}-\d{2}-\d{2}/.test(text) && !/^\d{1,2}\/\d{1,2}\/\d{2,4}/.test(text)) return false;
-  return !Number.isNaN(Date.parse(text));
-}
-
-function toNumber(value) {
-  if (typeof value === 'number') return value;
-  if (typeof value === 'string') return Number(value.replace(/,/g, '').trim());
-  return NaN;
-}
-
-function formatCompactNumber(value) {
-  const num = Number(value);
-  if (!Number.isFinite(num)) return '—';
-  return new Intl.NumberFormat(undefined, { notation: Math.abs(num) >= 1000 ? 'compact' : 'standard', maximumFractionDigits: 1 }).format(num);
-}
-
-function formatSmartValue(value) {
-  if (value === null || value === undefined || value === '') return '—';
-  return isNumericValue(value) ? formatCompactNumber(toNumber(value)) : String(value);
-}
-
-function renderDashboardChart(chart) {
-  if (!chart || chart.type === 'empty') {
-    return `<div class="empty-state"><p>No strong chart could be generated from the current result. The table is still available in Ask AI or SQL Runner.</p></div>`;
-  }
-  if (chart.type === 'table') return renderTable(chart.columns, chart.rows);
-  if (chart.type === 'bar') return renderBarChart(chart);
-  if (chart.type === 'line') return renderLineChart(chart);
-  return `<div class="empty-state"><p>Chart type not supported yet.</p></div>`;
-}
-
-function renderBarChart(chart) {
-  const measureLabel = chart.measure === ROW_COUNT_MEASURE ? 'Row count' : chart.measure;
-  const width = 760;
-  const height = 320;
-  const left = 150;
-  const right = 24;
-  const top = 20;
-  const bottom = 24;
-  const plotWidth = width - left - right;
-  const slotHeight = (height - top - bottom) / Math.max(chart.bars.length, 1);
-  const max = Math.max(...chart.bars.map((bar) => bar.value), 1);
-
-  const bars = chart.bars.map((bar, index) => {
-    const y = top + index * slotHeight + 6;
-    const barHeight = Math.max(slotHeight - 14, 16);
-    const barWidth = Math.max((bar.value / max) * plotWidth, 2);
-    const label = escapeHtml(truncateLabel(bar.label, 22));
-    return `
-      <text x="${left - 10}" y="${y + barHeight / 2 + 4}" text-anchor="end" fill="#8b949e" font-size="12">${label}</text>
-      <rect x="${left}" y="${y}" width="${barWidth}" height="${barHeight}" rx="8" fill="url(#barGrad)" />
-      <text x="${left + barWidth + 8}" y="${y + barHeight / 2 + 4}" fill="#e6edf3" font-size="12">${escapeHtml(formatCompactNumber(bar.value))}</text>
-    `;
-  }).join('');
-
+function renderDashboardTabRow(tab) {
+  const workspace = ensureDashboardWorkspace();
   return `
-    <svg class="dashboard-chart-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(measureLabel)} by ${escapeHtml(chart.dimension)}">
-      <defs>
-        <linearGradient id="barGrad" x1="0%" x2="100%">
-          <stop offset="0%" stop-color="#58a6ff"/>
-          <stop offset="100%" stop-color="#3fb950"/>
-        </linearGradient>
-      </defs>
-      <rect x="0" y="0" width="${width}" height="${height}" rx="14" fill="rgba(255,255,255,0.01)"/>
-      ${bars}
-    </svg>`;
+    <div class="dashboard-tab-row">
+      <div class="dashboard-tab-list">
+        ${workspace.tabs.map((item) => `
+          <button class="dashboard-tab-chip ${item.id === workspace.activeTabId ? 'active' : ''}" type="button" onclick="setActiveDashboardTab('${item.id}')">${escapeHtml(item.name)}</button>
+        `).join('')}
+        <button class="dashboard-tab-chip" type="button" onclick="createNewDashboardTab()">+ New</button>
+      </div>
+      <div class="dashboard-tab-actions">
+        <button class="btn btn-ghost btn-sm" type="button" onclick="saveDashboardView()">Save dashboard</button>
+        <button class="btn btn-ghost btn-sm" type="button" onclick="refreshDashboard()">Refresh</button>
+      </div>
+    </div>
+  `;
 }
 
-function renderLineChart(chart) {
-  const measureLabel = chart.measure === ROW_COUNT_MEASURE ? 'Row count' : chart.measure;
-  const width = 760;
-  const height = 320;
-  const left = 56;
-  const right = 20;
-  const top = 18;
-  const bottom = 44;
-  const plotWidth = width - left - right;
-  const plotHeight = height - top - bottom;
-  const max = Math.max(...chart.points.map((point) => point.value), 1);
-  const min = Math.min(...chart.points.map((point) => point.value), 0);
-  const range = Math.max(max - min, 1);
-  const points = chart.points.map((point, index) => {
-    const x = left + (chart.points.length === 1 ? plotWidth / 2 : (index / (chart.points.length - 1)) * plotWidth);
-    const y = top + plotHeight - (((point.value - min) / range) * plotHeight);
-    return { ...point, x, y };
-  });
-  const polyline = points.map((point) => `${point.x},${point.y}`).join(' ');
-  const yTicks = Array.from({ length: 4 }, (_, index) => {
-    const ratio = index / 3;
-    const value = max - ratio * range;
-    const y = top + ratio * plotHeight;
-    return `
-      <line x1="${left}" y1="${y}" x2="${width - right}" y2="${y}" stroke="rgba(255,255,255,0.08)" stroke-dasharray="3 6"/>
-      <text x="${left - 10}" y="${y + 4}" text-anchor="end" fill="#8b949e" font-size="11">${escapeHtml(formatCompactNumber(value))}</text>
-    `;
-  }).join('');
-  const xLabels = points.filter((_, index) => index === 0 || index === points.length - 1 || index === Math.floor(points.length / 2)).map((point) => `
-    <text x="${point.x}" y="${height - 14}" text-anchor="middle" fill="#8b949e" font-size="11">${escapeHtml(truncateLabel(point.label, 16))}</text>
-  `).join('');
-  const circles = points.map((point) => `
-    <circle cx="${point.x}" cy="${point.y}" r="4.5" fill="#58a6ff" stroke="#08111c" stroke-width="2"/>
-  `).join('');
+function renderDashboardSummaryBanner(tab, result) {
+  const summary = tab.summary || buildPlainEnglishAnswer(result, tab.dashboardPlan);
+  return `<div class="dashboard-summary-banner">${escapeHtml(summary || 'Ask a question in plain English to create a stakeholder-ready dashboard.')}</div>`;
+}
 
+function renderDashboardMetaStrip(tab, result) {
+  const tables = result?.tables_used?.length ? result.tables_used.join(', ') : 'Current result set';
   return `
-    <svg class="dashboard-chart-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(measureLabel)} over ${escapeHtml(chart.dimension)}">
-      <defs>
-        <linearGradient id="lineFill" x1="0%" x2="0%" y1="0%" y2="100%">
-          <stop offset="0%" stop-color="rgba(88,166,255,0.35)"/>
-          <stop offset="100%" stop-color="rgba(88,166,255,0.02)"/>
-        </linearGradient>
-      </defs>
-      <rect x="0" y="0" width="${width}" height="${height}" rx="14" fill="rgba(255,255,255,0.01)"/>
-      ${yTicks}
-      <polyline fill="none" stroke="#58a6ff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="${polyline}"/>
-      ${circles}
-      ${xLabels}
-    </svg>`;
+    <div class="dashboard-meta-strip">
+      <div class="dashboard-meta-card">
+        <div class="dashboard-meta-label">AI explanation</div>
+        <div class="dashboard-meta-value">${escapeHtml(tab.dashboardPlan?.summary || result?.explanation || 'Dashboard AI turns query results into a multi-panel view for stakeholders.')}</div>
+      </div>
+      <div class="dashboard-meta-card">
+        <div class="dashboard-meta-label">Confidence</div>
+        <div class="dashboard-meta-value">${escapeHtml(String(tab.confidence || result?.confidence || 'medium').toUpperCase())}</div>
+      </div>
+      <div class="dashboard-meta-card">
+        <div class="dashboard-meta-label">Tables used</div>
+        <div class="dashboard-meta-value">${escapeHtml(tables)}</div>
+      </div>
+    </div>
+  `;
 }
 
-function truncateLabel(label, max) {
-  return label.length > max ? `${label.slice(0, max - 1)}…` : label;
+function renderDashboardFilterBar(tab, result) {
+  const filters = tab.filters || defaultDashboardFilters();
+  const dimensionOptions = getDashboardDimensionOptions(tab, tab.rawResult || result);
+  return `
+    <div class="dashboard-filter-bar">
+      <div class="dashboard-filter-grid">
+        <div class="form-row" style="margin-bottom:0">
+          <label>Date range</label>
+          <select onchange="updateDashboardDateRange(this.value)">
+            ${[
+              ['7d', 'Last 7d'],
+              ['30d', 'Last 30d'],
+              ['90d', 'Last 90d'],
+              ['12m', 'Last 12m'],
+              ['custom', 'Custom'],
+              ['all', 'All time'],
+            ].map(([value, text]) => `<option value="${value}" ${filters.dateRange === value ? 'selected' : ''}>${text}</option>`).join('')}
+          </select>
+        </div>
+        ${filters.dimensionFilters.map((filter, index) => `
+          <div class="form-row" style="margin-bottom:0">
+            <label>Filter ${index + 1}</label>
+            <div style="display:grid;gap:8px">
+              <select onchange="updateDashboardFilterField(${index}, this.value)">
+                <option value="">Select field</option>
+                ${dimensionOptions.map((item) => `<option value="${escapeHtml(item)}" ${filter.column === item ? 'selected' : ''}>${escapeHtml(item)}</option>`).join('')}
+              </select>
+              <select onchange="updateDashboardFilterValue(${index}, this.value)" ${filter.column ? '' : 'disabled'}>
+                <option value="">All values</option>
+                ${getDashboardFilterValues(tab.rawResult || result, filter.column).map((item) => `<option value="${escapeHtml(item)}" ${filter.value === item ? 'selected' : ''}>${escapeHtml(item)}</option>`).join('')}
+              </select>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+      ${filters.dateRange === 'custom' ? `
+        <div class="dashboard-filter-grid">
+          <div class="form-row" style="margin-bottom:0">
+            <label>From</label>
+            <input type="date" value="${escapeHtml(filters.customFrom || '')}" onchange="updateDashboardCustomDate('customFrom', this.value)" />
+          </div>
+          <div class="form-row" style="margin-bottom:0">
+            <label>To</label>
+            <input type="date" value="${escapeHtml(filters.customTo || '')}" onchange="updateDashboardCustomDate('customTo', this.value)" />
+          </div>
+        </div>
+      ` : ''}
+      <div class="dashboard-filter-actions">
+        <button class="btn btn-ghost btn-sm" type="button" onclick="clearDashboardFilters()">Clear all</button>
+        <button class="btn btn-primary btn-sm" type="button" onclick="applyDashboardFilters()">Apply</button>
+      </div>
+      <div class="dashboard-filter-help">Filters rerun the active dashboard question when possible, then refresh all panels from the filtered result.</div>
+    </div>
+  `;
 }
 
-function buildPlainEnglishAnswer(result, dashboard) {
-  const question = result?.title || 'the current question';
-  const chart = dashboard?.chart || {};
+function renderDashboardKpiStrip(tab) {
+  const panels = (tab.panels || []).filter((panel) => panel.chart_type === 'kpi').slice(0, 3);
+  if (!panels.length) return '';
+  return `
+    <div class="dashboard-kpi-strip">
+      ${panels.map((panel) => `
+        <div class="dashboard-kpi-card">
+          <div class="dashboard-kpi-title">${escapeHtml(panel.title)}</div>
+          <div class="dashboard-kpi-number">${escapeHtml(panel.data?.[0]?.formatted_value || formatSmartValue(panel.data?.[0]?.value))}</div>
+          <div class="dashboard-kpi-insight">${escapeHtml(panel.insight || '')}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderDashboardPanelCards(tab) {
+  const panels = (tab.panels || []).filter((panel) => panel.chart_type !== 'kpi');
+  return panels.map((panel) => `
+    <div class="dashboard-panel-card ${dashboardExpandedPanel === panel.id ? 'expanded' : ''}">
+      <div class="dashboard-panel-head">
+        <div>
+          <div class="dashboard-panel-type">${escapeHtml(panel.chart_type)}</div>
+          <div class="dashboard-panel-title">${escapeHtml(panel.title || 'Untitled panel')}</div>
+        </div>
+        <details class="dashboard-panel-menu">
+          <summary>⋯</summary>
+          <div class="dashboard-panel-menu-list">
+            <button type="button" onclick="downloadDashboardPanelCSV('${panel.id}')">Download CSV</button>
+            <button type="button" onclick="downloadDashboardPanelPNG('${panel.id}')">Download PNG</button>
+            <button type="button" onclick="toggleExpandDashboardPanel('${panel.id}')">${dashboardExpandedPanel === panel.id ? 'Collapse' : 'Expand'}</button>
+            <button type="button" onclick="removeDashboardPanel('${panel.id}')">Remove panel</button>
+          </div>
+        </details>
+      </div>
+      <div class="dashboard-panel-chart-wrap">${renderDashboardPanelBody(tab, panel)}</div>
+      <div class="dashboard-panel-insight">${escapeHtml(panel.insight || 'Stakeholder-ready context for this panel.')}</div>
+    </div>
+  `).join('');
+}
+
+function renderDashboardPanelBody(tab, panel) {
+  if (panel.chart_type === 'table') {
+    return renderDashboardPanelTable(tab, panel);
+  }
+  if (!['bar', 'bar_horizontal', 'line', 'donut'].includes(panel.chart_type)) {
+    return `<div class="dashboard-empty"><p>No chart could be rendered for this panel yet.</p></div>`;
+  }
+  return `<canvas id="dashboard-chart-${panel.id}"></canvas>`;
+}
+
+function renderDashboardPanelTable(tab, panel) {
+  const rows = Array.isArray(panel.data) ? panel.data : [];
+  const columns = panel.columns || Object.keys(rows[0] || {});
+  const sortState = tab.sortState?.[panel.id] || {};
+  const sortedRows = [...rows].sort((a, b) => {
+    if (!sortState.column) return 0;
+    const av = a?.[sortState.column];
+    const bv = b?.[sortState.column];
+    if (isNumericValue(av) && isNumericValue(bv)) {
+      return (toNumber(av) - toNumber(bv)) * (sortState.direction === 'desc' ? -1 : 1);
+    }
+    return String(av ?? '').localeCompare(String(bv ?? '')) * (sortState.direction === 'desc' ? -1 : 1);
+  });
+  return `
+    <div class="dashboard-table-wrap">
+      <table class="dashboard-table">
+        <thead>
+          <tr>
+            ${columns.map((column) => `<th onclick="sortDashboardPanel('${panel.id}', '${escapeJsString(column)}')">${escapeHtml(column)}${sortState.column === column ? ` ${sortState.direction === 'desc' ? '↓' : '↑'}` : ''}</th>`).join('')}
+          </tr>
+        </thead>
+        <tbody>
+          ${sortedRows.map((row) => `<tr>${columns.map((column) => `<td>${escapeHtml(formatSmartValue(row?.[column]))}</td>`).join('')}</tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function renderDashboardPromptDock(tab) {
+  const followUps = tab.followUps?.length ? tab.followUps : getDashboardStarterPrompts();
+  return `
+    <div class="dashboard-prompt-dock">
+      <div class="dashboard-chip-row">
+        ${followUps.map((item) => `<button class="dashboard-chip" type="button" onclick='runDashboardCopilot(${escapeJsString(item)})'>${escapeHtml(item)}</button>`).join('')}
+      </div>
+      <textarea id="dashboardPrompt" class="sql-editor" rows="3" placeholder="Ask a follow-up or start a new question..."></textarea>
+      <div class="dashboard-prompt-controls">
+        <label class="dashboard-checkbox"><input id="dashboardReplaceMode" type="checkbox" /> Replace existing panels</label>
+        <div class="dashboard-prompt-actions">
+          <button class="btn btn-ghost btn-sm" type="button" onclick="clearDashboardPrompt()">Clear</button>
+          <button class="btn btn-primary btn-sm" id="dashboardCopilotBtn" type="button" onclick="runDashboardCopilot()">Create dashboard</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderDashboardEmptyState() {
+  return `
+    <div class="dashboard-empty">
+      <div>
+        <p style="font-size:0.95rem;color:#eef1ff;margin-bottom:8px">Start with a plain-English dashboard question</p>
+        <p>Dashboard AI can fetch the data, create multiple panels, and keep the view simple enough for business stakeholders.</p>
+      </div>
+    </div>
+  `;
+}
+
+function updateDashboardDateRange(value) {
+  const tab = getActiveDashboardTab();
+  tab.filters.dateRange = value;
+  persistDashboardWorkspace();
+  renderDashboard();
+}
+
+function updateDashboardCustomDate(key, value) {
+  const tab = getActiveDashboardTab();
+  tab.filters[key] = value;
+  persistDashboardWorkspace();
+}
+
+function updateDashboardFilterField(index, value) {
+  const tab = getActiveDashboardTab();
+  tab.filters.dimensionFilters[index].column = value;
+  tab.filters.dimensionFilters[index].value = '';
+  persistDashboardWorkspace();
+  renderDashboard();
+}
+
+function updateDashboardFilterValue(index, value) {
+  const tab = getActiveDashboardTab();
+  tab.filters.dimensionFilters[index].value = value;
+  persistDashboardWorkspace();
+}
+
+async function applyDashboardFilters() {
+  const tab = getActiveDashboardTab();
+  let baseResult = tab.rawResult || tab.result || dashboardLastResult;
+  if (!baseResult && !tab.baseQuestion) {
+    toast('Run a dashboard query first');
+    return;
+  }
+
+  try {
+    if (tab.baseQuestion && (connected || activeConnId)) {
+      baseResult = await askDashboardQuestion(tab.baseQuestion);
+      tab.rawResult = cloneDashboardObject(baseResult);
+    }
+    const filteredResult = applyDashboardFiltersToResult(baseResult, tab.filters, tab);
+    const planPayload = await requestDashboardPlan(tab.baseQuestion || filteredResult.title || 'Filtered dashboard', filteredResult, tab.dashboardPlan);
+    assignDashboardPlan(tab, planPayload, {
+      replace: true,
+      result: filteredResult,
+      question: tab.baseQuestion || filteredResult.title,
+      source: tab.source || filteredResult.source || 'Dashboard AI',
+    });
+    renderDashboard();
+    toast('Filters applied');
+  } catch (error) {
+    toast(error.message || 'Failed to apply dashboard filters');
+  }
+}
+
+function clearDashboardFilters() {
+  const tab = getActiveDashboardTab();
+  tab.filters = defaultDashboardFilters();
+  if (tab.rawResult) tab.result = cloneDashboardObject(tab.rawResult);
+  persistDashboardWorkspace();
+  renderDashboard();
+}
+
+function sortDashboardPanel(panelId, column) {
+  const tab = getActiveDashboardTab();
+  const current = tab.sortState?.[panelId];
+  if (!tab.sortState) tab.sortState = {};
+  tab.sortState[panelId] = {
+    column,
+    direction: current?.column === column && current?.direction === 'asc' ? 'desc' : 'asc',
+  };
+  persistDashboardWorkspace();
+  renderDashboard();
+}
+
+function removeDashboardPanel(panelId) {
+  const tab = getActiveDashboardTab();
+  tab.panels = (tab.panels || []).filter((panel) => panel.id !== panelId);
+  if (dashboardExpandedPanel === panelId) dashboardExpandedPanel = null;
+  persistDashboardWorkspace();
+  renderDashboard();
+}
+
+function toggleExpandDashboardPanel(panelId) {
+  dashboardExpandedPanel = dashboardExpandedPanel === panelId ? null : panelId;
+  renderDashboard();
+}
+
+function buildPlainEnglishAnswer(result, plan) {
+  if (plan?.summary) return plan.summary;
   const rowCount = result?.row_count ?? result?.rows?.length ?? 0;
+  const question = result?.title || 'the current question';
+  return `For "${question}", the current result contains ${formatCompactNumber(rowCount)} rows. Ask Dashboard AI to turn it into a trend, ranking, KPI summary, or filtered stakeholder view.`;
+}
 
-  if (chart.type === 'bar' && chart.bars?.length) {
-    const leader = chart.bars[0];
-    return `For "${question}", the dashboard compares ${getMeasureLabel({ name: chart.measure, synthetic: chart.measure === ROW_COUNT_MEASURE })} by ${chart.dimension}. ${leader.label} is the leading category at ${formatCompactNumber(leader.value)}. ${chart.bars.length} categories are shown for quick stakeholder review.`;
+function dashboardPanelRowsForExport(panel) {
+  if (panel.chart_type === 'table') {
+    const columns = panel.columns || Object.keys(panel.data?.[0] || {});
+    return [columns, ...(panel.data || []).map((row) => columns.map((column) => row?.[column]))];
   }
-
-  if (chart.type === 'line' && chart.points?.length) {
-    const first = chart.points[0];
-    const last = chart.points[chart.points.length - 1];
-    return `For "${question}", the dashboard shows the trend of ${getMeasureLabel({ name: chart.measure, synthetic: chart.measure === ROW_COUNT_MEASURE })} over ${chart.dimension}. The visible series runs from ${first.label} to ${last.label}, and the latest point is ${formatCompactNumber(last.value)}.`;
+  if (panel.chart_type === 'kpi') {
+    return [['label', 'value'], ...(panel.data || []).map((item) => [item.label, item.value])];
   }
+  return [[panel.x_axis || 'x', panel.y_axis || 'y'], ...(panel.data || []).map((item) => [item.x, item.y])];
+}
 
-  if (chart.type === 'table') {
-    return `For "${question}", the query returned ${formatCompactNumber(rowCount)} rows. This result is currently best reviewed as a table, but you can ask Dashboard AI to switch it into a chart, ranking, or trend view.`;
+function downloadDashboardPanelCSV(panelId) {
+  const panel = getActiveDashboardTab().panels.find((item) => item.id === panelId);
+  if (!panel) return;
+  const csv = dashboardPanelRowsForExport(panel)
+    .map((row) => row.map((value) => `"${String(value ?? '').replace(/"/g, '""')}"`).join(','))
+    .join('\n');
+  const a = Object.assign(document.createElement('a'), {
+    href: URL.createObjectURL(new Blob([csv], { type: 'text/csv' })),
+    download: `${panel.title.replace(/\s+/g, '_').toLowerCase()}_${Date.now()}.csv`,
+  });
+  a.click();
+  toast('Panel CSV downloaded');
+}
+
+function downloadDashboardPanelPNG(panelId) {
+  const canvas = document.getElementById(`dashboard-chart-${panelId}`);
+  if (!canvas) {
+    toast('This panel does not have a chart to download');
+    return;
   }
-
-  return `For "${question}", the current result contains ${formatCompactNumber(rowCount)} rows. Use Dashboard AI to ask for a chart, top categories, trends, or an executive summary in plain English.`;
+  const a = Object.assign(document.createElement('a'), {
+    href: canvas.toDataURL('image/png'),
+    download: `dashboard_panel_${Date.now()}.png`,
+  });
+  a.click();
+  toast('Panel PNG downloaded');
 }
 
 function downloadDashboardCSV() {
-  if (!dashboardLastResult?.columns || !dashboardLastResult?.rows) {
+  const tab = getActiveDashboardTab();
+  const result = tab.result || dashboardLastResult;
+  if (!result?.columns?.length) {
     toast('No dashboard data to export');
     return;
   }
-  const csv = [dashboardLastResult.columns, ...dashboardLastResult.rows]
+  const csv = [result.columns, ...(result.rows || [])]
     .map((row) => row.map((value) => `"${String(value ?? '').replace(/"/g, '""')}"`).join(','))
     .join('\n');
   const a = Object.assign(document.createElement('a'), {
@@ -3163,79 +3970,99 @@ function downloadDashboardCSV() {
     download: `dashboard_${Date.now()}.csv`,
   });
   a.click();
-  toast('Dashboard CSV downloaded');
 }
 
 function downloadDashboardSummary() {
-  if (!dashboardLastResult?.columns?.length) {
-    toast('No dashboard summary to export');
-    return;
-  }
-  const dashboard = buildDashboardModel(dashboardLastResult, dashboardPrefs);
+  const tab = getActiveDashboardTab();
+  const result = tab.result || dashboardLastResult;
   const summary = [
-    `Question: ${dashboardLastResult.title}`,
-    `Source: ${dashboardLastResult.source}`,
-    `Plain-English answer: ${buildPlainEnglishAnswer(dashboardLastResult, dashboard)}`,
-    `Confidence: ${(dashboard.confidence || dashboardLastResult.confidence || 'medium').toUpperCase()}`,
-    `Tables used: ${(dashboardLastResult.tables_used || []).join(', ') || 'Current result set'}`,
-    '',
-    'Business insights:',
-    ...dashboard.insights.map((item, index) => `${index + 1}. ${item}`),
-    '',
-    dashboardLastResult.sql ? `SQL:\n${dashboardLastResult.sql}` : '',
-  ].filter(Boolean).join('\n');
-
+    `Dashboard: ${tab.name}`,
+    `Question: ${tab.baseQuestion || result?.title || 'N/A'}`,
+    `Summary: ${tab.summary || buildPlainEnglishAnswer(result, tab.dashboardPlan)}`,
+    `Confidence: ${String(tab.confidence || result?.confidence || 'medium').toUpperCase()}`,
+    `Panels: ${(tab.panels || []).map((panel) => panel.title).join(', ')}`,
+    result?.sql ? `SQL:\n${result.sql}` : '',
+  ].filter(Boolean).join('\n\n');
   const a = Object.assign(document.createElement('a'), {
     href: URL.createObjectURL(new Blob([summary], { type: 'text/plain' })),
     download: `dashboard_summary_${Date.now()}.txt`,
   });
   a.click();
-  toast('Dashboard summary downloaded');
 }
 
 function downloadDashboardPNG() {
-  const svg = document.querySelector('#dashboardBody .dashboard-chart-svg');
-  if (!svg) {
+  const tab = getActiveDashboardTab();
+  const panel = (tab.panels || []).find((item) => ['bar', 'bar_horizontal', 'line', 'donut'].includes(item.chart_type));
+  if (!panel) {
     downloadDashboardSummary();
     return;
   }
+  downloadDashboardPanelPNG(panel.id);
+}
 
-  const viewBox = (svg.getAttribute('viewBox') || '0 0 760 320').split(/\s+/).map(Number);
-  const [, , width = 760, height = 320] = viewBox;
-  const serialized = new XMLSerializer().serializeToString(svg);
-  const blob = new Blob([serialized], { type: 'image/svg+xml;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const img = new Image();
-
-  img.onload = () => {
-    const canvas = document.createElement('canvas');
-    canvas.width = width;
-    canvas.height = height;
+function mountDashboardCharts(tab) {
+  if (!window.Chart) return;
+  (tab.panels || []).filter((panel) => ['bar', 'bar_horizontal', 'line', 'donut'].includes(panel.chart_type)).forEach((panel) => {
+    const canvas = document.getElementById(`dashboard-chart-${panel.id}`);
+    if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#0d1117';
-    ctx.fillRect(0, 0, width, height);
-    ctx.drawImage(img, 0, 0, width, height);
-    URL.revokeObjectURL(url);
-    canvas.toBlob((pngBlob) => {
-      if (!pngBlob) {
-        toast('Could not render chart download');
-        return;
-      }
-      const a = Object.assign(document.createElement('a'), {
-        href: URL.createObjectURL(pngBlob),
-        download: `dashboard_chart_${Date.now()}.png`,
-      });
-      a.click();
-      toast('Dashboard chart downloaded');
-    });
-  };
+    const dataPoints = panel.data || [];
+    const labels = dataPoints.map((point) => point.x);
+    const values = dataPoints.map((point) => point.y);
+    const baseConfig = {
+      data: {
+        labels,
+        datasets: [
+          {
+            label: panel.y_axis || 'Value',
+            data: values,
+            borderColor: '#5b3df5',
+            backgroundColor: panel.chart_type === 'donut'
+              ? ['#5b3df5', '#22c55e', '#ef4444', '#38bdf8', '#f59e0b', '#a855f7', '#14b8a6', '#f97316']
+              : 'rgba(91,61,245,0.82)',
+            borderWidth: 2,
+            borderRadius: 8,
+            fill: panel.chart_type === 'line',
+            tension: 0.35,
+            pointBackgroundColor: '#5b3df5',
+          },
+        ],
+      },
+      options: {
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: panel.chart_type === 'donut',
+            labels: { color: '#cfd5f7' },
+          },
+          tooltip: {
+            mode: 'index',
+            intersect: false,
+          },
+        },
+        scales: panel.chart_type === 'donut' ? {} : {
+          x: {
+            ticks: { color: '#9ca3af' },
+            grid: { color: 'rgba(255,255,255,0.06)' },
+          },
+          y: {
+            ticks: { color: '#9ca3af' },
+            grid: { color: 'rgba(255,255,255,0.06)' },
+          },
+        },
+      },
+    };
 
-  img.onerror = () => {
-    URL.revokeObjectURL(url);
-    toast('Could not render chart download');
-  };
-
-  img.src = url;
+    let config = { type: 'bar', ...baseConfig };
+    if (panel.chart_type === 'bar_horizontal') {
+      config = { ...config, options: { ...baseConfig.options, indexAxis: 'y' } };
+    } else if (panel.chart_type === 'line') {
+      config = { type: 'line', ...baseConfig };
+    } else if (panel.chart_type === 'donut') {
+      config = { type: 'doughnut', ...baseConfig };
+    }
+    dashboardCharts[panel.id] = new Chart(ctx, config);
+  });
 }
 
 // ── TABLE RENDERER ──
