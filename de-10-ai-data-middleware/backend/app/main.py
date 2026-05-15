@@ -489,6 +489,14 @@ def serve_home():
 
 
 @app.get(
+    "/auth",
+    include_in_schema=False,
+)
+def serve_auth():
+    return FileResponse(os.path.join(_static_dir, "auth.html"))
+
+
+@app.get(
     "/api/status",
     response_model=RootResponse,
     summary="API Status",

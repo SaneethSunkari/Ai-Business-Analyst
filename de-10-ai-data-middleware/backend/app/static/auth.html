@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Data Middleware | Auth</title>
+  <style>
+    :root {
+      --bg: #f8f9fb;
+      --surface: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --muted: #64748b;
+      --accent: #0f172a;
+      --accent-2: #0ea5e9;
+      --radius-xl: 28px;
+      --radius-lg: 24px;
+      --radius-md: 18px;
+      --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro", "Inter", system-ui, sans-serif;
+      --shadow-soft: 0 18px 60px rgba(15, 23, 42, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      font-feature-settings: "tnum";
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+    a { color: inherit; text-decoration: none; }
+    button, input { font: inherit; }
+
+    .wrap {
+      width: min(100%, 440px);
+    }
+
+    .back {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.92rem;
+      color: #64748b;
+      margin-bottom: 24px;
+      transition: color 150ms ease;
+    }
+    .back:hover { color: #0f172a; }
+
+    .back svg { width: 16px; height: 16px; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-soft);
+      padding: 48px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 40px;
+    }
+
+    .brand-mark {
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      background: #0f172a;
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: -0.08em;
+      flex-shrink: 0;
+    }
+
+    .brand-copy strong {
+      display: block;
+      font-size: 1.34rem;
+      line-height: 1;
+      letter-spacing: -0.05em;
+      font-weight: 700;
+    }
+    .brand-copy span {
+      display: block;
+      color: #64748b;
+      font-size: 0.72rem;
+      margin-top: 2px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: 2.5rem;
+      line-height: 1.03;
+      letter-spacing: -0.08em;
+      font-weight: 700;
+    }
+
+    .sub {
+      margin: 0 0 34px;
+      color: #64748b;
+      font-size: 1rem;
+      line-height: 1.55;
+    }
+
+    .field {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 0.76rem;
+      color: #64748b;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 16px;
+      border: 1px solid #cbd5e1;
+      background: #fff;
+      color: #0f172a;
+      font-size: 0.96rem;
+      outline: none;
+      transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+    }
+
+    input:focus {
+      border-color: rgba(14,165,233,0.6);
+      box-shadow: 0 0 0 4px rgba(14,165,233,0.08);
+      transform: translateY(-1px);
+    }
+
+    .submit {
+      width: 100%;
+      margin-top: 8px;
+      padding: 15px 18px;
+      border: 1px solid #0f172a;
+      background: #0f172a;
+      color: #fff;
+      border-radius: 16px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 150ms ease, transform 150ms ease;
+    }
+
+    .submit:hover {
+      background: #1e293b;
+      transform: translateY(-1px);
+    }
+
+    .submit:disabled {
+      opacity: 0.78;
+      cursor: progress;
+      transform: none;
+    }
+
+    .switch {
+      margin-top: 20px;
+      text-align: center;
+      color: #64748b;
+      font-size: 0.94rem;
+    }
+
+    .switch button {
+      border: 0;
+      background: transparent;
+      color: #0f172a;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .message {
+      display: none;
+      margin-bottom: 18px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      font-size: 0.9rem;
+      line-height: 1.45;
+    }
+
+    .message.show { display: block; }
+    .message.error {
+      color: #b91c1c;
+      background: rgba(239,68,68,0.08);
+      border: 1px solid rgba(239,68,68,0.16);
+    }
+    .message.success {
+      color: #166534;
+      background: rgba(16,185,129,0.08);
+      border: 1px solid rgba(16,185,129,0.16);
+    }
+
+    .signup-only { display: none; }
+    .mode-signup .signup-only { display: block; }
+
+    @media (max-width: 520px) {
+      .card { padding: 32px 22px; }
+      h1 { font-size: 2rem; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap" id="authRoot">
+    <a class="back" href="/">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M15 18l-6-6 6-6" />
+      </svg>
+      Back to homepage
+    </a>
+
+    <section class="card">
+      <div class="brand">
+        <div class="brand-mark">AI</div>
+        <div class="brand-copy">
+          <strong>AI Data Middleware</strong>
+          <span>Enterprise Analytics</span>
+        </div>
+      </div>
+
+      <h1 id="title">Welcome back</h1>
+      <p class="sub" id="subtitle">Enterprise-grade analytics for your team.</p>
+
+      <div class="message" id="message"></div>
+
+      <form id="form">
+        <div class="field signup-only" id="nameField">
+          <label for="name">FULL NAME</label>
+          <input id="name" type="text" placeholder="Alex Rivera" />
+        </div>
+
+        <div class="field">
+          <label for="email">WORK EMAIL</label>
+          <input id="email" type="email" placeholder="you@company.com" required />
+        </div>
+
+        <div class="field">
+          <label for="password">PASSWORD</label>
+          <input id="password" type="password" placeholder="••••••••••••" required />
+        </div>
+
+        <button class="submit" id="submitBtn" type="submit">Sign in to workspace</button>
+      </form>
+
+      <div class="switch">
+        <span id="switchPrefix">Don't have an account?</span>
+        <button id="switchMode" type="button">Create one</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="/static/auth.js"></script>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const root = document.getElementById('authRoot');
+    const title = document.getElementById('title');
+    const subtitle = document.getElementById('subtitle');
+    const message = document.getElementById('message');
+    const form = document.getElementById('form');
+    const submitBtn = document.getElementById('submitBtn');
+    const switchPrefix = document.getElementById('switchPrefix');
+    const switchMode = document.getElementById('switchMode');
+    const nameField = document.getElementById('nameField');
+
+    let mode = params.get('mode') === 'signup' ? 'signup' : 'login';
+
+    function setMessage(text, kind = 'error') {
+      message.textContent = text;
+      message.className = `message show ${kind}`;
+    }
+
+    function clearMessage() {
+      message.textContent = '';
+      message.className = 'message';
+    }
+
+    function setMode(nextMode) {
+      mode = nextMode;
+      root.classList.toggle('mode-signup', mode === 'signup');
+      title.textContent = mode === 'login' ? 'Welcome back' : 'Create your workspace';
+      subtitle.textContent = mode === 'login' ? 'Enterprise-grade analytics for your team.' : 'Create an account to unlock your workspace.';
+      submitBtn.textContent = mode === 'login' ? 'Sign in to workspace' : 'Create workspace';
+      switchPrefix.textContent = mode === 'login' ? "Don't have an account?" : 'Already have an account?';
+      switchMode.textContent = mode === 'login' ? 'Create one' : 'Sign in';
+      nameField.querySelector('input').required = mode === 'signup';
+      if (mode === 'signup') {
+        window.history.replaceState({}, '', '/auth?mode=signup');
+      } else {
+        window.history.replaceState({}, '', '/auth');
+      }
+      clearMessage();
+      const focusTarget = mode === 'signup' ? document.getElementById('name') : document.getElementById('email');
+      setTimeout(() => focusTarget.focus(), 50);
+    }
+
+    async function submit(event) {
+      event.preventDefault();
+      clearMessage();
+      submitBtn.disabled = true;
+      const original = submitBtn.textContent;
+      submitBtn.textContent = 'Please wait...';
+
+      try {
+        if (mode === 'signup') {
+          const session = await window.middlewareAuth.signUp({
+            full_name: document.getElementById('name').value.trim(),
+            email: document.getElementById('email').value.trim(),
+            password: document.getElementById('password').value,
+          });
+          if (session?.user) {
+            window.location.assign('/ui');
+            return;
+          }
+        } else {
+          const session = await window.middlewareAuth.signIn({
+            email: document.getElementById('email').value.trim(),
+            password: document.getElementById('password').value,
+          });
+          if (session?.user) {
+            window.location.assign('/ui');
+            return;
+          }
+        }
+        setMessage('Session created, but the workspace redirect did not complete.', 'success');
+      } catch (error) {
+        setMessage(error?.message || (mode === 'login' ? 'Login failed.' : 'Sign up failed.'));
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = original;
+      }
+    }
+
+    switchMode.addEventListener('click', () => setMode(mode === 'login' ? 'signup' : 'login'));
+    form.addEventListener('submit', submit);
+    setMode(mode);
+  </script>
+</body>
+</html>

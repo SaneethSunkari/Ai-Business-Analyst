@@ -23,7 +23,7 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: "Avenir Next", "Segoe UI", "Helvetica Neue", sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro", "Inter", system-ui, sans-serif;
       background:
         radial-gradient(circle at 12% 0%, rgba(88,166,255,0.18), transparent 26%),
         radial-gradient(circle at 88% 8%, rgba(63,185,80,0.10), transparent 18%),
@@ -1107,6 +1107,643 @@
       }
     }
 
+    /* ── DASHBOARD REDESIGN OVERRIDES ── */
+    .dashboard-shell {
+      display: grid;
+      grid-template-columns: 48px minmax(0, 1fr);
+      min-height: calc(100vh - 180px);
+      gap: 0;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      background: #0f0f13;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro", "Inter", system-ui, sans-serif;
+    }
+    .dashboard-shell * {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.14) transparent;
+    }
+    .dashboard-shell *::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    .dashboard-shell *::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .dashboard-shell *::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.14);
+      border-radius: 999px;
+    }
+    .dashboard-rail {
+      width: 48px;
+      background: #111116;
+      border-right: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+    }
+    .dashboard-rail-group {
+      display: grid;
+      gap: 8px;
+      justify-items: center;
+    }
+    .dashboard-rail-logo {
+      width: 28px;
+      height: 28px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      background: #7c3aed;
+      color: #fff;
+      font-size: 0.9rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+    .dashboard-rail-button {
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: #555;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
+    }
+    .dashboard-rail-button:hover {
+      color: #d9dbe7;
+      border-color: rgba(255,255,255,0.08);
+    }
+    .dashboard-rail-button.active {
+      background: #1e1e2a;
+      color: #fff;
+      border-color: rgba(255,255,255,0.08);
+    }
+    .dashboard-main {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      background: #0f0f13;
+    }
+    .dashboard-topbar {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 24px;
+      background: #1a1a1f;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .dashboard-topbar-label {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .dashboard-tab-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+    .dashboard-tab-list {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .dashboard-tab-chip {
+      padding: 8px 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: #141419;
+      color: #a7adbb;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: border-color 150ms ease, color 150ms ease, background 150ms ease;
+    }
+    .dashboard-tab-chip:hover {
+      color: #fff;
+      border-color: rgba(255,255,255,0.15);
+    }
+    .dashboard-tab-chip.active {
+      border-color: #7c3aed;
+      color: #a78bfa;
+      background: rgba(124,58,237,0.08);
+    }
+    .dashboard-topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+    .dashboard-source-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: #141419;
+      color: #e7e9f5;
+      font-size: 0.78rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .dashboard-source-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+    }
+    .dashboard-source-icon {
+      width: 16px;
+      height: 16px;
+      color: #e9ecff;
+      display: inline-grid;
+      place-items: center;
+      font-size: 0.8rem;
+    }
+    .dashboard-share-btn,
+    .dashboard-avatar-badge {
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: #141419;
+      color: #fff;
+      padding: 8px 14px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: border-color 150ms ease, color 150ms ease;
+    }
+    .dashboard-share-btn:hover {
+      border-color: #7c3aed;
+      color: #a78bfa;
+    }
+    .dashboard-avatar-badge {
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      display: grid;
+      place-items: center;
+      background: #201d2f;
+      color: #fff;
+    }
+    .dashboard-content {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      padding: 20px 24px 116px;
+      min-height: 0;
+      position: relative;
+    }
+    .dashboard-filter-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: 0;
+      background: transparent;
+      border: 0;
+    }
+    .dashboard-filter-label {
+      font-size: 0.78rem;
+      color: #a3a6b5;
+      font-weight: 600;
+      margin-right: 2px;
+    }
+    .dashboard-filter-pill,
+    .dashboard-filter-select,
+    .dashboard-filter-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      height: 38px;
+      padding: 0 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: #15151b;
+      color: #d6d9e6;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: border-color 150ms ease, color 150ms ease, background 150ms ease;
+    }
+    .dashboard-filter-pill.active,
+    .dashboard-filter-select.active {
+      border-color: #7c3aed;
+      color: #a78bfa;
+    }
+    .dashboard-filter-action.refresh {
+      background: #7c3aed;
+      border-color: #7c3aed;
+      color: #fff;
+    }
+    .dashboard-filter-action:hover:not(.refresh),
+    .dashboard-filter-pill:hover,
+    .dashboard-filter-select:hover {
+      border-color: rgba(255,255,255,0.28);
+      color: #fff;
+    }
+    .dashboard-filter-select {
+      padding-right: 8px;
+      position: relative;
+    }
+    .dashboard-filter-select select {
+      appearance: none;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      padding: 0 20px 0 0;
+      outline: none;
+      cursor: pointer;
+      min-width: 0;
+    }
+    .dashboard-filter-select::after {
+      content: "▾";
+      color: inherit;
+      font-size: 0.68rem;
+      pointer-events: none;
+    }
+    .dashboard-kpi-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .dashboard-kpi-card {
+      background: #222228;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 20px 24px;
+      display: grid;
+      gap: 10px;
+      min-height: 132px;
+    }
+    .dashboard-kpi-title {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #888;
+    }
+    .dashboard-kpi-number {
+      font-size: 32px;
+      font-weight: 600;
+      color: #fff;
+      letter-spacing: -0.04em;
+      line-height: 1;
+    }
+    .dashboard-kpi-delta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #9aa0ae;
+    }
+    .dashboard-kpi-delta.positive { color: #22c55e; }
+    .dashboard-kpi-delta.negative { color: #ef4444; }
+    .dashboard-kpi-delta.neutral { color: #a4a9b8; }
+    .dashboard-panel-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      align-items: start;
+      grid-auto-flow: dense;
+    }
+    .dashboard-panel-card {
+      background: #222228;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 20px 24px;
+      display: grid;
+      gap: 14px;
+      min-height: 330px;
+    }
+    .dashboard-panel-card.layout-wide { grid-column: span 2; }
+    .dashboard-panel-card.layout-narrow { grid-column: span 1; }
+    .dashboard-panel-card.layout-full { grid-column: 1 / -1; }
+    .dashboard-panel-card.expanded { grid-column: 1 / -1; }
+    .dashboard-panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .dashboard-panel-title {
+      font-size: 15px;
+      font-weight: 500;
+      color: #fff;
+      line-height: 1.35;
+    }
+    .dashboard-panel-head-right {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .dashboard-panel-type {
+      font-size: 12px;
+      color: #8f94a3;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .dashboard-expand-btn,
+    .dashboard-panel-menu > summary {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: #17171d;
+      color: #aab0bf;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: border-color 150ms ease, color 150ms ease;
+    }
+    .dashboard-expand-btn:hover,
+    .dashboard-panel-menu > summary:hover {
+      border-color: rgba(255,255,255,0.2);
+      color: #fff;
+    }
+    .dashboard-panel-menu {
+      position: relative;
+    }
+    .dashboard-panel-menu > summary {
+      list-style: none;
+    }
+    .dashboard-panel-menu > summary::-webkit-details-marker {
+      display: none;
+    }
+    .dashboard-panel-menu-list {
+      position: absolute;
+      right: 0;
+      top: calc(100% + 8px);
+      min-width: 160px;
+      background: #17171d;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 8px;
+      display: grid;
+      gap: 6px;
+      z-index: 8;
+      box-shadow: none;
+    }
+    .dashboard-panel-menu-list button {
+      width: 100%;
+      border: 0;
+      background: transparent;
+      color: #eef1ff;
+      text-align: left;
+      padding: 8px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.78rem;
+      transition: background 150ms ease;
+    }
+    .dashboard-panel-menu-list button:hover {
+      background: rgba(124,58,237,0.12);
+    }
+    .dashboard-panel-chart-wrap {
+      min-height: 260px;
+      position: relative;
+      overflow: hidden;
+    }
+    .dashboard-panel-card.layout-full .dashboard-panel-chart-wrap {
+      min-height: 320px;
+    }
+    .dashboard-panel-card.layout-narrow .dashboard-panel-chart-wrap {
+      min-height: 260px;
+    }
+    .dashboard-panel-chart-wrap canvas {
+      width: 100% !important;
+      height: 100% !important;
+    }
+    .dashboard-panel-insight {
+      color: #bfc3d3;
+      font-size: 0.8rem;
+      line-height: 1.55;
+    }
+    .dashboard-table-wrap {
+      overflow: auto;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: #17171d;
+      max-height: 320px;
+    }
+    .dashboard-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.76rem;
+    }
+    .dashboard-table th,
+    .dashboard-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      text-align: left;
+      white-space: nowrap;
+    }
+    .dashboard-table th {
+      position: sticky;
+      top: 0;
+      background: #1c1c24;
+      color: #aab0bf;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .dashboard-empty {
+      min-height: calc(100vh - 250px);
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 24px;
+      background: transparent;
+      border: 0;
+    }
+    .dashboard-empty-callout {
+      display: grid;
+      gap: 14px;
+      place-items: center;
+      max-width: 560px;
+    }
+    .dashboard-empty-icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 22px;
+      display: grid;
+      place-items: center;
+      color: #a78bfa;
+      background: rgba(124,58,237,0.12);
+      border: 1px solid rgba(124,58,237,0.24);
+    }
+    .dashboard-empty-title {
+      color: #fff;
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+    .dashboard-empty-subtext {
+      color: #9da3b3;
+      font-size: 0.9rem;
+      line-height: 1.65;
+    }
+    .dashboard-prompt-dock {
+      position: sticky;
+      bottom: 0;
+      z-index: 6;
+      display: grid;
+      gap: 12px;
+      padding: 16px 0 0;
+      margin-top: auto;
+      background: linear-gradient(180deg, rgba(15,15,19,0), rgba(15,15,19,0.9) 32%, #0f0f13 70%);
+      border: 0;
+      backdrop-filter: blur(0);
+    }
+    .dashboard-chip-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .dashboard-chip {
+      padding: 7px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: #17171d;
+      color: #d7dbeb;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: border-color 150ms ease, color 150ms ease;
+    }
+    .dashboard-chip:hover {
+      border-color: rgba(124,58,237,0.45);
+      color: #fff;
+    }
+    .dashboard-prompt-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .dashboard-prompt-input {
+      flex: 1;
+      min-width: 0;
+      height: 48px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: #17171d;
+      color: #fff;
+      padding: 0 18px;
+      font-size: 0.86rem;
+      outline: none;
+    }
+    .dashboard-prompt-input::placeholder {
+      color: #838899;
+    }
+    .dashboard-prompt-send,
+    .dashboard-prompt-replace {
+      height: 48px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      padding: 0 16px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 150ms ease, border-color 150ms ease, background 150ms ease;
+    }
+    .dashboard-prompt-send {
+      background: #7c3aed;
+      color: #fff;
+      min-width: 118px;
+    }
+    .dashboard-prompt-send:hover {
+      opacity: 0.92;
+    }
+    .dashboard-prompt-replace {
+      background: #17171d;
+      color: #cfd4e5;
+      border-color: rgba(255,255,255,0.14);
+    }
+    .dashboard-prompt-replace.active {
+      border-color: #7c3aed;
+      color: #a78bfa;
+      background: rgba(124,58,237,0.08);
+    }
+    @media (max-width: 1260px) {
+      .dashboard-panel-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .dashboard-panel-card.layout-wide,
+      .dashboard-panel-card.layout-full {
+        grid-column: 1 / -1;
+      }
+      .dashboard-topbar {
+        grid-template-columns: 1fr;
+        justify-items: start;
+      }
+      .dashboard-topbar-actions,
+      .dashboard-tab-row {
+        width: 100%;
+        justify-content: flex-start;
+      }
+    }
+    @media (max-width: 900px) {
+      .dashboard-shell {
+        grid-template-columns: 1fr;
+      }
+      .dashboard-rail {
+        width: 100%;
+        height: auto;
+        border-right: 0;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+        flex-direction: row;
+        padding: 10px 12px;
+      }
+      .dashboard-kpi-strip,
+      .dashboard-panel-grid {
+        grid-template-columns: 1fr;
+      }
+      .dashboard-panel-card.layout-wide,
+      .dashboard-panel-card.layout-narrow,
+      .dashboard-panel-card.layout-full {
+        grid-column: auto;
+      }
+      .dashboard-prompt-wrap {
+        flex-wrap: wrap;
+      }
+      .dashboard-prompt-send,
+      .dashboard-prompt-replace {
+        flex: 1 1 auto;
+      }
+    }
+    @media (max-width: 640px) {
+      .dashboard-content {
+        padding: 14px 14px 108px;
+      }
+      .dashboard-topbar {
+        padding: 16px 14px;
+      }
+      .dashboard-filter-bar {
+        gap: 8px;
+      }
+      .dashboard-filter-label {
+        width: 100%;
+      }
+      .dashboard-filter-pill,
+      .dashboard-filter-select,
+      .dashboard-filter-action {
+        width: 100%;
+        justify-content: space-between;
+      }
+      .dashboard-prompt-input {
+        width: 100%;
+      }
+    }
+
     /* launchpad */
     .hero-panel {
       position: relative;
@@ -1594,6 +2231,1132 @@
         grid-template-columns: 1fr;
       }
     }
+
+    /* ── LIGHT WORKSPACE THEME OVERRIDE (reference zip 2) ── */
+    :root {
+      --bg: #f8f9fb;
+      --surface: #ffffff;
+      --surface2: #f1f5f9;
+      --border: #e2e8f0;
+      --accent: #0ea5e9;
+      --accent2: #10b981;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --purple: #7c3aed;
+      --text: #0f172a;
+      --muted: #64748b;
+    }
+
+    body {
+      background:
+        radial-gradient(circle at 14% 0%, rgba(14,165,233,0.08), transparent 24%),
+        radial-gradient(circle at 86% 8%, rgba(15,23,42,0.04), transparent 20%),
+        linear-gradient(180deg, #f8f9fb 0%, #fbfcfe 100%);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro", "Inter", system-ui, sans-serif;
+    }
+
+    header {
+      height: 72px;
+      padding: 0 22px;
+      gap: 14px;
+      background: rgba(255,255,255,0.92);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(16px);
+    }
+
+    .logo {
+      gap: 10px;
+      color: var(--text);
+    }
+    .logo-mark {
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: #0f172a;
+      color: #fff;
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: -0.08em;
+      flex-shrink: 0;
+    }
+    .logo-copy {
+      display: grid;
+      gap: 2px;
+      min-width: 0;
+    }
+    .logo-copy strong {
+      font-size: 1rem;
+      line-height: 1.05;
+      white-space: nowrap;
+    }
+    .logo-copy span {
+      font-size: 0.68rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .nav-tabs {
+      flex: 1;
+      justify-content: center;
+      margin-left: 0;
+      gap: 8px;
+    }
+    .nav-tab {
+      padding: 9px 14px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      color: #64748b;
+      background: transparent;
+      font-weight: 600;
+    }
+    .nav-tab:hover {
+      background: #f1f5f9;
+      color: #0f172a;
+    }
+    .nav-tab.active {
+      background: rgba(14,165,233,0.12);
+      color: #0f172a;
+      border-color: rgba(14,165,233,0.22);
+      box-shadow: none;
+    }
+
+    .header-actions {
+      gap: 10px;
+    }
+    .status-pill,
+    .profile-trigger,
+    .header-link {
+      background: #fff;
+      border: 1px solid var(--border);
+      color: #0f172a;
+      border-radius: 999px;
+    }
+    .status-pill {
+      padding: 8px 12px;
+      box-shadow: 0 1px 0 rgba(255,255,255,0.6) inset;
+    }
+    .status-pill::before {
+      content: "❄";
+      color: #0ea5e9;
+      font-size: 0.86rem;
+      line-height: 1;
+      margin-right: 2px;
+    }
+    .status-dot.connected {
+      background: #10b981;
+      box-shadow: 0 0 0 4px rgba(16,185,129,0.12);
+    }
+    .header-link,
+    .profile-trigger {
+      transition: border-color var(--tr), background var(--tr), color var(--tr);
+    }
+    .header-link:hover,
+    .profile-trigger:hover,
+    .profile-trigger.open {
+      border-color: rgba(14,165,233,0.35);
+      background: #f8fbff;
+      color: #0f172a;
+    }
+    .account-avatar {
+      color: #fff;
+      background: linear-gradient(135deg, #0f172a 0%, #0ea5e9 100%);
+    }
+    .profile-menu {
+      background: #fff;
+      border-color: var(--border);
+      box-shadow: 0 24px 60px rgba(15,23,42,0.10);
+    }
+    .profile-menu-head {
+      border-bottom-color: var(--border);
+    }
+    .profile-action {
+      background: #f8fafc;
+      border-color: var(--border);
+      color: #0f172a;
+    }
+    .profile-action:hover {
+      border-color: rgba(14,165,233,0.35);
+      background: #f0f9ff;
+    }
+    .profile-action.danger:hover {
+      border-color: rgba(239,68,68,0.35);
+      color: var(--danger);
+      background: rgba(239,68,68,0.06);
+    }
+
+    main {
+      background: transparent;
+    }
+    .sidebar {
+      width: 306px;
+      min-width: 306px;
+      background: #fff;
+      border-right: 1px solid var(--border);
+    }
+    .sidebar-section {
+      padding: 18px;
+      border-bottom: 1px solid var(--border);
+    }
+    .sidebar-title {
+      color: #94a3b8;
+    }
+    .content {
+      padding: 24px;
+      gap: 18px;
+      background: transparent;
+    }
+
+    .card,
+    .source-summary-card,
+    .source-panel,
+    .schema-browser-sidebar,
+    .schema-browser-detail,
+    .schema-relationships,
+    .workspace-empty-card,
+    .dashboard-meta-card,
+    .dashboard-filter-bar,
+    .dashboard-kpi-card,
+    .dashboard-panel-card,
+    .dashboard-modal-card,
+    .tool-card,
+    .ops-stat,
+    .ops-list-item,
+    .history-item,
+    .history-run {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      box-shadow: none;
+    }
+
+    .card-header,
+    .dashboard-panel-head,
+    .source-modal-head,
+    .schema-detail-head {
+      color: #0f172a;
+    }
+    .card-header,
+    .dashboard-panel-head,
+    .source-modal-head {
+      padding-inline: 4px;
+    }
+    .card-body {
+      padding: 18px 22px 22px;
+    }
+
+    label,
+    .sidebar-title,
+    .dashboard-filter-help,
+    .dashboard-meta-label,
+    .dashboard-panel-type,
+    .source-summary-sync,
+    .source-modal-copy p,
+    .schema-table-item-meta,
+    .schema-column-type,
+    .result-meta,
+    .ops-stat-meta,
+    .history-item-meta,
+    .dashboard-empty-subtext,
+    .dashboard-panel-insight,
+    .dashboard-note,
+    .dashboard-chip,
+    .dashboard-prompt-dock,
+    .dashboard-filter-label,
+    .dashboard-table td,
+    .dashboard-table th,
+    .empty-state {
+      color: var(--muted);
+    }
+
+    input,
+    textarea,
+    select,
+    .sql-editor,
+    .dashboard-prompt-input,
+    .dashboard-filter-select select {
+      background: #fff;
+      border: 1px solid #d8e2ee;
+      color: var(--text);
+      border-radius: 16px;
+      outline: none;
+    }
+    input:focus,
+    textarea:focus,
+    select:focus,
+    .sql-editor:focus,
+    .dashboard-prompt-input:focus,
+    .dashboard-filter-select select:focus {
+      border-color: rgba(14,165,233,0.45);
+      box-shadow: 0 0 0 3px rgba(14,165,233,0.08);
+    }
+
+    .btn,
+    .btn-ghost,
+    .copy-btn,
+    .header-link,
+    .dashboard-filter-pill,
+    .dashboard-filter-action,
+    .dashboard-tab-chip,
+    .dashboard-panel-menu > summary,
+    .dashboard-expand-btn,
+    .dashboard-prompt-send,
+    .dashboard-prompt-replace {
+      border-radius: 999px;
+      transition: background 150ms ease, border-color 150ms ease, color 150ms ease, transform 150ms ease;
+    }
+    .btn-primary,
+    .btn-success,
+    .dashboard-filter-action.refresh,
+    .dashboard-prompt-send {
+      background: #0f172a;
+      color: #fff;
+    }
+    .btn-primary:hover:not(:disabled),
+    .btn-success:hover:not(:disabled),
+    .dashboard-filter-action.refresh:hover,
+    .dashboard-prompt-send:hover {
+      background: #1e293b;
+      color: #fff;
+    }
+    .btn-ghost,
+    .copy-btn,
+    .dashboard-filter-pill,
+    .dashboard-filter-select,
+    .dashboard-filter-action,
+    .dashboard-tab-chip,
+    .dashboard-panel-menu > summary,
+    .dashboard-expand-btn,
+    .dashboard-prompt-replace {
+      background: #fff;
+      border: 1px solid var(--border);
+      color: #0f172a;
+    }
+    .btn-ghost:hover:not(:disabled),
+    .copy-btn:hover,
+    .dashboard-filter-pill:hover,
+    .dashboard-filter-select:hover,
+    .dashboard-filter-action:hover:not(.refresh),
+    .dashboard-tab-chip:hover,
+    .dashboard-panel-menu > summary:hover,
+    .dashboard-expand-btn:hover,
+    .dashboard-prompt-replace:hover {
+      border-color: rgba(14,165,233,0.35);
+      background: #f8fbff;
+      color: #0f172a;
+    }
+    .btn-primary,
+    .btn-success {
+      box-shadow: none;
+    }
+
+    .source-summary-card {
+      background: linear-gradient(180deg, rgba(14,165,233,0.05), rgba(255,255,255,0.88));
+      padding: 16px;
+      display: grid;
+      gap: 12px;
+    }
+    .source-summary-name {
+      color: #0f172a;
+    }
+    .source-summary-meta {
+      color: var(--muted);
+    }
+    .source-summary-dot.connected {
+      background: #10b981;
+      box-shadow: 0 0 0 4px rgba(16,185,129,0.12);
+    }
+    .source-empty-card {
+      background: #f8fbff;
+      border-style: dashed;
+      gap: 14px;
+    }
+    .source-modal {
+      background: rgba(248,249,251,0.72);
+    }
+    .source-modal-card {
+      background: #fff;
+      border-color: var(--border);
+      box-shadow: 0 24px 70px rgba(15,23,42,0.10);
+    }
+    .source-panel-title {
+      color: #94a3b8;
+    }
+
+    .workspace-empty-state {
+      min-height: 52vh;
+    }
+    .workspace-empty-card {
+      background: #fff;
+      border-radius: 28px;
+      padding: 34px 28px;
+      gap: 14px;
+    }
+    .workspace-empty-card h3 {
+      color: #0f172a;
+    }
+    .workspace-empty-card p {
+      color: var(--muted);
+    }
+
+    .schema-browser {
+      gap: 18px;
+    }
+    .schema-table-item,
+    .schema-column-card,
+    .schema-relationship-row {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      color: #0f172a;
+    }
+    .schema-table-item.active,
+    .schema-table-item:hover {
+      border-color: rgba(14,165,233,0.35);
+      background: #f0f9ff;
+    }
+    .schema-table-item-name,
+    .schema-column-name {
+      color: #0f172a;
+    }
+    .semantic-badge {
+      border-color: rgba(15,23,42,0.06);
+    }
+    .semantic-badge.dimension { color: #0284c7; background: rgba(14,165,233,0.12); }
+    .semantic-badge.measure { color: #059669; background: rgba(16,185,129,0.12); }
+    .semantic-badge.date { color: #ca8a04; background: rgba(245,158,11,0.12); }
+    .semantic-badge.id { color: #7c3aed; background: rgba(124,58,237,0.12); }
+    .semantic-badge.text { color: #dc2626; background: rgba(239,68,68,0.12); }
+
+    .dashboard-shell {
+      gap: 18px;
+      color: #0f172a;
+    }
+    .dashboard-summary-banner {
+      background: linear-gradient(135deg, rgba(14,165,233,0.12), rgba(255,255,255,0.95));
+      border-color: rgba(14,165,233,0.2);
+      color: #0f172a;
+    }
+    .dashboard-meta-card,
+    .dashboard-filter-bar,
+    .dashboard-kpi-card,
+    .dashboard-panel-card,
+    .dashboard-modal-card {
+      background: #fff;
+      border-color: var(--border);
+    }
+    .dashboard-tab-chip.active {
+      background: rgba(14,165,233,0.12);
+      border-color: rgba(14,165,233,0.3);
+      color: #0f172a;
+    }
+    .dashboard-filter-pill.active {
+      background: rgba(14,165,233,0.08);
+      border-color: rgba(14,165,233,0.35);
+      color: #0f172a;
+    }
+    .dashboard-filter-action.refresh {
+      background: #0f172a;
+      color: #fff;
+      border-color: #0f172a;
+    }
+    .dashboard-kpi-card {
+      background: #fff;
+      padding: 20px 24px;
+      min-height: 124px;
+      border-radius: 18px;
+    }
+    .dashboard-kpi-title,
+    .dashboard-panel-type,
+    .dashboard-meta-label {
+      color: #94a3b8;
+    }
+    .dashboard-kpi-number {
+      color: #0f172a;
+      font-size: 2rem;
+    }
+    .dashboard-kpi-insight,
+    .dashboard-panel-insight,
+    .dashboard-note,
+    .dashboard-empty-subtext {
+      color: #64748b;
+    }
+    .dashboard-panel-card {
+      background: #fff;
+      border-radius: 22px;
+      min-height: 320px;
+      padding: 18px 20px 20px;
+    }
+    .dashboard-panel-title {
+      color: #0f172a;
+    }
+    .dashboard-panel-chart-wrap,
+    .dashboard-table-wrap,
+    .dashboard-prompt-dock {
+      background: transparent;
+    }
+    .dashboard-table th {
+      color: #64748b;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--border);
+    }
+    .dashboard-table td {
+      color: #0f172a;
+      border-bottom: 1px solid #eef2f7;
+    }
+    .dashboard-empty-callout {
+      background: #fff;
+      border: 1px dashed rgba(14,165,233,0.28);
+      color: #0f172a;
+    }
+    .dashboard-empty-icon {
+      color: #0ea5e9;
+    }
+    .dashboard-chip {
+      background: #fff;
+      border: 1px solid var(--border);
+      color: #0f172a;
+    }
+    .dashboard-chip:hover {
+      border-color: rgba(14,165,233,0.35);
+      background: #f8fbff;
+    }
+    .dashboard-prompt-dock {
+      border-top: 1px solid var(--border);
+      background: rgba(248,249,251,0.92);
+      backdrop-filter: blur(16px);
+    }
+    .dashboard-prompt-input {
+      background: #fff;
+      border: 1px solid #d8e2ee;
+      color: #0f172a;
+    }
+
+    .card-header span:first-child,
+    .source-modal-copy h3,
+    .schema-detail-head h3,
+    .dashboard-topbar-label,
+    .dashboard-filter-label,
+    .source-panel-title {
+      color: #0f172a;
+    }
+
+    .history-list,
+    .ops-grid,
+    .ops-inline-stats,
+    .ops-list {
+      gap: 10px;
+    }
+    .ops-stat,
+    .ops-list-item,
+    .ops-run {
+      background: #fff;
+      border-color: var(--border);
+    }
+    .ops-stat-label,
+    .ops-list-copy span,
+    .ops-run-copy span {
+      color: #64748b;
+    }
+    .ops-stat-value,
+    .ops-list-copy strong,
+    .ops-run-copy strong {
+      color: #0f172a;
+    }
+
+    .copy-btn,
+    .btn-ghost,
+    .dashboard-panel-menu > summary,
+    .dashboard-expand-btn {
+      color: #0f172a;
+    }
+    .copy-btn:hover,
+    .dashboard-panel-menu > summary:hover,
+    .dashboard-expand-btn:hover {
+      color: #0f172a;
+    }
+
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(148,163,184,0.35); border-radius: 999px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(148,163,184,0.55); }
+
+    #toast {
+      background: #fff;
+      border-color: var(--border);
+      color: #0f172a;
+      box-shadow: 0 18px 50px rgba(15,23,42,0.12);
+    }
+
+    /* Workspace structure from reference zip, recolored to match the home page theme. */
+    .dashboard-shell {
+      background: transparent;
+      border: 0;
+      border-radius: 0;
+      grid-template-columns: 56px minmax(0, 1fr);
+      min-height: calc(100vh - 144px);
+      color: #0f172a;
+      overflow: visible;
+    }
+    .dashboard-shell * {
+      scrollbar-color: rgba(148,163,184,0.42) transparent;
+    }
+    .dashboard-shell *::-webkit-scrollbar-thumb {
+      background: rgba(148,163,184,0.42);
+    }
+    .dashboard-rail {
+      width: 56px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 14px 0;
+      box-shadow: none;
+    }
+    .dashboard-rail-logo {
+      background: #0f172a;
+      color: #fff;
+      letter-spacing: 0;
+    }
+    .dashboard-rail-button {
+      background: transparent;
+      color: #94a3b8;
+      border-color: transparent;
+    }
+    .dashboard-rail-button:hover {
+      background: #f1f5f9;
+      border-color: var(--border);
+      color: #0f172a;
+    }
+    .dashboard-rail-button.active {
+      background: rgba(14,165,233,0.12);
+      border-color: rgba(14,165,233,0.24);
+      color: #0f172a;
+    }
+    .dashboard-main {
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      overflow: hidden;
+    }
+    .dashboard-topbar {
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      color: #0f172a;
+    }
+    .dashboard-topbar-label {
+      color: #0f172a;
+    }
+    .dashboard-tab-chip {
+      background: #fff;
+      border: 1px solid var(--border);
+      color: #64748b;
+    }
+    .dashboard-tab-chip:hover {
+      background: #f8fafc;
+      border-color: rgba(14,165,233,0.30);
+      color: #0f172a;
+    }
+    .dashboard-tab-chip.active {
+      background: rgba(14,165,233,0.12);
+      border-color: rgba(14,165,233,0.26);
+      color: #0f172a;
+    }
+    .dashboard-source-pill,
+    .dashboard-share-btn,
+    .dashboard-avatar-badge {
+      background: #fff;
+      border: 1px solid var(--border);
+      color: #0f172a;
+    }
+    .dashboard-share-btn:hover {
+      border-color: rgba(14,165,233,0.35);
+      color: #0f172a;
+      background: #f8fbff;
+    }
+    .dashboard-avatar-badge {
+      background: linear-gradient(135deg, #0f172a 0%, #0ea5e9 100%);
+      color: #fff;
+    }
+    .dashboard-source-icon {
+      color: #0ea5e9;
+    }
+    .dashboard-content {
+      background: #f8f9fb;
+      padding: 22px 24px 116px;
+    }
+    .dashboard-filter-bar {
+      background: transparent;
+      border: 0;
+    }
+    .dashboard-filter-label {
+      color: #64748b;
+    }
+    .dashboard-filter-pill,
+    .dashboard-filter-select,
+    .dashboard-filter-action {
+      background: #fff;
+      border: 1px solid var(--border);
+      color: #0f172a;
+    }
+    .dashboard-filter-pill.active,
+    .dashboard-filter-select.active {
+      background: rgba(14,165,233,0.08);
+      border-color: rgba(14,165,233,0.35);
+      color: #0f172a;
+    }
+    .dashboard-filter-action.refresh,
+    .dashboard-prompt-send {
+      background: #0f172a;
+      border-color: #0f172a;
+      color: #fff;
+    }
+    .dashboard-filter-action:hover:not(.refresh),
+    .dashboard-filter-pill:hover,
+    .dashboard-filter-select:hover {
+      border-color: rgba(14,165,233,0.35);
+      background: #f8fbff;
+      color: #0f172a;
+    }
+    .dashboard-kpi-card,
+    .dashboard-panel-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      color: #0f172a;
+      box-shadow: none;
+    }
+    .dashboard-kpi-title,
+    .dashboard-panel-type {
+      color: #94a3b8;
+    }
+    .dashboard-kpi-number,
+    .dashboard-panel-title,
+    .dashboard-empty-title {
+      color: #0f172a;
+      letter-spacing: 0;
+    }
+    .dashboard-panel-chart-wrap {
+      background: transparent;
+      border: 0;
+    }
+    .dashboard-panel-insight {
+      color: #64748b;
+    }
+    .dashboard-expand-btn,
+    .dashboard-panel-menu > summary {
+      background: #fff;
+      border: 1px solid var(--border);
+      color: #64748b;
+    }
+    .dashboard-expand-btn:hover,
+    .dashboard-panel-menu > summary:hover {
+      border-color: rgba(14,165,233,0.35);
+      color: #0f172a;
+      background: #f8fbff;
+    }
+    .dashboard-panel-menu-list {
+      background: #fff;
+      border-color: var(--border);
+      box-shadow: 0 18px 44px rgba(15,23,42,0.10);
+    }
+    .dashboard-panel-menu-list button {
+      color: #0f172a;
+    }
+    .dashboard-panel-menu-list button:hover {
+      background: #f1f5f9;
+    }
+    .dashboard-empty {
+      background: transparent;
+      border: 0;
+    }
+    .dashboard-empty-callout {
+      background: #fff;
+      border: 1px dashed rgba(14,165,233,0.30);
+      border-radius: 24px;
+      padding: 32px;
+      color: #0f172a;
+    }
+    .dashboard-empty-icon {
+      color: #0ea5e9;
+      background: rgba(14,165,233,0.10);
+      border-color: rgba(14,165,233,0.22);
+    }
+    .dashboard-empty-subtext {
+      color: #64748b;
+    }
+    .dashboard-chip {
+      background: #fff;
+      border: 1px solid var(--border);
+      color: #0f172a;
+    }
+    .dashboard-chip:hover {
+      background: #f8fbff;
+      border-color: rgba(14,165,233,0.35);
+      color: #0f172a;
+    }
+    .dashboard-prompt-dock {
+      background: linear-gradient(180deg, rgba(248,249,251,0), rgba(248,249,251,0.96) 24%, #f8f9fb 72%);
+      border: 0;
+      backdrop-filter: blur(12px);
+    }
+    .dashboard-prompt-input,
+    .dashboard-prompt-replace {
+      background: #fff;
+      border: 1px solid var(--border);
+      color: #0f172a;
+    }
+    .dashboard-prompt-input::placeholder {
+      color: #94a3b8;
+    }
+    .dashboard-prompt-replace.active {
+      background: rgba(14,165,233,0.08);
+      border-color: rgba(14,165,233,0.35);
+      color: #0f172a;
+    }
+    .dashboard-table-wrap {
+      background: #fff;
+      border-color: var(--border);
+    }
+    .dashboard-table th {
+      background: #f8fafc;
+      color: #64748b;
+    }
+    .dashboard-table td {
+      color: #0f172a;
+      border-bottom-color: #eef2f7;
+    }
+
+    /* Final dashboard guard: keep the reference workspace structure, never its dark colors. */
+    #tab-dashboard .dashboard-shell {
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) !important;
+      gap: 0 !important;
+      min-height: auto !important;
+      background: transparent !important;
+      border: 0 !important;
+      color: #0f172a !important;
+    }
+    #tab-dashboard .dashboard-rail {
+      display: none !important;
+    }
+    #tab-dashboard .dashboard-main {
+      background: #ffffff !important;
+      border: 1px solid #e2e8f0 !important;
+      border-radius: 28px !important;
+      overflow: hidden !important;
+      box-shadow: none !important;
+    }
+    #tab-dashboard .dashboard-topbar,
+    #tab-dashboard .dashboard-content,
+    #tab-dashboard .dashboard-filter-bar,
+    #tab-dashboard .dashboard-kpi-card,
+    #tab-dashboard .dashboard-panel-card,
+    #tab-dashboard .dashboard-empty-callout,
+    #tab-dashboard .dashboard-table-wrap {
+      background: #ffffff !important;
+      border-color: #e2e8f0 !important;
+      color: #0f172a !important;
+      box-shadow: none !important;
+    }
+    #tab-dashboard .dashboard-content {
+      background: #f8f9fb !important;
+      min-height: calc(100vh - 210px) !important;
+      padding: 24px !important;
+    }
+    #tab-dashboard .dashboard-topbar {
+      border-bottom: 1px solid #e2e8f0 !important;
+    }
+    #tab-dashboard .dashboard-tab-chip,
+    #tab-dashboard .dashboard-filter-pill,
+    #tab-dashboard .dashboard-filter-select,
+    #tab-dashboard .dashboard-filter-action,
+    #tab-dashboard .dashboard-source-pill,
+    #tab-dashboard .dashboard-share-btn,
+    #tab-dashboard .dashboard-expand-btn,
+    #tab-dashboard .dashboard-panel-menu > summary,
+    #tab-dashboard .dashboard-chip,
+    #tab-dashboard .dashboard-prompt-input,
+    #tab-dashboard .dashboard-prompt-replace {
+      background: #ffffff !important;
+      border: 1px solid #dbe5ef !important;
+      color: #0f172a !important;
+      box-shadow: none !important;
+    }
+    #tab-dashboard .dashboard-tab-chip.active,
+    #tab-dashboard .dashboard-filter-pill.active,
+    #tab-dashboard .dashboard-filter-select.active,
+    #tab-dashboard .dashboard-prompt-replace.active {
+      background: rgba(14,165,233,0.10) !important;
+      border-color: rgba(14,165,233,0.32) !important;
+      color: #0f172a !important;
+    }
+    #tab-dashboard .dashboard-filter-action.refresh,
+    #tab-dashboard .dashboard-prompt-send {
+      background: #0f172a !important;
+      border-color: #0f172a !important;
+      color: #ffffff !important;
+    }
+    #tab-dashboard .dashboard-rail-logo {
+      background: #0f172a !important;
+      color: #ffffff !important;
+    }
+    #tab-dashboard .dashboard-rail-button {
+      background: transparent !important;
+      border-color: transparent !important;
+      color: #94a3b8 !important;
+    }
+    #tab-dashboard .dashboard-rail-button.active,
+    #tab-dashboard .dashboard-rail-button:hover {
+      background: rgba(14,165,233,0.10) !important;
+      border-color: rgba(14,165,233,0.24) !important;
+      color: #0f172a !important;
+    }
+    #tab-dashboard .dashboard-empty-icon {
+      background: rgba(14,165,233,0.10) !important;
+      border-color: rgba(14,165,233,0.24) !important;
+      color: #0ea5e9 !important;
+    }
+    #tab-dashboard .dashboard-prompt-dock {
+      background: linear-gradient(180deg, rgba(248,249,251,0), rgba(248,249,251,0.96) 24%, #f8f9fb 72%) !important;
+      border: 0 !important;
+      box-shadow: none !important;
+    }
+    #tab-dashboard .dashboard-topbar-label,
+    #tab-dashboard .dashboard-panel-title,
+    #tab-dashboard .dashboard-kpi-number,
+    #tab-dashboard .dashboard-empty-title {
+      color: #0f172a !important;
+    }
+    #tab-dashboard .dashboard-filter-label,
+    #tab-dashboard .dashboard-panel-type,
+    #tab-dashboard .dashboard-kpi-title,
+    #tab-dashboard .dashboard-panel-insight,
+    #tab-dashboard .dashboard-empty-subtext,
+    #tab-dashboard .dashboard-kpi-insight {
+      color: #64748b !important;
+    }
+    #tab-dashboard .dashboard-empty {
+      min-height: auto !important;
+      display: block !important;
+      padding: 0 !important;
+      text-align: left !important;
+    }
+    #tab-dashboard .dashboard-empty-callout {
+      max-width: none !important;
+      display: block !important;
+      padding: 0 !important;
+      border: 0 !important;
+      background: transparent !important;
+    }
+    #tab-dashboard .dashboard-builder-hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+      gap: 22px;
+      align-items: stretch;
+    }
+    #tab-dashboard .dashboard-builder-copy,
+    #tab-dashboard .dashboard-builder-preview,
+    #tab-dashboard .dashboard-starter-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 24px;
+      box-shadow: none;
+    }
+    #tab-dashboard .dashboard-builder-copy {
+      padding: 34px;
+      display: grid;
+      align-content: start;
+      gap: 18px;
+    }
+    #tab-dashboard .dashboard-builder-eyebrow {
+      color: #0ea5e9;
+      font-size: 0.74rem;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+    #tab-dashboard .dashboard-builder-title {
+      max-width: 680px;
+      color: #0f172a;
+      font-size: clamp(2rem, 4vw, 4rem);
+      line-height: 0.96;
+      letter-spacing: -0.065em;
+      font-weight: 760;
+    }
+    #tab-dashboard .dashboard-builder-subtitle {
+      max-width: 620px;
+      color: #64748b;
+      font-size: 1rem;
+      line-height: 1.65;
+    }
+    #tab-dashboard .dashboard-builder-prompt {
+      display: flex;
+      gap: 10px;
+      padding: 10px;
+      border: 1px solid #dbe5ef;
+      border-radius: 24px;
+      background: #f8fafc;
+    }
+    #tab-dashboard .dashboard-builder-prompt .dashboard-prompt-input {
+      height: 54px;
+      border: 0 !important;
+      background: transparent !important;
+      box-shadow: none !important;
+      padding-inline: 10px;
+      font-size: 0.95rem;
+    }
+    #tab-dashboard .dashboard-builder-prompt .dashboard-prompt-send {
+      height: 54px;
+      min-width: 152px;
+    }
+    #tab-dashboard .dashboard-builder-preview {
+      padding: 24px;
+      display: grid;
+      gap: 16px;
+      align-content: start;
+      background:
+        radial-gradient(circle at 85% 0%, rgba(14,165,233,0.10), transparent 34%),
+        #ffffff;
+    }
+    #tab-dashboard .dashboard-preview-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      color: #0f172a;
+      font-weight: 800;
+    }
+    #tab-dashboard .dashboard-preview-live {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: #059669;
+      font-size: 0.74rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    #tab-dashboard .dashboard-preview-live::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: #10b981;
+      box-shadow: 0 0 0 4px rgba(16,185,129,0.12);
+    }
+    #tab-dashboard .dashboard-preview-kpis {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+    #tab-dashboard .dashboard-preview-kpi {
+      padding: 14px;
+      border-radius: 18px;
+      border: 1px solid #e2e8f0;
+      background: #f8fafc;
+    }
+    #tab-dashboard .dashboard-preview-kpi span {
+      display: block;
+      color: #94a3b8;
+      font-size: 0.66rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    #tab-dashboard .dashboard-preview-kpi strong {
+      color: #0f172a;
+      font-size: 1.35rem;
+      letter-spacing: -0.04em;
+    }
+    #tab-dashboard .dashboard-preview-chart {
+      min-height: 230px;
+      padding: 18px;
+      border-radius: 20px;
+      border: 1px solid #e2e8f0;
+      background: #ffffff;
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 10px;
+      align-items: end;
+    }
+    #tab-dashboard .dashboard-preview-bar {
+      border-radius: 999px 999px 6px 6px;
+      background: linear-gradient(180deg, #0ea5e9, #0f172a);
+      min-height: 34px;
+    }
+    #tab-dashboard .dashboard-starter-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+    #tab-dashboard .dashboard-starter-card {
+      padding: 20px;
+      display: grid;
+      gap: 10px;
+    }
+    #tab-dashboard .dashboard-starter-card strong {
+      color: #0f172a;
+      font-size: 0.98rem;
+    }
+    #tab-dashboard .dashboard-starter-card p {
+      color: #64748b;
+      font-size: 0.84rem;
+      line-height: 1.55;
+    }
+    #tab-dashboard .dashboard-chip-row {
+      gap: 8px !important;
+    }
+    #tab-dashboard .dashboard-builder-copy .dashboard-chip-row {
+      margin-top: 2px;
+    }
+    @media (max-width: 1180px) {
+      #tab-dashboard .dashboard-builder-hero,
+      #tab-dashboard .dashboard-starter-grid {
+        grid-template-columns: 1fr;
+      }
+      #tab-dashboard .dashboard-builder-title {
+        font-size: clamp(2.2rem, 8vw, 3.4rem);
+      }
+    }
+
+    @media (max-width: 1120px) {
+      header {
+        height: auto;
+        padding: 14px 18px;
+        flex-wrap: wrap;
+      }
+      .nav-tabs {
+        order: 3;
+        width: 100%;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+      }
+      .header-actions {
+        margin-left: auto;
+      }
+      .sidebar {
+        width: 100%;
+        min-width: 0;
+      }
+      .content {
+        padding: 18px;
+      }
+      .dashboard-kpi-strip,
+      .dashboard-panel-grid,
+      .dashboard-filter-grid {
+        grid-template-columns: 1fr;
+      }
+      .schema-browser {
+        grid-template-columns: 1fr;
+      }
+      .source-modal-grid {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
@@ -1601,14 +3364,11 @@
 <!-- HEADER -->
 <header>
   <div class="logo" id="logoTrigger" title="AI Data Middleware">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <ellipse cx="12" cy="5" rx="9" ry="3"/>
-      <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
-      <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
-      <line x1="16" y1="9" x2="20" y2="9"/>
-      <circle cx="20" cy="9" r="2" fill="currentColor" stroke="none" opacity=".7"/>
-    </svg>
-    AI Data Middleware
+    <span class="logo-mark">AI</span>
+    <span class="logo-copy">
+      <strong>AI Data Middleware</strong>
+      <span>Enterprise analytics workspace</span>
+    </span>
   </div>
 
   <nav class="nav-tabs">
@@ -1626,6 +3386,7 @@
       <div class="status-dot" id="statusDot"></div>
       <span id="statusLabel">Not connected</span>
     </div>
+    <button class="header-link" type="button" onclick="shareWorkspace()">Share</button>
     <div class="account-pill">
       <button class="profile-trigger" id="profileTrigger" type="button" onclick="toggleProfileMenu()">
         <span class="account-avatar" id="accountAvatar">AI</span>
@@ -1764,21 +3525,7 @@
     <div class="tab-panel" id="tab-dashboard">
       <div id="dashboardEmptyState" class="workspace-empty-state" style="display:none"></div>
       <div id="dashboardConnectedContent">
-      <div class="card">
-        <div class="card-header">
-          <span>Dashboard</span>
-          <div style="display:flex;gap:8px;align-items:center">
-            <span style="font-size:0.7rem;color:var(--muted);font-weight:400" id="dashboardSourceLabel">Visual view of the latest result</span>
-            <button class="btn btn-ghost btn-sm" onclick="refreshDashboard()">Refresh</button>
-          </div>
-        </div>
-        <div class="card-body" id="dashboardBody">
-          <div class="empty-state">
-            <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19h16"/><rect x="5" y="10" width="3" height="7"/><rect x="10.5" y="6" width="3" height="11"/><rect x="16" y="3" width="3" height="14"/></svg>
-            <p>Run Ask AI or SQL Runner first. The dashboard view will turn the latest result into KPI cards and a visual summary.</p>
-          </div>
-        </div>
-      </div>
+        <div id="dashboardBody"></div>
       </div>
     </div>
 
@@ -2233,15 +3980,15 @@ function renderWorkspaceEmptyState(targetId, title, subtitle) {
 function updateSourceDependentUI() {
   const connectedSource = hasConnectedSource();
   const tabRules = {
-    ask: 'Connect a source first',
-    sql: 'Connect a source first',
-    dashboard: 'Connect a source first',
-    schema: 'Connect a source first',
+    ask: 'Open Ask AI. Connect a source before running a question.',
+    sql: 'Open SQL Runner. Connect a source before running SQL.',
+    dashboard: 'Open Dashboard. Connect a source before generating charts.',
+    schema: 'Open Schema. Connect a source before scanning tables.',
   };
   Object.entries(tabRules).forEach(([tabId, tooltip]) => {
     const btn = document.getElementById(`ntab-${tabId}`);
     if (!btn) return;
-    btn.disabled = !connectedSource;
+    btn.disabled = false;
     btn.title = connectedSource ? '' : tooltip;
   });
 
@@ -2278,6 +4025,20 @@ async function logoutWorkspace() {
   closeProfileMenu();
   await window.middlewareAuth.signOut();
   window.location.replace('/');
+}
+
+async function shareWorkspace() {
+  const url = window.location.href;
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(url);
+      toast('Workspace link copied');
+      return;
+    }
+  } catch (err) {
+    // fall through to prompt
+  }
+  window.prompt('Copy workspace link', url);
 }
 
 function toggleProfileMenu() {
@@ -2438,10 +4199,6 @@ function setupHotkeys() {
 
 function switchTab(id) {
   if (!devMode && ['agent', 'ops'].includes(id)) return;
-  if (!hasConnectedSource() && ['ask', 'sql', 'dashboard', 'schema'].includes(id)) {
-    toast('Connect a source first');
-    return;
-  }
   document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   const btn = document.getElementById('ntab-' + id);
@@ -2635,7 +4392,10 @@ document.getElementById('statusPill').addEventListener('click', testConnection);
 
 function updateStatusPill(ok, label) {
   document.getElementById('statusDot').className = 'status-dot ' + (ok ? 'connected' : 'error');
-  document.getElementById('statusLabel').textContent = ok ? 'Connected' : (label || 'Error');
+  const source = currentSourceRecord();
+  const sourceLabel = source ? (databaseCatalog[source.engine_key]?.label || source.engine_key || 'Source') : null;
+  const sourceContext = source?.options?.warehouse || source?.database || source?.host || source?.source_kind || 'Live source';
+  document.getElementById('statusLabel').textContent = ok && source ? `${sourceLabel} · ${sourceContext}` : (label || 'Not connected');
 }
 
 // ── SAVE CONNECTION ──
@@ -4061,6 +5821,937 @@ function mountDashboardCharts(tab) {
     } else if (panel.chart_type === 'donut') {
       config = { type: 'doughnut', ...baseConfig };
     }
+    dashboardCharts[panel.id] = new Chart(ctx, config);
+  });
+}
+
+/* ── DASHBOARD REDESIGN OVERRIDES ── */
+function defaultDashboardFilters() {
+  return {
+    dateRange: '90d',
+    customFrom: '',
+    customTo: '',
+    dimensionFilters: [
+      { column: '', value: '' },
+      { column: '', value: '' },
+      { column: '', value: '' },
+    ],
+  };
+}
+
+function ensureDashboardSeedTabs(workspace) {
+  if (!workspace || !Array.isArray(workspace.tabs)) {
+    workspace = { activeTabId: '', tabs: [] };
+  }
+  const defaults = ['Overview', 'Sales', 'Operations'];
+  defaults.forEach((name) => {
+    if (workspace.tabs.length >= DASHBOARD_STORAGE_LIMIT) return;
+    if (!workspace.tabs.some((tab) => String(tab.name || '').toLowerCase() === name.toLowerCase())) {
+      workspace.tabs.push(createDashboardTab(name));
+    }
+  });
+  if (!workspace.activeTabId || !workspace.tabs.some((tab) => tab.id === workspace.activeTabId)) {
+    workspace.activeTabId = workspace.tabs[0]?.id || '';
+  }
+  return workspace;
+}
+
+function ensureDashboardWorkspace() {
+  if (dashboardWorkspace) return ensureDashboardSeedTabs(dashboardWorkspace);
+  try {
+    const saved = JSON.parse(localStorage.getItem(getDashboardStorageKey()) || 'null');
+    if (saved && Array.isArray(saved.tabs)) {
+      dashboardWorkspace = saved;
+    }
+  } catch (error) {
+    dashboardWorkspace = null;
+  }
+  if (!dashboardWorkspace) {
+    dashboardWorkspace = { activeTabId: '', tabs: [] };
+  }
+  dashboardWorkspace = ensureDashboardSeedTabs(dashboardWorkspace);
+  return dashboardWorkspace;
+}
+
+function refreshDashboard() {
+  const tab = getActiveDashboardTab();
+  if (tab) delete tab.renderHash;
+  renderDashboard();
+}
+
+function getDashboardSourcePresentation() {
+  const source = currentSourceRecord();
+  const engineKey = source?.engine_key || document.getElementById('dbType')?.value || 'sqlite';
+  const meta = databaseCatalog[engineKey] || {};
+  const label = meta.label || humanizeIdentifier(engineKey) || 'Source';
+  const detail = source?.options?.warehouse || source?.database || source?.host || 'Connected';
+  return {
+    engineKey,
+    label,
+    detail,
+    icon: engineKey === 'snowflake' ? '❄' : (engineKey === 'sqlite' ? '◫' : '◈'),
+  };
+}
+
+function getDashboardAvatarText() {
+  return (currentUser?.full_name || currentUser?.email || 'AI').trim().slice(0, 2).toUpperCase();
+}
+
+function computeDashboardResultHash(result) {
+  if (!result) return 'dashboard_empty';
+  return JSON.stringify({
+    title: result.title || '',
+    sql: result.sql || '',
+    columns: result.columns || [],
+    row_count: result.row_count ?? result.rows?.length ?? 0,
+    rows: (result.rows || []).slice(0, 20),
+  });
+}
+
+function getDashboardSchemaSemanticMap(result) {
+  const semanticMap = new Map();
+  const tableDetails = Array.isArray(schemaData?.table_details) ? schemaData.table_details : [];
+  const usedTables = new Set((result?.tables_used || []).map((name) => String(name || '').toLowerCase()));
+  tableDetails.forEach((table) => {
+    const include = !usedTables.size || usedTables.has(String(table.name || '').toLowerCase());
+    if (!include) return;
+    (table.columns || []).forEach((column) => {
+      const key = String(column.name || '').toLowerCase();
+      if (!semanticMap.has(key) && column.semantic_type) {
+        semanticMap.set(key, String(column.semantic_type).toUpperCase());
+      }
+    });
+  });
+  return semanticMap;
+}
+
+function inferDashboardProfilesFromResult(result) {
+  const profiles = inferDashboardProfiles(result?.columns || [], result?.rows || []);
+  const semanticMap = getDashboardSchemaSemanticMap(result);
+  return profiles.map((profile) => {
+    const hinted = semanticMap.get(String(profile.name || '').toLowerCase());
+    let semanticType = hinted || profile.semanticType;
+    if (semanticType === 'MEASURE' && /(zip|postal|phone|ssn|identifier|account|customer|employee|user|subscription|invoice|order|patient|encounter).*(id)?$/i.test(profile.name)) {
+      semanticType = 'DIMENSION';
+    }
+    return { ...profile, semanticType };
+  });
+}
+
+function dashboardQuestionMentions(question, identifier) {
+  const text = String(question || '').toLowerCase();
+  const raw = String(identifier || '').toLowerCase();
+  const human = humanizeIdentifier(identifier).toLowerCase();
+  return text.includes(raw) || (human && text.includes(human));
+}
+
+function selectDashboardPrimaryDimension(profiles, question) {
+  const dimensions = profiles.filter((profile) => profile.semanticType === 'DIMENSION');
+  if (!dimensions.length) return null;
+  const direct = dimensions.find((profile) => dashboardQuestionMentions(question, profile.name));
+  if (direct) return direct;
+  return [...dimensions].sort((a, b) => {
+    const aScore = a.distinct >= 2 && a.distinct <= 18 ? 0 : 1;
+    const bScore = b.distinct >= 2 && b.distinct <= 18 ? 0 : 1;
+    if (aScore !== bScore) return aScore - bScore;
+    return a.distinct - b.distinct;
+  })[0];
+}
+
+function selectDashboardSecondaryDimension(profiles, primaryDimension, question) {
+  const candidates = profiles.filter((profile) => (
+    profile.semanticType === 'DIMENSION'
+    && profile.name !== primaryDimension?.name
+    && profile.distinct >= 2
+    && profile.distinct <= 8
+  ));
+  if (!candidates.length) return null;
+  const direct = candidates.find((profile) => dashboardQuestionMentions(question, profile.name));
+  if (direct) return direct;
+  const preferred = candidates.find((profile) => /(gender|segment|status|category|type|region|ethnicity|race|plan|department)/i.test(profile.name));
+  return preferred || candidates[0];
+}
+
+function selectDashboardPrimaryMeasure(profiles, question) {
+  const measures = profiles.filter((profile) => profile.semanticType === 'MEASURE');
+  if (!measures.length) return null;
+  const direct = measures.find((profile) => dashboardQuestionMentions(question, profile.name));
+  if (direct) return direct;
+  return measures[0];
+}
+
+function selectDashboardDateProfile(profiles, question) {
+  const dates = profiles.filter((profile) => profile.semanticType === 'DATE');
+  if (!dates.length) return null;
+  const direct = dates.find((profile) => dashboardQuestionMentions(question, profile.name));
+  return direct || dates[0];
+}
+
+function dashboardResultRowsAsObjects(result) {
+  const columns = result?.columns || [];
+  return (result?.rows || []).map((row) => Object.fromEntries(columns.map((column, index) => [column, row[index]])));
+}
+
+function dashboardSafeNumber(value) {
+  const num = Number(value);
+  return Number.isFinite(num) ? num : 0;
+}
+
+function aggregateDashboardByDimension(result, dimensionName, measureName = ROW_COUNT_MEASURE, limit = 12) {
+  if (!result?.columns?.length || !dimensionName) return [];
+  const dimensionIndex = result.columns.indexOf(dimensionName);
+  if (dimensionIndex < 0) return [];
+  const measureIndex = measureName !== ROW_COUNT_MEASURE ? result.columns.indexOf(measureName) : -1;
+  const buckets = new Map();
+  (result.rows || []).forEach((row) => {
+    const rawLabel = row[dimensionIndex];
+    if (rawLabel === null || rawLabel === undefined || String(rawLabel).trim() === '') return;
+    const label = String(rawLabel);
+    const numericValue = measureName === ROW_COUNT_MEASURE
+      ? 1
+      : (measureIndex >= 0 && isNumericValue(row[measureIndex]) ? toNumber(row[measureIndex]) : 0);
+    buckets.set(label, dashboardSafeNumber(buckets.get(label)) + dashboardSafeNumber(numericValue));
+  });
+  return [...buckets.entries()]
+    .map(([x, y]) => ({ x, y }))
+    .sort((a, b) => b.y - a.y)
+    .slice(0, limit);
+}
+
+function dashboardDateBucketLabel(dateValue) {
+  if (!(dateValue instanceof Date) || Number.isNaN(dateValue.getTime())) return null;
+  if (dateValue.getHours() === 0 && dateValue.getMinutes() === 0 && dateValue.getSeconds() === 0) {
+    return `${dateValue.getFullYear()}-${String(dateValue.getMonth() + 1).padStart(2, '0')}`;
+  }
+  return `${dateValue.getFullYear()}-${String(dateValue.getMonth() + 1).padStart(2, '0')}-${String(dateValue.getDate()).padStart(2, '0')}`;
+}
+
+function aggregateDashboardOverDate(result, dateName, measureName = ROW_COUNT_MEASURE, limit = 18) {
+  if (!result?.columns?.length || !dateName) return [];
+  const dateIndex = result.columns.indexOf(dateName);
+  if (dateIndex < 0) return [];
+  const measureIndex = measureName !== ROW_COUNT_MEASURE ? result.columns.indexOf(measureName) : -1;
+  const buckets = new Map();
+  (result.rows || []).forEach((row) => {
+    const parsed = parseDashboardDate(row[dateIndex]);
+    if (!parsed) return;
+    const bucket = dashboardDateBucketLabel(parsed);
+    if (!bucket) return;
+    const value = measureName === ROW_COUNT_MEASURE
+      ? 1
+      : (measureIndex >= 0 && isNumericValue(row[measureIndex]) ? toNumber(row[measureIndex]) : 0);
+    buckets.set(bucket, dashboardSafeNumber(buckets.get(bucket)) + dashboardSafeNumber(value));
+  });
+  return [...buckets.entries()]
+    .map(([x, y]) => ({ x, y, _sort: Date.parse(`${x.length === 7 ? `${x}-01` : x}T00:00:00`) }))
+    .sort((a, b) => a._sort - b._sort)
+    .slice(-limit)
+    .map(({ x, y }) => ({ x, y }));
+}
+
+function computeDashboardDelta(values) {
+  if (!Array.isArray(values) || values.length < 2) {
+    return { direction: 'neutral', text: 'Stable baseline' };
+  }
+  const previous = dashboardSafeNumber(values[values.length - 2]);
+  const current = dashboardSafeNumber(values[values.length - 1]);
+  if (!previous && !current) return { direction: 'neutral', text: 'No change' };
+  if (!previous) return { direction: 'positive', text: 'New activity detected' };
+  const delta = ((current - previous) / Math.abs(previous)) * 100;
+  if (!Number.isFinite(delta) || Math.abs(delta) < 0.1) return { direction: 'neutral', text: 'Flat vs previous' };
+  return {
+    direction: delta >= 0 ? 'positive' : 'negative',
+    text: `${delta >= 0 ? '▲' : '▼'} ${Math.abs(delta).toFixed(1)}% vs previous`,
+  };
+}
+
+function dashboardMeasureLabel(measureProfile) {
+  return measureProfile ? humanizeIdentifier(measureProfile.name) : 'row count';
+}
+
+function buildDashboardPlainSummary(question, primaryDimension, primaryMeasure, barSeries) {
+  if (!barSeries.length) return `For "${question}", there was not enough structured data to build a visual summary yet.`;
+  const leader = barSeries[0];
+  const measureLabel = primaryMeasure ? humanizeIdentifier(primaryMeasure.name) : 'record count';
+  const dimensionLabel = primaryDimension ? humanizeIdentifier(primaryDimension.name) : 'category';
+  return `For "${question}", ${leader.x} leads on ${dimensionLabel} with ${formatCompactNumber(leader.y)} ${measureLabel}.`;
+}
+
+function buildDashboardInsight(prefix, series) {
+  if (!series?.length) return prefix;
+  const first = series[0];
+  return `${prefix} ${first.x} is currently highest at ${formatCompactNumber(first.y)}.`;
+}
+
+function buildDashboardPanelsFromResult(tab, result) {
+  const question = tab.baseQuestion || result?.title || 'current result';
+  const profiles = inferDashboardProfilesFromResult(result);
+  const primaryDimension = selectDashboardPrimaryDimension(profiles, question);
+  const secondaryDimension = selectDashboardSecondaryDimension(profiles, primaryDimension, question);
+  const primaryMeasure = selectDashboardPrimaryMeasure(profiles, question);
+  const dateProfile = selectDashboardDateProfile(profiles, question);
+  const measureKey = primaryMeasure?.name || ROW_COUNT_MEASURE;
+
+  const barSeries = primaryDimension
+    ? aggregateDashboardByDimension(result, primaryDimension.name, measureKey, 10)
+    : [];
+  const donutSeries = secondaryDimension
+    ? aggregateDashboardByDimension(result, secondaryDimension.name, ROW_COUNT_MEASURE, 6)
+    : [];
+  const lineSeries = dateProfile
+    ? aggregateDashboardOverDate(result, dateProfile.name, measureKey, 18)
+    : [];
+
+  const numericValues = primaryMeasure
+    ? (result.rows || [])
+      .map((row) => row[result.columns.indexOf(primaryMeasure.name)])
+      .filter((value) => isNumericValue(value))
+      .map((value) => toNumber(value))
+    : [];
+
+  const deltaBasis = lineSeries.length > 1
+    ? lineSeries.map((point) => point.y)
+    : (barSeries.length > 1 ? barSeries.map((point) => point.y) : numericValues);
+  const delta = computeDashboardDelta(deltaBasis);
+  const avgValue = numericValues.length ? numericValues.reduce((sum, value) => sum + value, 0) / numericValues.length : 0;
+  const maxValue = numericValues.length ? Math.max(...numericValues) : (barSeries[0]?.y || result.row_count || result.rows.length || 0);
+  const rowCount = result.row_count ?? result.rows?.length ?? 0;
+  const groupCount = primaryDimension ? new Set((result.rows || []).map((row) => row[result.columns.indexOf(primaryDimension.name)])).size : rowCount;
+
+  const kpis = [
+    {
+      id: dashboardUid('panel'),
+      chart_type: 'kpi',
+      title: 'ROWS RETURNED',
+      data: [{ label: 'Rows returned', value: rowCount, formatted_value: formatCompactNumber(rowCount), delta_text: `${result.columns?.length || 0} columns in view`, delta_direction: 'neutral' }],
+      insight: 'Returned records in the current dashboard result.',
+    },
+    {
+      id: dashboardUid('panel'),
+      chart_type: 'kpi',
+      title: primaryMeasure ? `MAX ${humanizeIdentifier(primaryMeasure.name).toUpperCase()}` : 'TOP VALUE',
+      data: [{ label: 'Max value', value: maxValue, formatted_value: formatCompactNumber(maxValue), delta_text: delta.text, delta_direction: delta.direction }],
+      insight: `Highest ${dashboardMeasureLabel(primaryMeasure)} in the current result.`,
+    },
+    {
+      id: dashboardUid('panel'),
+      chart_type: 'kpi',
+      title: primaryMeasure ? `AVG ${humanizeIdentifier(primaryMeasure.name).toUpperCase()}` : 'GROUPS',
+      data: [{ label: 'Average value', value: primaryMeasure ? avgValue : groupCount, formatted_value: formatCompactNumber(primaryMeasure ? avgValue : groupCount), delta_text: primaryMeasure ? `${formatCompactNumber(groupCount)} grouped values` : 'Distinct categories detected', delta_direction: 'positive' }],
+      insight: primaryMeasure ? `Average ${dashboardMeasureLabel(primaryMeasure)} across the current result.` : 'Distinct groups available for analysis.',
+    },
+  ];
+
+  const panels = [];
+  if (barSeries.length > 0) {
+    panels.push({
+      id: dashboardUid('panel'),
+      chart_type: 'bar',
+      layout: donutSeries.length > 0 ? 'wide' : 'full',
+      title: `${humanizeIdentifier(primaryDimension?.name || 'Category')} by ${primaryMeasure ? humanizeIdentifier(primaryMeasure.name) : 'count'}`,
+      x_axis: primaryDimension?.name || 'category',
+      y_axis: primaryMeasure?.name || 'row_count',
+      data: barSeries,
+      insight: buildDashboardInsight(`This ranking summarizes ${humanizeIdentifier(primaryDimension?.name || 'category')}.`, barSeries),
+    });
+  }
+  if (donutSeries.length > 1) {
+    panels.push({
+      id: dashboardUid('panel'),
+      chart_type: 'donut',
+      layout: 'narrow',
+      title: `${humanizeIdentifier(secondaryDimension?.name || 'Category')} split`,
+      x_axis: secondaryDimension?.name || 'category',
+      y_axis: 'row_count',
+      data: donutSeries,
+      insight: buildDashboardInsight(`This split shows how records are distributed across ${humanizeIdentifier(secondaryDimension?.name || 'categories')}.`, donutSeries),
+    });
+  }
+  if (lineSeries.length > 1) {
+    panels.push({
+      id: dashboardUid('panel'),
+      chart_type: 'line',
+      layout: 'full',
+      title: `${primaryMeasure ? humanizeIdentifier(primaryMeasure.name) : 'Record count'} over time`,
+      x_axis: dateProfile?.name || 'date',
+      y_axis: primaryMeasure?.name || 'row_count',
+      data: lineSeries,
+      insight: buildDashboardInsight('The timeline highlights how the result changes over time.', [...lineSeries].sort((a, b) => b.y - a.y)),
+    });
+  }
+  if (!panels.length) {
+    panels.push({
+      id: dashboardUid('panel'),
+      chart_type: 'table',
+      layout: 'full',
+      title: 'Detailed result table',
+      columns: result.columns || [],
+      data: dashboardResultRowsAsObjects(result),
+      insight: 'The current result is better reviewed as a detailed table.',
+    });
+  }
+
+  return {
+    panels: [...kpis, ...panels],
+    summary: result.explanation || tab.dashboardPlan?.summary || buildDashboardPlainSummary(question, primaryDimension, primaryMeasure, barSeries),
+    confidence: String(result.confidence || tab.dashboardPlan?.confidence || tab.confidence || 'medium').toLowerCase(),
+  };
+}
+
+function ensureDashboardVisualState(tab, result) {
+  if (!result?.columns?.length || !result?.rows?.length) return;
+  const renderHash = computeDashboardResultHash(result);
+  if (tab.renderHash === renderHash && Array.isArray(tab.panels) && tab.panels.length) return;
+  const generated = buildDashboardPanelsFromResult(tab, result);
+  tab.panels = generated.panels;
+  tab.summary = generated.summary;
+  tab.confidence = generated.confidence;
+  tab.renderHash = renderHash;
+  persistDashboardWorkspace();
+}
+
+function renderDashboardIconRail() {
+  return `
+    <aside class="dashboard-rail">
+      <div class="dashboard-rail-group">
+        <div class="dashboard-rail-logo">A</div>
+        <button class="dashboard-rail-button active" type="button" onclick="switchTab('dashboard')" title="Dashboard">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 13h8V3H3zM13 21h8v-8h-8zM13 11h8V3h-8zM3 21h8v-6H3z"/></svg>
+        </button>
+        <button class="dashboard-rail-button" type="button" onclick="switchTab('ask')" title="Ask AI">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l1.8 4.8L18 9.6l-4.2 1.8L12 16l-1.8-4.6L6 9.6l4.2-1.8L12 3z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9L19 15z"/></svg>
+        </button>
+        <button class="dashboard-rail-button" type="button" onclick="switchTab('sql')" title="SQL Runner">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="7 8 3 12 7 16"/><polyline points="17 8 21 12 17 16"/><line x1="14" y1="5" x2="10" y2="19"/></svg>
+        </button>
+        <button class="dashboard-rail-button" type="button" onclick="switchTab('schema')" title="Schema">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="5" rx="7" ry="3"/><path d="M5 5v7c0 1.7 3.1 3 7 3s7-1.3 7-3V5"/><path d="M5 12v7c0 1.7 3.1 3 7 3s7-1.3 7-3v-7"/></svg>
+        </button>
+        <button class="dashboard-rail-button" type="button" onclick="switchTab('history')" title="History">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12a9 9 0 1 0 3-6.7"/><polyline points="3 3 3 9 9 9"/><path d="M12 7v5l3 3"/></svg>
+        </button>
+      </div>
+      <div class="dashboard-rail-group">
+        <button class="dashboard-rail-button" type="button" onclick="toast('Settings coming soon')" title="Settings">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.7l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.7-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.2a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.7.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.7 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.2a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.7l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.7.3h.1A1.6 1.6 0 0 0 10 3.2V3a2 2 0 1 1 4 0v.2a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.7-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.7v.1a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.2a1.6 1.6 0 0 0-1.4 1z"/></svg>
+        </button>
+      </div>
+    </aside>
+  `;
+}
+
+function renderDashboardTopbar(tab) {
+  const workspace = ensureDashboardWorkspace();
+  return `
+    <div class="dashboard-topbar">
+      <div class="dashboard-topbar-label">Dashboard</div>
+      <div class="dashboard-tab-row">
+        <div class="dashboard-tab-list">
+          ${workspace.tabs.slice(0, DASHBOARD_STORAGE_LIMIT).map((item) => `
+            <button class="dashboard-tab-chip ${item.id === workspace.activeTabId ? 'active' : ''}" type="button" onclick="setActiveDashboardTab('${item.id}')">${escapeHtml(item.name)}</button>
+          `).join('')}
+          ${workspace.tabs.length < DASHBOARD_STORAGE_LIMIT ? `<button class="dashboard-tab-chip" type="button" onclick="createNewDashboardTab()">+ New</button>` : ''}
+        </div>
+      </div>
+      <div class="dashboard-topbar-actions">
+        <button class="dashboard-share-btn" type="button" onclick="saveDashboardView()">Save dashboard</button>
+        <button class="dashboard-share-btn" type="button" onclick="refreshDashboard()">Refresh</button>
+      </div>
+    </div>
+  `;
+}
+
+function ensureDashboardFilterColumns(tab, result) {
+  if (!tab.filters) tab.filters = defaultDashboardFilters();
+  const profiles = inferDashboardProfilesFromResult(result).filter((profile) => profile.semanticType === 'DIMENSION');
+  tab.filters.dimensionFilters.forEach((filter, index) => {
+    if (!filter.column && profiles[index]) {
+      filter.column = profiles[index].name;
+    }
+  });
+}
+
+function dashboardFilterPillLabel(filter, fallbackLabel = 'All values') {
+  if (!filter?.column) return fallbackLabel;
+  if (filter.value) return `${humanizeIdentifier(filter.column)}: ${String(filter.value)}`;
+  return `All ${humanizeIdentifier(filter.column)}`;
+}
+
+function renderDashboardFilterSelect(index, tab, result) {
+  const filter = tab.filters.dimensionFilters[index];
+  if (!filter?.column) return '';
+  const values = getDashboardFilterValues(tab.rawResult || result, filter.column);
+  const active = Boolean(filter.value);
+  return `
+    <label class="dashboard-filter-select ${active ? 'active' : ''}">
+      <span>${escapeHtml(dashboardFilterPillLabel(filter, 'All values'))}</span>
+      <select onchange="updateDashboardQuickFilterValue(${index}, this.value)">
+        <option value="">${escapeHtml(`All ${humanizeIdentifier(filter.column)}`)}</option>
+        ${values.map((value) => `<option value="${escapeHtml(value)}" ${filter.value === value ? 'selected' : ''}>${escapeHtml(value)}</option>`).join('')}
+      </select>
+    </label>
+  `;
+}
+
+function renderDashboardFilterBarModern(tab, result) {
+  if (!result?.columns?.length || !result?.rows?.length) return '';
+  ensureDashboardFilterColumns(tab, result);
+  const filters = tab.filters || defaultDashboardFilters();
+  const dateLabels = {
+    '7d': 'Last 7 days',
+    '30d': 'Last 30 days',
+    '90d': 'Last 90 days',
+    '12m': 'Last 12 months',
+    custom: 'Custom range',
+    all: 'All time',
+  };
+  const thirdFilter = filters.dimensionFilters[2];
+  return `
+    <div class="dashboard-filter-bar">
+      <span class="dashboard-filter-label">Filters:</span>
+      <label class="dashboard-filter-select active">
+        <span>${escapeHtml(dateLabels[filters.dateRange] || 'Last 90 days')}</span>
+        <select onchange="updateDashboardDateRangeAndApply(this.value)">
+          <option value="7d" ${filters.dateRange === '7d' ? 'selected' : ''}>Last 7 days</option>
+          <option value="30d" ${filters.dateRange === '30d' ? 'selected' : ''}>Last 30 days</option>
+          <option value="90d" ${filters.dateRange === '90d' ? 'selected' : ''}>Last 90 days</option>
+          <option value="12m" ${filters.dateRange === '12m' ? 'selected' : ''}>Last 12 months</option>
+          <option value="all" ${filters.dateRange === 'all' ? 'selected' : ''}>All time</option>
+        </select>
+      </label>
+      ${renderDashboardFilterSelect(0, tab, result)}
+      ${renderDashboardFilterSelect(1, tab, result)}
+      ${thirdFilter?.column ? renderDashboardFilterSelect(2, tab, result) : ''}
+      <button class="dashboard-filter-action" type="button" onclick="addDashboardFilterPrompt()">Add filter</button>
+      <button class="dashboard-filter-action" type="button" onclick="openDashboardExportMenu()">Export</button>
+      <button class="dashboard-filter-action" type="button" onclick="addDashboardSupportPanel()">Add panel</button>
+      <button class="dashboard-filter-action refresh" type="button" onclick="refreshDashboard()">Refresh</button>
+    </div>
+  `;
+}
+
+function renderDashboardKpiStripModern(tab) {
+  const panels = (tab.panels || []).filter((panel) => panel.chart_type === 'kpi').slice(0, 3);
+  if (!panels.length) return '';
+  return `
+    <div class="dashboard-kpi-strip">
+      ${panels.map((panel) => {
+        const item = panel.data?.[0] || {};
+        const deltaDir = item.delta_direction || 'neutral';
+        const deltaText = item.delta_text || 'Stable baseline';
+        const deltaIcon = deltaDir === 'positive' ? '▲' : (deltaDir === 'negative' ? '▼' : '•');
+        return `
+          <div class="dashboard-kpi-card">
+            <div class="dashboard-kpi-title">${escapeHtml(panel.title)}</div>
+            <div class="dashboard-kpi-number">${escapeHtml(item.formatted_value || formatCompactNumber(item.value))}</div>
+            <div class="dashboard-kpi-delta ${escapeHtml(deltaDir)}">
+              <span>${escapeHtml(deltaIcon)}</span>
+              <span>${escapeHtml(deltaText)}</span>
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+function renderDashboardPanelsModern(tab) {
+  const panels = (tab.panels || []).filter((panel) => panel.chart_type !== 'kpi');
+  if (!panels.length) return '';
+  return `
+    <div class="dashboard-panel-grid">
+      ${panels.map((panel) => `
+        <div class="dashboard-panel-card layout-${escapeHtml(panel.layout || 'full')} ${dashboardExpandedPanel === panel.id ? 'expanded' : ''}">
+          <div class="dashboard-panel-head">
+            <div class="dashboard-panel-title">${escapeHtml(panel.title || 'Dashboard panel')}</div>
+            <div class="dashboard-panel-head-right">
+              <span class="dashboard-panel-type">${escapeHtml(panel.chart_type)}</span>
+              <button class="dashboard-expand-btn" type="button" onclick="toggleExpandDashboardPanel('${panel.id}')" title="${dashboardExpandedPanel === panel.id ? 'Collapse panel' : 'Expand panel'}">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+              </button>
+              <details class="dashboard-panel-menu">
+                <summary>⋯</summary>
+                <div class="dashboard-panel-menu-list">
+                  <button type="button" onclick="downloadDashboardPanelCSV('${panel.id}')">Download CSV</button>
+                  <button type="button" onclick="downloadDashboardPanelPNG('${panel.id}')">Download PNG</button>
+                  <button type="button" onclick="toggleExpandDashboardPanel('${panel.id}')">${dashboardExpandedPanel === panel.id ? 'Collapse' : 'Expand'}</button>
+                  <button type="button" onclick="removeDashboardPanel('${panel.id}')">Remove panel</button>
+                </div>
+              </details>
+            </div>
+          </div>
+          <div class="dashboard-panel-chart-wrap">${renderDashboardPanelBody(tab, panel)}</div>
+          <div class="dashboard-panel-insight">${escapeHtml(panel.insight || 'This panel summarizes the latest result for business stakeholders.')}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderDashboardPromptDockModern(tab) {
+  const followUps = tab.followUps?.length ? tab.followUps.slice(0, 3) : getDashboardStarterPrompts().slice(0, 3);
+  const replaceOn = Boolean(document.getElementById('dashboardReplaceMode')?.checked);
+  return `
+    <div class="dashboard-prompt-dock">
+      <div class="dashboard-chip-row">
+        ${followUps.map((item) => `<button class="dashboard-chip" type="button" onclick='runDashboardCopilot(${escapeJsString(item)})'>${escapeHtml(item)}</button>`).join('')}
+      </div>
+      <div class="dashboard-prompt-wrap">
+        <input id="dashboardPrompt" class="dashboard-prompt-input" type="text" placeholder="Ask a follow-up or start a new question..." />
+        <button id="dashboardReplaceToggle" class="dashboard-prompt-replace ${replaceOn ? 'active' : ''}" type="button" onclick="toggleDashboardReplaceMode()">Replace</button>
+        <button class="dashboard-prompt-send" id="dashboardCopilotBtn" type="button" onclick="runDashboardCopilot()">Send</button>
+      </div>
+      <input id="dashboardReplaceMode" type="checkbox" style="display:none" ${replaceOn ? 'checked' : ''} />
+    </div>
+  `;
+}
+
+function renderDashboardEmptyStateModern(tab) {
+  const chips = (tab.followUps?.length ? tab.followUps : getDashboardStarterPrompts()).slice(0, 3);
+  return `
+    <div class="dashboard-empty">
+      <div class="dashboard-empty-callout">
+        <section class="dashboard-builder-hero">
+          <div class="dashboard-builder-copy">
+            <div class="dashboard-builder-eyebrow">Dashboard AI</div>
+            <h2 class="dashboard-builder-title">Ask once. Get the dashboard.</h2>
+            <p class="dashboard-builder-subtitle">
+              Type a business question in plain English. The workspace will query the connected source, choose the right KPIs and charts, and explain the result for stakeholders.
+            </p>
+            <div class="dashboard-builder-prompt">
+              <input id="dashboardPrompt" class="dashboard-prompt-input" type="text" placeholder="Example: Count patients by ethnicity" />
+              <button class="dashboard-prompt-send" id="dashboardCopilotBtn" type="button" onclick="runDashboardCopilot()">Create dashboard</button>
+            </div>
+            <div class="dashboard-chip-row">
+              ${chips.map((item) => `<button class="dashboard-chip" type="button" onclick='runDashboardCopilot(${escapeJsString(item)})'>${escapeHtml(item)}</button>`).join('')}
+            </div>
+          </div>
+          <div class="dashboard-builder-preview" aria-hidden="true">
+            <div class="dashboard-preview-title">
+              <span>Live dashboard preview</span>
+              <span class="dashboard-preview-live">Ready</span>
+            </div>
+            <div class="dashboard-preview-kpis">
+              <div class="dashboard-preview-kpi"><span>Rows</span><strong>Auto</strong></div>
+              <div class="dashboard-preview-kpi"><span>Groups</span><strong>Smart</strong></div>
+              <div class="dashboard-preview-kpi"><span>Charts</span><strong>3+</strong></div>
+            </div>
+            <div class="dashboard-preview-chart">
+              <span class="dashboard-preview-bar" style="height:42%"></span>
+              <span class="dashboard-preview-bar" style="height:68%"></span>
+              <span class="dashboard-preview-bar" style="height:51%"></span>
+              <span class="dashboard-preview-bar" style="height:84%"></span>
+              <span class="dashboard-preview-bar" style="height:62%"></span>
+              <span class="dashboard-preview-bar" style="height:92%"></span>
+              <span class="dashboard-preview-bar" style="height:74%"></span>
+            </div>
+          </div>
+        </div>
+        <div class="dashboard-starter-grid">
+          <article class="dashboard-starter-card">
+            <strong>For business users</strong>
+            <p>No SQL needed. Ask for a breakdown, trend, top list, KPI summary, or filter and the dashboard builds itself.</p>
+          </article>
+          <article class="dashboard-starter-card">
+            <strong>Real charts, not just tables</strong>
+            <p>Results become KPI cards, bar charts, donut charts, line charts, and downloadable tables when the data supports it.</p>
+          </article>
+          <article class="dashboard-starter-card">
+            <strong>Always connected to data</strong>
+            <p>The same source used by Ask AI and SQL Runner powers dashboard generation, so answers stay tied to the live schema.</p>
+          </article>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderDashboard() {
+  destroyDashboardCharts();
+  const body = document.getElementById('dashboardBody');
+  if (!body) return;
+  const tab = getActiveDashboardTab();
+  const result = tab.result || dashboardLastResult;
+  if (result?.columns?.length && result?.rows?.length) {
+    ensureDashboardVisualState(tab, result);
+  }
+  const hasData = Boolean(result?.columns?.length && result?.rows?.length);
+  body.innerHTML = `
+    <div class="dashboard-shell">
+      ${renderDashboardIconRail()}
+      <div class="dashboard-main">
+        ${renderDashboardTopbar(tab)}
+        <div class="dashboard-content">
+          ${hasData ? renderDashboardFilterBarModern(tab, result) : ''}
+          ${hasData ? renderDashboardKpiStripModern(tab) : ''}
+          ${hasData ? renderDashboardPanelsModern(tab) : renderDashboardEmptyStateModern(tab)}
+          ${hasData ? renderDashboardPromptDockModern(tab) : ''}
+        </div>
+      </div>
+    </div>
+  `;
+  if (hasData) mountDashboardCharts(tab);
+}
+
+function toggleDashboardReplaceMode() {
+  const checkbox = document.getElementById('dashboardReplaceMode');
+  if (!checkbox) return;
+  checkbox.checked = !checkbox.checked;
+  const btn = document.getElementById('dashboardReplaceToggle');
+  if (btn) btn.classList.toggle('active', checkbox.checked);
+}
+
+function clearDashboardPrompt() {
+  const input = document.getElementById('dashboardPrompt');
+  if (input) input.value = '';
+}
+
+function updateDashboardDateRangeAndApply(value) {
+  const tab = getActiveDashboardTab();
+  tab.filters.dateRange = value;
+  persistDashboardWorkspace();
+  applyDashboardFilters();
+}
+
+function updateDashboardQuickFilterValue(index, value) {
+  const tab = getActiveDashboardTab();
+  tab.filters.dimensionFilters[index].value = value;
+  persistDashboardWorkspace();
+  applyDashboardFilters();
+}
+
+function addDashboardFilterPrompt() {
+  const tab = getActiveDashboardTab();
+  const result = tab.rawResult || tab.result || dashboardLastResult;
+  if (!result?.columns?.length) {
+    toast('Run a dashboard query first');
+    return;
+  }
+  ensureDashboardFilterColumns(tab, result);
+  const existing = new Set(tab.filters.dimensionFilters.map((filter) => filter.column).filter(Boolean));
+  const options = getDashboardDimensionOptions(tab, result).filter((item) => !existing.has(item));
+  if (!options.length) {
+    toast('No additional dimension filters are available');
+    return;
+  }
+  const slot = tab.filters.dimensionFilters.find((filter) => !filter.column) || tab.filters.dimensionFilters[2];
+  slot.column = options[0];
+  slot.value = '';
+  persistDashboardWorkspace();
+  renderDashboard();
+}
+
+function openDashboardExportMenu() {
+  const choice = window.prompt('Export dashboard as: csv, png, or summary', 'png');
+  if (!choice) return;
+  const normalized = choice.trim().toLowerCase();
+  if (normalized === 'csv') return downloadDashboardCSV();
+  if (normalized === 'summary') return downloadDashboardSummary();
+  return downloadDashboardPNG();
+}
+
+function addDashboardSupportPanel() {
+  const tab = getActiveDashboardTab();
+  const result = tab.result || dashboardLastResult;
+  if (!result?.columns?.length || !result?.rows?.length) {
+    toast('Run a dashboard query first');
+    return;
+  }
+  const currentTypes = new Set((tab.panels || []).filter((panel) => panel.chart_type !== 'kpi').map((panel) => panel.chart_type));
+  const generated = buildDashboardPanelsFromResult(tab, result).panels.filter((panel) => panel.chart_type !== 'kpi');
+  const nextPanel = generated.find((panel) => !currentTypes.has(panel.chart_type));
+  if (!nextPanel) {
+    toast('No additional panel type is available from the current result');
+    return;
+  }
+  tab.panels.push(nextPanel);
+  persistDashboardWorkspace();
+  renderDashboard();
+}
+
+function shareDashboardView() {
+  const tab = getActiveDashboardTab();
+  const payload = `${window.location.origin}${window.location.pathname}#${encodeURIComponent(tab.name || 'Dashboard')}`;
+  navigator.clipboard.writeText(payload).then(() => toast('Dashboard link copied'));
+}
+
+function renderDashboardPanelBody(tab, panel) {
+  if (panel.chart_type === 'table') {
+    return renderDashboardPanelTable(tab, panel);
+  }
+  if (!['bar', 'bar_horizontal', 'line', 'donut'].includes(panel.chart_type)) {
+    return `<div class="dashboard-empty"><div class="dashboard-empty-callout"><div class="dashboard-empty-subtext">No chart could be rendered for this panel yet.</div></div></div>`;
+  }
+  return `<canvas id="dashboard-chart-${panel.id}"></canvas>`;
+}
+
+function mountDashboardCharts(tab) {
+  if (!window.Chart) return;
+  const donutCenterPlugin = {
+    id: 'dashboardDonutCenterText',
+    afterDraw(chart, _args, pluginOptions) {
+      if (chart.config.type !== 'doughnut') return;
+      const { ctx } = chart;
+      const meta = chart.getDatasetMeta(0);
+      if (!meta?.data?.length) return;
+      const dataset = chart.data.datasets?.[0]?.data || [];
+      const total = dataset.reduce((sum, value) => sum + dashboardSafeNumber(value), 0);
+      if (!total) return;
+      let text = '';
+      if (dataset.length >= 2) {
+        const a = Math.round((dashboardSafeNumber(dataset[0]) / total) * 100);
+        const b = Math.round((dashboardSafeNumber(dataset[1]) / total) * 100);
+        text = `${a}/${b}`;
+      } else {
+        text = `${Math.round((dashboardSafeNumber(dataset[0]) / total) * 100)}%`;
+      }
+      ctx.save();
+      ctx.fillStyle = '#0f172a';
+      ctx.font = '600 16px Inter, system-ui, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(text, chart.width / 2, chart.height / 2);
+      ctx.restore();
+    },
+  };
+
+  (tab.panels || []).filter((panel) => ['bar', 'bar_horizontal', 'line', 'donut'].includes(panel.chart_type)).forEach((panel) => {
+    const canvas = document.getElementById(`dashboard-chart-${panel.id}`);
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const labels = (panel.data || []).map((point) => point.x);
+    const values = (panel.data || []).map((point) => point.y);
+    const commonTicks = {
+      color: '#64748b',
+      font: { size: 11, family: 'Inter, system-ui, sans-serif' },
+    };
+    const gridY = { color: 'rgba(15,23,42,0.08)' };
+    let config = {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: panel.y_axis || 'Value',
+            data: values,
+            backgroundColor: '#0ea5e9',
+            hoverBackgroundColor: '#0284c7',
+            borderRadius: 4,
+            borderSkipped: false,
+            borderWidth: 0,
+          },
+        ],
+      },
+      options: {
+        maintainAspectRatio: false,
+        animation: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { intersect: false, mode: 'index' },
+        },
+        scales: {
+          x: {
+            ticks: commonTicks,
+            grid: { display: false },
+            border: { display: false },
+          },
+          y: {
+            ticks: commonTicks,
+            grid: gridY,
+            border: { display: false },
+          },
+        },
+      },
+      plugins: [],
+    };
+
+    if (panel.chart_type === 'bar_horizontal') {
+      config.options.indexAxis = 'y';
+      config.options.scales.x.grid = gridY;
+      config.options.scales.y.grid = { display: false };
+    }
+
+    if (panel.chart_type === 'line') {
+      const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height || 320);
+      gradient.addColorStop(0, 'rgba(14,165,233,0.22)');
+      gradient.addColorStop(1, 'rgba(14,165,233,0)');
+      config = {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [
+            {
+              label: panel.y_axis || 'Value',
+              data: values,
+              borderColor: '#0ea5e9',
+              borderWidth: 2,
+              fill: true,
+              backgroundColor: gradient,
+              pointRadius: 0,
+              tension: 0.4,
+            },
+          ],
+        },
+        options: {
+          maintainAspectRatio: false,
+          animation: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: { intersect: false, mode: 'index' },
+          },
+          scales: {
+            x: {
+              ticks: commonTicks,
+              grid: { display: false },
+              border: { display: false },
+            },
+            y: {
+              ticks: commonTicks,
+              grid: gridY,
+              border: { display: false },
+            },
+          },
+        },
+        plugins: [],
+      };
+    }
+
+    if (panel.chart_type === 'donut') {
+      config = {
+        type: 'doughnut',
+        data: {
+          labels,
+          datasets: [
+            {
+              data: values,
+              backgroundColor: ['#0f172a', '#0ea5e9', '#38bdf8', '#94a3b8', '#bae6fd', '#0369a1'],
+              borderWidth: 0,
+            },
+          ],
+        },
+        options: {
+          maintainAspectRatio: false,
+          animation: false,
+          cutout: '65%',
+          plugins: {
+            legend: {
+              display: true,
+              position: 'right',
+              labels: {
+                color: '#64748b',
+                font: { size: 12, family: 'Inter, system-ui, sans-serif' },
+                usePointStyle: true,
+                pointStyle: 'circle',
+                boxWidth: 8,
+              },
+            },
+            tooltip: { intersect: false },
+          },
+        },
+        plugins: [donutCenterPlugin],
+      };
+    }
+
     dashboardCharts[panel.id] = new Chart(ctx, config);
   });
 }
